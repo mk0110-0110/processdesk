@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mass & Energy Balance Calculator — Stream Table | ProcessDesk</title>
+<meta name="description" content="Free mass and energy balance calculator. Stream table, component closure check, Sankey diagram, annual energy figure. Five process templates included.">
+<link rel="canonical" href="https://processdesks.com/fel3_meb.html">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg:#f8f9fb; --s1:#ffffff; --s2:#f2f4f7; --s3:#e8ebf0;
+  --border:#e2e6ec; --border2:#d0d5de;
+  --text:#0f1420; --text2:#5a6070; --text3:#9aa0b0;
+  --accent:#1a56db; --accent2:#1648c0;
+  --accent-bg:#eef2ff; --accent-light:#c7d4fa;
+  --green:#059669; --green-bg:#ecfdf5;
+  --red:#dc2626; --red-bg:#fef2f2;
+  --amber:#d97706; --amber-bg:#fffbeb;
+  --orange:#ea580c; --orange-bg:#fff7ed;
+  --purple:#7c3aed; --purple-bg:#f5f3ff;
+  --teal:#0891b2; --teal-bg:#ecfeff;
+  --radius:12px; --rsm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.05);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+
+.pd-nav { position:fixed; top:0; left:0; right:0; z-index:9999; background:rgba(255,255,255,0.97); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.pd-nav-inner { max-width:1280px; margin:0 auto; height:54px; display:flex; align-items:center; padding:0 1.5rem; gap:0; }
+.pd-logo { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:var(--text); text-decoration:none; letter-spacing:0.3px; margin-right:1.5rem; white-space:nowrap; flex-shrink:0; }
+.pd-logo em { font-style:normal; color:var(--accent); }
+.pd-tools { display:flex; align-items:center; gap:0; overflow-x:auto; flex:1; scrollbar-width:none; }
+.pd-tools::-webkit-scrollbar { display:none; }
+.pd-tool { font-size:11px; color:var(--text2); text-decoration:none; padding:6px 9px; border-radius:var(--rsm); white-space:nowrap; transition:all 0.15s; font-weight:500; }
+.pd-tool:hover { color:var(--accent); background:var(--accent-bg); }
+.pd-tool.active { color:var(--accent); background:var(--accent-bg); font-weight:600; }
+.pd-home { font-size:11px; color:#fff; background:var(--accent); text-decoration:none; padding:6px 14px; border-radius:var(--rsm); white-space:nowrap; font-weight:600; margin-left:auto; flex-shrink:0; transition:background 0.15s; }
+.pd-home:hover { background:var(--accent2); }
+body { padding-top:54px; }
+
+
+.pd-footer { background:#0f1420; color:rgba(255,255,255,0.6); padding:3rem 2rem 1.5rem; margin-top:3rem; }
+.pd-footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:2.5rem; margin-bottom:2rem; }
+@media(max-width:720px){ .pd-footer-inner { grid-template-columns:1fr 1fr; gap:1.5rem; } }
+@media(max-width:420px){ .pd-footer-inner { grid-template-columns:1fr; } }
+.pd-footer-logo { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:#fff; margin-bottom:0.6rem; }
+.pd-footer-logo em { font-style:normal; color:#93c5fd; }
+.pd-footer-desc { font-size:12px; line-height:1.75; max-width:220px; }
+.pd-footer-col h4 { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; color:rgba(255,255,255,0.3); text-transform:uppercase; margin-bottom:0.85rem; }
+.pd-footer-col a { display:block; font-size:12px; color:rgba(255,255,255,0.55); text-decoration:none; margin-bottom:7px; transition:color 0.15s; }
+.pd-footer-col a:hover { color:#fff; }
+.pd-footer-bottom { max-width:1280px; margin:0 auto; padding-top:1.25rem; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.pd-footer-bottom p { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.25); }
+
+
+.page { max-width:1280px; margin:0 auto; padding:0 1.5rem 2rem; }
+/* Module header */
+.mod-header { padding:1.5rem 0 1.25rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:flex-end; gap:1rem; flex-wrap:wrap; }
+.mod-logo { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; color:var(--text2); letter-spacing:0.5px; }
+.mod-logo em { font-style:normal; color:var(--accent); }
+.mod-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.02em; }
+.mod-subtitle { font-size:13px; color:var(--text2); margin-top:3px; }
+.mod-badges { display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; align-items:center; }
+.mod-badge { font-family:'DM Mono',monospace; font-size:10px; padding:4px 10px; border-radius:3px; border:1px solid; letter-spacing:0.04em; }
+.mb-blue { background:var(--accent-bg); color:var(--accent); border-color:var(--accent-light); }
+.mb-green { background:var(--green-bg); color:var(--green); border-color:#a7f3d0; }
+.mb-amber { background:var(--amber-bg); color:var(--amber); border-color:#fcd34d; }
+.mb-red { background:var(--red-bg); color:var(--red); border-color:#fca5a5; }
+/* Layout grids */
+.col2 { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; margin-bottom:1rem; }
+.col3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-bottom:1rem; }
+.g2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.75rem; }
+.g3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.75rem; }
+@media(max-width:900px){ .col2,.col3 { grid-template-columns:1fr; } }
+@media(max-width:540px){ .g2,.g3 { grid-template-columns:1fr; } }
+/* Cards */
+.card { background:var(--s1); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.25rem; margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow); }
+.card-title { font-family:'DM Mono',monospace; font-size:10px; font-weight:500; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.85rem; display:flex; align-items:center; gap:8px; }
+.card-title::after { content:''; flex:1; height:1px; background:var(--border); }
+/* Form elements */
+.field { margin-bottom:0.65rem; }
+.lbl { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); margin-bottom:3px; display:block; letter-spacing:0.04em; }
+.ir { display:flex; gap:5px; align-items:center; }
+.unit { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); min-width:52px; flex-shrink:0; }
+input[type="number"], input[type="text"], select, textarea {
+  background:var(--s2); border:1px solid var(--border2); border-radius:var(--rsm);
+  color:var(--text); font-family:'DM Mono',monospace; font-size:12px;
+  padding:6px 9px; width:100%; outline:none; transition:border-color 0.15s; -webkit-appearance:none;
+}
+input:focus, select:focus, textarea:focus { border-color:var(--accent); background:var(--s1); }
+.ir input, .ir select { flex:1; width:auto; min-width:0; }
+/* Toggle */
+.tog { display:flex; border:1px solid var(--border2); border-radius:var(--rsm); overflow:hidden; margin-bottom:0.85rem; }
+.tb { flex:1; padding:8px 6px; font-family:'DM Mono',monospace; font-size:11px; background:transparent; border:none; cursor:pointer; color:var(--text2); transition:all 0.15s; }
+.tb.av { background:var(--accent); color:#fff; font-weight:500; }
+/* Run button */
+.run-btn { width:100%; padding:12px; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.5px; background:var(--accent); color:#fff; border:none; border-radius:var(--rsm); cursor:pointer; transition:background 0.15s; margin-bottom:1rem; }
+.run-btn:hover { background:var(--accent2); }
+/* Metrics */
+.mg { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:1rem; }
+@media(max-width:600px){ .mg { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.metric { background:var(--s2); border-radius:var(--rsm); padding:0.75rem 1rem; border:1px solid var(--border); }
+.ml { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); margin-bottom:4px; letter-spacing:0.04em; }
+.mv { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; color:var(--text); }
+.mv.acc { color:var(--accent); }
+.mv.gr { color:var(--green); }
+.mv.rd { color:var(--red); }
+.mv.am { color:var(--amber); }
+.mu { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); }
+/* Alerts */
+.alert { border-radius:0 var(--rsm) var(--rsm) 0; padding:8px 12px; font-family:'DM Mono',monospace; font-size:11px; line-height:1.6; margin-bottom:8px; display:none; }
+.alert.show { display:block; }
+.aok  { background:var(--green-bg); border-left:3px solid var(--green); color:var(--green); }
+.awk  { background:var(--amber-bg); border-left:3px solid var(--amber); color:var(--amber); }
+.aer  { background:var(--red-bg);   border-left:3px solid var(--red);   color:var(--red); }
+.ainf { background:var(--accent-bg);border-left:3px solid var(--accent);color:var(--accent); }
+/* Tables */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; font-size:11px; }
+th { text-align:left; padding:7px 10px; border-bottom:1px solid var(--border2); color:var(--text2); font-size:10px; letter-spacing:0.06em; background:var(--s2); }
+td { padding:6px 10px; border-bottom:1px solid var(--border); color:var(--text); }
+tr:last-child td { border-bottom:none; }
+td.num { text-align:right; }
+td.ok  { color:var(--green); }
+td.wk  { color:var(--amber); }
+td.er  { color:var(--red); }
+tr.sel { background:var(--accent-bg); }
+/* Divider */
+.divider { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); letter-spacing:0.1em; text-transform:uppercase; display:flex; align-items:center; gap:10px; margin:1.5rem 0 1rem; }
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border2); }
+.note { font-family:'DM Mono',monospace; font-size:11px; color:var(--text2); line-height:1.7; }
+/* Chart containers */
+.chart-wrap { background:var(--s1); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow); }
+.chart-title { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem; }
+.chart-box { position:relative; width:100%; }
+
+
+
+/* ProcessDesk shared nav */
+.pd-nav{position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(255,255,255,0.97);backdrop-filter:blur(10px);border-bottom:1px solid #e2e6ec;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.pd-nav-inner{max-width:1280px;margin:0 auto;height:54px;display:flex;align-items:center;gap:0;padding:0 1.5rem;}
+.pd-logo{font-family:monospace;font-size:15px;font-weight:600;color:#0f1420;text-decoration:none;letter-spacing:0.3px;margin-right:1.5rem;white-space:nowrap;}
+.pd-logo em{font-style:normal;color:#1a56db;}
+.pd-tools{display:flex;align-items:center;gap:0;overflow-x:auto;flex:1;scrollbar-width:none;}
+.pd-tools::-webkit-scrollbar{display:none;}
+.pd-tool{font-size:11px;color:#5a6070;text-decoration:none;padding:6px 10px;border-radius:5px;white-space:nowrap;transition:all 0.15s;font-weight:500;}
+.pd-tool:hover{color:#1a56db;background:#eef2ff;}
+.pd-tool.active{color:#1a56db;background:#eef2ff;font-weight:600;}
+.pd-home{font-size:11px;color:#fff;background:#1a56db;text-decoration:none;padding:6px 14px;border-radius:5px;white-space:nowrap;font-weight:600;margin-left:auto;flex-shrink:0;transition:background 0.15s;}
+.pd-home:hover{background:#1648c0;}
+body{padding-top:54px;}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f8f6f1;
+  --s1:#ffffff;
+  --s2:#f0ede6;
+  --s3:#e6e2d8;
+  --s4:#d8d4c8;
+  --border:rgba(0,0,0,0.08);
+  --border2:rgba(0,0,0,0.16);
+  --text:#1e1c18;
+  --text2:#6e6a60;
+  --text3:#aea89a;
+  --teal:#0a7060;
+  --teal-bg:#e8f4f0;
+  --teal-light:#b0d8d0;
+  --orange:#c84800;
+  --orange-bg:#fdf0e8;
+  --orange-light:#f0b890;
+  --blue:#1840a0;
+  --blue-bg:#eaeffc;
+  --purple:#6030a0;
+  --purple-bg:#f0eafa;
+  --green:#206820;
+  --green-bg:#eaf4ea;
+  --red:#a02020;
+  --red-bg:#faeaea;
+  --amber:#906010;
+  --amber-bg:#faf0d8;
+  --radius:12px;
+  --rsm:6px;
+}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.page{max-width:1280px;margin:0 auto;padding:0 1.5rem 3rem;}
+
+/* HEADER */
+.hdr{padding:2rem 0 1.25rem;margin-bottom:1.75rem;border-bottom:1px solid var(--border2);}
+.hdr-inner{display:flex;align-items:flex-end;gap:1.5rem;flex-wrap:wrap;}
+.logo-block{}
+.logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:400;letter-spacing:0.5px;color:var(--text);}
+.logo em{font-style:italic;color:var(--teal);}
+.logo-sub{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:0.06em;margin-top:5px;}
+.badge-row{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center;}
+.badge{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:3px;border:1px solid;}
+.b-mb{background:var(--teal-bg);color:var(--teal);border-color:var(--teal-light);}
+.b-eb{background:var(--orange-bg);color:var(--orange);border-color:var(--orange-light);}
+.b-st{background:var(--blue-bg);color:var(--blue);border-color:#a0b8f0;}
+
+/* TEMPLATE BAR */
+.template-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center;}
+.tbar-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:0.05em;white-space:nowrap;}
+.tpl-btn{font-family:'DM Mono',monospace;font-size:11px;padding:6px 14px;border-radius:20px;border:1px solid var(--border2);background:var(--s1);cursor:pointer;color:var(--text2);transition:all 0.15s;}
+.tpl-btn:hover{border-color:var(--teal);color:var(--teal);}
+.tpl-btn.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+
+/* MAIN LAYOUT */
+.layout{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:1.25rem;align-items:start;}
+@media(max-width:960px){.layout{grid-template-columns:1fr;}}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--border2);border-radius:var(--radius);padding:1.1rem 1.25rem;margin-bottom:1rem;overflow:hidden;}
+.card.teal-card{border-top:3px solid var(--teal);}
+.card.orange-card{border-top:3px solid var(--orange);}
+.card.blue-card{border-top:3px solid var(--blue);}
+.ct{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--text2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.85rem;display:flex;align-items:center;gap:8px;}
+.ct::after{content:'';flex:1;height:1px;background:var(--border);}
+.ct.tc{color:var(--teal);}
+.ct.oc{color:var(--orange);}
+.ct.bc{color:var(--blue);}
+
+/* FORM */
+.field{margin-bottom:0.65rem;}
+.lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);margin-bottom:3px;display:block;letter-spacing:0.04em;}
+.ir{display:flex;gap:5px;align-items:center;}
+.unit{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);min-width:52px;flex-shrink:0;}
+input,select,textarea{background:var(--s2);border:1px solid var(--border2);border-radius:var(--rsm);color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:6px 9px;width:100%;outline:none;transition:border-color 0.15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);background:var(--s1);}
+.ir input,.ir select{flex:1;width:auto;min-width:0;}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.6rem;}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.6rem;}
+@media(max-width:500px){.g2,.g3{grid-template-columns:1fr;}}
+
+/* STREAM BUILDER */
+.stream-list{display:flex;flex-direction:column;gap:8px;margin-bottom:0.85rem;}
+.stream-row{background:var(--s2);border:1px solid var(--border);border-radius:var(--rsm);padding:8px 10px;position:relative;}
+.stream-row.feed-row{border-left:3px solid var(--teal);}
+.stream-row.product-row{border-left:3px solid var(--orange);}
+.stream-row.utility-row{border-left:3px solid var(--blue);}
+.stream-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.stream-tag{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;padding:2px 8px;border-radius:3px;}
+.tag-feed{background:var(--teal-bg);color:var(--teal);}
+.tag-prod{background:var(--orange-bg);color:var(--orange);}
+.tag-util{background:var(--blue-bg);color:var(--blue);}
+.stream-name-input{flex:1;font-size:12px;padding:4px 8px;}
+.del-btn{width:24px;height:24px;border-radius:50%;border:1px solid var(--border2);background:var(--s1);cursor:pointer;color:var(--text2);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
+.del-btn:hover{background:var(--red-bg);color:var(--red);border-color:var(--red);}
+
+.add-btn{font-family:'DM Mono',monospace;font-size:11px;padding:6px 14px;border-radius:var(--rsm);border:1px dashed var(--border2);background:transparent;cursor:pointer;color:var(--text2);width:100%;transition:all 0.15s;margin-bottom:6px;}
+.add-btn:hover{border-color:var(--teal);color:var(--teal);}
+
+/* UNIT OP BUILDER */
+.op-list{display:flex;flex-direction:column;gap:8px;margin-bottom:0.85rem;}
+.op-row{background:var(--s2);border:1px solid var(--border);border-radius:var(--rsm);padding:8px 10px;}
+.op-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.op-type-tag{font-family:'DM Mono',monospace;font-size:10px;padding:2px 8px;border-radius:3px;}
+.ot-mix{background:var(--purple-bg);color:var(--purple);}
+.ot-spl{background:var(--amber-bg);color:var(--amber);}
+.ot-hx {background:var(--orange-bg);color:var(--orange);}
+.ot-rxn{background:var(--red-bg);color:var(--red);}
+.ot-sep{background:var(--green-bg);color:var(--green);}
+
+/* RUN */
+.run-btn{width:100%;padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-style:italic;background:var(--teal);color:#fff;border:none;border-radius:var(--rsm);cursor:pointer;transition:opacity 0.15s;margin-bottom:1rem;letter-spacing:0.5px;}
+.run-btn:hover{opacity:0.88;}
+
+/* ALERTS */
+.alert{border-radius:0 var(--rsm) var(--rsm) 0;padding:8px 12px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.6;margin-bottom:8px;display:none;}
+.alert.show{display:block;}
+.aok{background:var(--green-bg);border-left:3px solid var(--green);color:var(--green);}
+.awk{background:var(--amber-bg);border-left:3px solid var(--amber);color:var(--amber);}
+.aer{background:var(--red-bg);border-left:3px solid var(--red);color:var(--red);}
+.ainf{background:var(--blue-bg);border-left:3px solid var(--blue);color:var(--blue);}
+
+/* BALANCE GAUGES */
+.balance-row{display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;}
+.b-gauge{flex:1;min-width:140px;background:var(--s2);border-radius:var(--rsm);padding:0.75rem 1rem;border:1px solid var(--border);}
+.bg-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);margin-bottom:4px;}
+.bg-val{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;color:var(--text);}
+.bg-val.ok{color:var(--green);}
+.bg-val.er{color:var(--red);}
+.bg-val.warn{color:var(--amber);}
+.bg-unit{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);}
+.bg-bar{height:5px;background:var(--s3);border-radius:3px;margin-top:6px;}
+.bg-fill{height:100%;border-radius:3px;transition:width 0.4s,background 0.4s;}
+
+/* STREAM TABLE */
+.st-wrap{overflow-x:auto;margin-bottom:1rem;}
+.st-table{border-collapse:collapse;font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap;}
+.st-table th{background:var(--text);color:#fff;padding:8px 12px;text-align:left;font-size:10px;letter-spacing:0.06em;font-weight:400;}
+.st-table th.prop-col{background:var(--s3);color:var(--text2);position:sticky;left:0;z-index:2;}
+.st-table td{padding:6px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.st-table td.prop-col{background:var(--s2);color:var(--text2);position:sticky;left:0;font-size:10px;letter-spacing:0.04em;}
+.st-table td.feed-col{border-top:2px solid var(--teal);}
+.st-table td.prod-col{border-top:2px solid var(--orange);}
+.st-table td.util-col{border-top:2px solid var(--blue);}
+.st-table tr:hover td{background:var(--s2);}
+.st-table tr:hover td.prop-col{background:var(--s3);}
+.st-table .section-hdr td{background:var(--s3);font-size:10px;letter-spacing:0.08em;color:var(--text2);text-transform:uppercase;}
+
+/* SANKEY */
+.sankey-wrap{background:var(--s1);border:1px solid var(--border2);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;overflow:hidden;}
+.sankey-title{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:1rem;}
+#sankey-svg{width:100%;display:block;}
+
+/* ENERGY SUMMARY */
+.energy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1rem;}
+@media(max-width:500px){.energy-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.e-card{border-radius:var(--rsm);padding:0.75rem 1rem;}
+.e-in{background:var(--teal-bg);border:1px solid var(--teal-light);}
+.e-out{background:var(--orange-bg);border:1px solid var(--orange-light);}
+.e-neu{background:var(--s2);border:1px solid var(--border);}
+.e-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);margin-bottom:3px;}
+.e-val{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;color:var(--text);}
+.e-unit{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);}
+
+/* DIVIDER */
+.divider{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin:1.75rem 0 1rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2);}
+
+.note{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);line-height:1.7;}
+
+footer{margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--border2);font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+
+/* ── ProcessDesk Feedback Widget ──────────────────── */
+.fb-btn {
+  position: fixed; bottom: 24px; right: 24px; z-index: 8888;
+  background: var(--accent); color: #fff;
+  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500;
+  padding: 10px 18px; border-radius: 24px; border: none; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(26,86,219,0.35);
+  display: flex; align-items: center; gap: 7px;
+  transition: all 0.2s; letter-spacing: 0.03em;
+}
+.fb-btn:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,86,219,0.4); }
+.fb-btn svg { flex-shrink: 0; }
+
+.fb-overlay {
+  position: fixed; inset: 0; z-index: 8889;
+  background: rgba(15,20,32,0.45); backdrop-filter: blur(3px);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.fb-overlay.open { opacity: 1; pointer-events: all; }
+
+.fb-panel {
+  position: fixed; bottom: 80px; right: 24px; z-index: 8890;
+  width: 360px; max-width: calc(100vw - 32px);
+  background: #fff; border: 1px solid var(--border2);
+  border-radius: 16px; box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+  opacity: 0; transform: translateY(16px) scale(0.97);
+  pointer-events: none; transition: all 0.2s;
+}
+.fb-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+
+.fb-header {
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.fb-header-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--accent-bg); display: flex; align-items: center;
+  justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.fb-header-text { flex: 1; }
+.fb-header-title {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;
+  font-weight: 700; color: var(--text); margin-bottom: 1px;
+}
+.fb-header-sub {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--text2); letter-spacing: 0.04em;
+}
+.fb-close {
+  width: 28px; height: 28px; border: none; background: var(--s2);
+  border-radius: 50%; cursor: pointer; font-size: 14px; color: var(--text2);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s; flex-shrink: 0;
+}
+.fb-close:hover { background: var(--s3); color: var(--text); }
+
+.fb-body { padding: 1rem 1.25rem; }
+
+.fb-field { margin-bottom: 0.85rem; }
+.fb-lbl {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--text2); letter-spacing: 0.06em; margin-bottom: 5px;
+  display: block; text-transform: uppercase;
+}
+.fb-select, .fb-textarea {
+  width: 100%; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; background: var(--s2); border: 1px solid var(--border2);
+  border-radius: 8px; color: var(--text); outline: none;
+  transition: border-color 0.15s;
+}
+.fb-select { padding: 8px 10px; appearance: none; -webkit-appearance: none; cursor: pointer; }
+.fb-textarea { padding: 10px 12px; resize: vertical; min-height: 90px; line-height: 1.6; }
+.fb-select:focus, .fb-textarea:focus { border-color: var(--accent); background: #fff; }
+
+.fb-rating { display: flex; gap: 6px; }
+.fb-star {
+  font-size: 22px; cursor: pointer; transition: transform 0.1s;
+  opacity: 0.35; line-height: 1;
+}
+.fb-star.active { opacity: 1; }
+.fb-star:hover { transform: scale(1.2); }
+
+.fb-submit {
+  width: 100%; padding: 11px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; font-weight: 700; background: var(--accent); color: #fff;
+  border: none; border-radius: 8px; cursor: pointer;
+  transition: background 0.15s; letter-spacing: 0.02em;
+}
+.fb-submit:hover { background: var(--accent2); }
+.fb-submit:disabled { background: var(--text3); cursor: not-allowed; }
+
+.fb-char-count {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  color: var(--text3); text-align: right; margin-top: 3px;
+}
+
+.fb-success {
+  padding: 1.5rem 1.25rem; text-align: center; display: none;
+}
+.fb-success-icon { font-size: 40px; margin-bottom: 10px; }
+.fb-success-title {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px;
+  font-weight: 700; color: var(--text); margin-bottom: 6px;
+}
+.fb-success-msg {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--text2); line-height: 1.7;
+}
+@media print { .fb-btn, .fb-panel, .fb-overlay { display: none !important; } }
+
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="pd-nav">
+  <div class="pd-nav-inner">
+    <a href="/" class="pd-logo">Process<em>Desk</em></a>
+    <div class="pd-tools">
+    <a href="fel3_hydraulics.html" class="pd-tool" data-page="fel3_hydraulics">Liquid Hydraulics</a>
+    <a href="fel3_gas_hydraulics.html" class="pd-tool" data-page="fel3_gas_hydraulics">Gas Hydraulics</a>
+    <a href="fel3_heat_exchanger.html" class="pd-tool" data-page="fel3_heat_exchanger">Heat Exchanger</a>
+    <a href="fel3_relief_valve.html" class="pd-tool" data-page="fel3_relief_valve">Relief Valve</a>
+    <a href="fel3_pump_selection.html" class="pd-tool" data-page="fel3_pump_selection">Pump Selection</a>
+    <a href="fel3_meb.html" class="pd-tool" data-page="fel3_meb">M&amp;E Balance</a>
+    <a href="fel3_cost_estimator.html" class="pd-tool" data-page="fel3_cost_estimator">Cost Estimator</a>
+    <a href="fel3_economics.html" class="pd-tool" data-page="fel3_economics">Project Economics</a>
+    <a href="fel3_dashboard.html" class="pd-tool" data-page="fel3_dashboard">Dashboard</a>
+    </div>
+    <a href="/" class="pd-home">← All tools</a>
+  </div>
+</nav>
+<script>
+(function(){
+  var p='fel3_meb';
+  document.querySelectorAll('.pd-tool[data-page]').forEach(function(a){
+    if(a.dataset.page===p) a.classList.add('active');
+  });
+})();
+</script>
+<div class="page">
+  <div class="mod-header">
+    <div>
+      <div class="mod-logo">Process<em>Desk</em> · Module 06</div>
+      <div class="mod-title">Mass & Energy Balance Engine</div>
+      <div class="mod-subtitle">Stream Table · Component Closure Check · Sankey Diagram · Five Process Templates</div>
+    </div>
+    <div class="mod-badges"><span class="mod-badge mb-blue">Stream Table</span><span class="mod-badge mb-amber">Sankey</span><span class="mod-badge mb-green">FEL-3 / AACE Class 3</span></div>
+  </div><div class="template-bar">
+  <span class="tbar-label">Template:</span>
+  <button class="tpl-btn active" onclick="loadTemplate('generic',this)">Generic</button>
+  <button class="tpl-btn" onclick="loadTemplate('combustion',this)">Combustion / Fired Heater</button>
+  <button class="tpl-btn" onclick="loadTemplate('distillation',this)">Distillation Feed Prep</button>
+  <button class="tpl-btn" onclick="loadTemplate('absorption',this)">Gas Absorption</button>
+  <button class="tpl-btn" onclick="loadTemplate('reaction',this)">Reactor with HX</button>
+</div>
+
+<div class="layout">
+<!-- LEFT: INPUTS -->
+<div>
+
+  <!-- STREAMS -->
+  <div class="card teal-card">
+    <div class="ct tc">Process Streams</div>
+    <div class="stream-list" id="stream-list"></div>
+    <div style="display:flex;gap:6px;">
+      <button class="add-btn" onclick="addStream('feed')">+ Add feed stream</button>
+      <button class="add-btn" onclick="addStream('product')" style="border-color:var(--orange-light);color:var(--orange);">+ Add product</button>
+      <button class="add-btn" onclick="addStream('utility')" style="border-color:#a0b8f0;color:var(--blue);">+ Add utility</button>
+    </div>
+  </div>
+
+  <!-- UNIT OPERATIONS -->
+  <div class="card orange-card">
+    <div class="ct oc">Unit Operations</div>
+    <div class="op-list" id="op-list"></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="add-btn" onclick="addOp('mixer')" style="border-color:#c0a0e0;color:var(--purple);">+ Mixer</button>
+      <button class="add-btn" onclick="addOp('splitter')" style="border-color:#e0c060;color:var(--amber);">+ Splitter</button>
+      <button class="add-btn" onclick="addOp('hx')" style="border-color:var(--orange-light);color:var(--orange);">+ Heat exchanger</button>
+      <button class="add-btn" onclick="addOp('reactor')" style="border-color:#e08080;color:var(--red);">+ Reactor</button>
+    </div>
+  </div>
+
+  <!-- PROJECT INFO -->
+  <div class="card blue-card">
+    <div class="ct bc">Project Basis</div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Project name</label><input type="text" id="proj-name" value="FEL-3 Process Study"></div>
+      <div class="field"><label class="lbl">Basis (operating hrs/yr)</label><div class="ir"><input type="number" id="op-hrs" value="8000" step="100"><span class="unit">hr/yr</span></div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Estimate class</label>
+        <select id="fel-class">
+          <option value="FEL-1">FEL-1 / AACE Class 5 (±50%)</option>
+          <option value="FEL-2">FEL-2 / AACE Class 4 (±30%)</option>
+          <option value="FEL-3" selected>FEL-3 / AACE Class 3 (±20%)</option>
+        </select>
+      </div>
+      <div class="field"><label class="lbl">Closure tolerance</label><div class="ir"><input type="number" id="tol" value="2" step="0.5" min="0.1"><span class="unit">%</span></div></div>
+    </div>
+  </div>
+
+  <button class="run-btn" onclick="calculate()">Calculate Balance</button>
+
+  <div id="closure-area" style="display:none;">
+    <div class="card">
+      <div class="ct">Balance Closure</div>
+      <div id="alert-mass" class="alert"></div>
+      <div id="alert-energy" class="alert"></div>
+      <div class="balance-row" id="balance-gauges"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- RIGHT: OUTPUTS -->
+<div id="output-panel">
+
+  <!-- ENERGY SUMMARY -->
+  <div id="energy-summary" style="display:none;">
+    <div class="card">
+      <div class="ct">Energy Summary</div>
+      <div class="energy-grid" id="energy-grid"></div>
+    </div>
+  </div>
+
+  <!-- SANKEY -->
+  <div class="sankey-wrap" id="sankey-wrap" style="display:none;">
+    <div class="sankey-title">Energy & Mass Flow — Sankey Diagram</div>
+    <svg id="sankey-svg" viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <!-- STREAM TABLE -->
+  <div id="stream-table-wrap" style="display:none;">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:1rem 1.25rem 0.5rem;border-bottom:1px solid var(--border);">
+        <div class="ct" style="margin-bottom:0;">Process Stream Table — FEL-3 Issue</div>
+      </div>
+      <div class="st-wrap" id="st-wrap"></div>
+    </div>
+  </div>
+
+  <!-- COMPONENT BALANCE TABLE -->
+  <div id="comp-balance-wrap" style="display:none;">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:1rem 1.25rem 0.5rem;border-bottom:1px solid var(--border);">
+        <div class="ct" style="margin-bottom:0;">Component Mass Balance — Tie-out Check</div>
+      </div>
+      <div class="st-wrap" id="comp-st-wrap"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+</div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────
+let streams=[], ops=[], streamId=0, opId=0;
+
+// ── TEMPLATES ─────────────────────────────────────────
+const TEMPLATES={
+  generic:{
+    streams:[
+      {type:'feed',name:'Feed-01',flow:1000,T:25,P:101.325,Cp:4.18,phase:'liquid',MW:18,Hvap:0,components:'Water 100%',color:'teal'},
+      {type:'product',name:'Product-01',flow:900,T:80,P:101.325,Cp:4.18,phase:'liquid',MW:18,Hvap:0,components:'Water 100%',color:'orange'},
+      {type:'utility',name:'Steam-HPS',flow:50,T:180,P:1000,Cp:2.1,phase:'vapor',MW:18,Hvap:2015,components:'Steam 100%',color:'blue'},
+    ],
+    ops:[
+      {type:'hx',name:'E-101',duty:800,stream_in:'Feed-01',stream_out:'Product-01',dH_rxn:0,split_frac:0},
+    ]
+  },
+  combustion:{
+    streams:[
+      {type:'feed',name:'Natural Gas',flow:500,T:15,P:101.325,Cp:2.2,phase:'vapor',MW:18.5,Hvap:0,components:'CH4 85%, C2H6 10%, N2 5%',color:'teal'},
+      {type:'feed',name:'Combustion Air',flow:9500,T:20,P:101.325,Cp:1.005,phase:'vapor',MW:29,Hvap:0,components:'N2 79%, O2 21%',color:'teal'},
+      {type:'product',name:'Flue Gas',flow:9850,T:180,P:101.325,Cp:1.1,phase:'vapor',MW:28.5,Hvap:0,components:'N2 74%, CO2 11%, H2O 12%, O2 3%',color:'orange'},
+      {type:'utility',name:'Process Fluid',flow:3000,T:60,P:500,Cp:3.5,phase:'liquid',MW:80,Hvap:0,components:'Organic fluid',color:'blue'},
+    ],
+    ops:[
+      {type:'reactor',name:'Burner-F-101',duty:0,stream_in:'Natural Gas',stream_out:'Flue Gas',dH_rxn:-802,split_frac:0},
+      {type:'hx',name:'Convection Section',duty:1200,stream_in:'Flue Gas',stream_out:'Process Fluid',dH_rxn:0,split_frac:0},
+    ]
+  },
+  distillation:{
+    streams:[
+      {type:'feed',name:'Column Feed',flow:5000,T:80,P:200,Cp:2.8,phase:'liquid',MW:72,Hvap:0,components:'nC4 30%, nC5 45%, nC6 25%',color:'teal'},
+      {type:'product',name:'Overhead Distillate',flow:1650,T:45,P:180,Cp:2.2,phase:'vapor',MW:58,Hvap:350,components:'nC4 88%, nC5 12%',color:'orange'},
+      {type:'product',name:'Bottoms Product',flow:3350,T:135,P:210,Cp:2.9,phase:'liquid',MW:82,Hvap:0,components:'nC5 20%, nC6 80%',color:'orange'},
+      {type:'utility',name:'Reboiler Steam',flow:280,T:160,P:620,Cp:2.1,phase:'vapor',MW:18,Hvap:2082,components:'Steam 100%',color:'blue'},
+      {type:'utility',name:'Condenser CW',flow:8000,T:25,P:101.325,Cp:4.18,phase:'liquid',MW:18,Hvap:0,components:'Water 100%',color:'blue'},
+    ],
+    ops:[
+      {type:'hx',name:'Reboiler E-201',duty:560,stream_in:'Reboiler Steam',stream_out:'Bottoms Product',dH_rxn:0,split_frac:0},
+      {type:'hx',name:'Condenser E-202',duty:-520,stream_in:'Overhead Distillate',stream_out:'Condenser CW',dH_rxn:0,split_frac:0},
+      {type:'splitter',name:'Column T-201',duty:0,stream_in:'Column Feed',stream_out:'Overhead Distillate',dH_rxn:0,split_frac:0.33},
+    ]
+  },
+  absorption:{
+    streams:[
+      {type:'feed',name:'Sour Gas',flow:2000,T:40,P:6000,Cp:1.05,phase:'vapor',MW:22,Hvap:0,components:'CH4 88%, CO2 8%, H2S 4%',color:'teal'},
+      {type:'feed',name:'Lean Amine',flow:5000,T:40,P:6100,Cp:3.6,phase:'liquid',MW:105,Hvap:0,components:'MDEA 40%, H2O 60%',color:'teal'},
+      {type:'product',name:'Sweet Gas',flow:1920,T:45,P:5900,Cp:1.02,phase:'vapor',MW:20,Hvap:0,components:'CH4 91%, CO2 0.5%, H2S <4ppm',color:'orange'},
+      {type:'product',name:'Rich Amine',flow:5080,T:55,P:5800,Cp:3.6,phase:'liquid',MW:106,Hvap:0,components:'MDEA 38%, H2O 58%, CO2+H2S 4%',color:'orange'},
+    ],
+    ops:[
+      {type:'mixer',name:'Absorber C-301',duty:-45,stream_in:'Sour Gas',stream_out:'Sweet Gas',dH_rxn:-60,split_frac:0},
+    ]
+  },
+  reaction:{
+    streams:[
+      {type:'feed',name:'Reactor Feed',flow:2500,T:120,P:800,Cp:2.4,phase:'liquid',MW:92,Hvap:0,components:'Reactant A 60%, Solvent 40%',color:'teal'},
+      {type:'product',name:'Reactor Effluent',flow:2500,T:155,P:780,Cp:2.5,phase:'liquid',MW:94,Hvap:0,components:'Product B 45%, Byproduct 8%, Solvent 40%, Unreacted A 7%',color:'orange'},
+      {type:'utility',name:'Cooling Water',flow:6000,T:28,P:400,Cp:4.18,phase:'liquid',MW:18,Hvap:0,components:'Water 100%',color:'blue'},
+    ],
+    ops:[
+      {type:'reactor',name:'Reactor R-401',duty:0,stream_in:'Reactor Feed',stream_out:'Reactor Effluent',dH_rxn:-120,split_frac:0},
+      {type:'hx',name:'Reactor Cooler E-401',duty:-350,stream_in:'Reactor Effluent',stream_out:'Cooling Water',dH_rxn:0,split_frac:0},
+    ]
+  }
+};
+
+// ── DOM HELPERS ───────────────────────────────────────
+function setAlert(id,cls,msg){const e=document.getElementById(id);if(!e)return;e.className='alert '+cls+' show';e.textContent=msg;}
+function clrAlert(id){const e=document.getElementById(id);if(e)e.className='alert';}
+
+// ── STREAM BUILDER ────────────────────────────────────
+function addStream(type, data={}){
+  streamId++;
+  const id='s'+streamId;
+  const defaults={feed:{name:'Feed-'+streamId,flow:1000,T:25,P:101.325,Cp:4.18,phase:'liquid',MW:18,Hvap:0,components:'Water 100%'},
+                  product:{name:'Product-'+streamId,flow:900,T:80,P:101.325,Cp:4.18,phase:'liquid',MW:18,Hvap:0,components:''},
+                  utility:{name:'Utility-'+streamId,flow:500,T:150,P:500,Cp:2.1,phase:'vapor',MW:18,Hvap:2015,components:'Steam 100%'}};
+  const d={...defaults[type],...data};
+  streams.push({id,type,...d});
+  renderStreams();
+}
+
+function removeStream(id){
+  streams=streams.filter(s=>s.id!==id);
+  renderStreams();
+}
+
+function renderStreams(){
+  const list=document.getElementById('stream-list');
+  list.innerHTML='';
+  streams.forEach(s=>{
+    const tagCls=s.type==='feed'?'tag-feed':s.type==='product'?'tag-prod':'tag-util';
+    const rowCls=s.type==='feed'?'feed-row':s.type==='product'?'product-row':'utility-row';
+    const div=document.createElement('div');
+    div.className='stream-row '+rowCls;
+    div.innerHTML=`
+      <div class="stream-hdr">
+        <span class="stream-tag ${tagCls}">${s.type.toUpperCase()}</span>
+        <input class="stream-name-input" value="${s.name}" onchange="updateStream('${s.id}','name',this.value)">
+        <button class="del-btn" onclick="removeStream('${s.id}')">×</button>
+      </div>
+      <div class="g3">
+        <div class="field"><label class="lbl">Flow (kg/h)</label><input type="number" value="${s.flow}" onchange="updateStream('${s.id}','flow',+this.value)"></div>
+        <div class="field"><label class="lbl">Temp (°C)</label><input type="number" value="${s.T}" onchange="updateStream('${s.id}','T',+this.value)"></div>
+        <div class="field"><label class="lbl">Press (kPa)</label><input type="number" value="${s.P}" onchange="updateStream('${s.id}','P',+this.value)"></div>
+      </div>
+      <div class="g3">
+        <div class="field"><label class="lbl">Cp (kJ/kg·K)</label><input type="number" value="${s.Cp}" step="0.01" onchange="updateStream('${s.id}','Cp',+this.value)"></div>
+        <div class="field"><label class="lbl">Hvap (kJ/kg)</label><input type="number" value="${s.Hvap}" step="1" onchange="updateStream('${s.id}','Hvap',+this.value)"></div>
+        <div class="field"><label class="lbl">Phase</label>
+          <select onchange="updateStream('${s.id}','phase',this.value)">
+            <option ${s.phase==='liquid'?'selected':''}>liquid</option>
+            <option ${s.phase==='vapor'?'selected':''}>vapor</option>
+            <option ${s.phase==='mixed'?'selected':''}>mixed</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label class="lbl">Components / composition</label><input type="text" value="${s.components}" onchange="updateStream('${s.id}','components',this.value)"></div>`;
+    list.appendChild(div);
+  });
+}
+
+function updateStream(id,key,val){
+  const s=streams.find(x=>x.id===id);
+  if(s) s[key]=val;
+}
+
+// ── OP BUILDER ────────────────────────────────────────
+function addOp(type, data={}){
+  opId++;
+  const id='op'+opId;
+  const defaults={
+    mixer:{name:'MIX-'+opId,duty:0,stream_in:'',stream_out:'',dH_rxn:0,split_frac:0},
+    splitter:{name:'SPL-'+opId,duty:0,stream_in:'',stream_out:'',dH_rxn:0,split_frac:0.5},
+    hx:{name:'E-'+String(opId).padStart(3,'0'),duty:500,stream_in:'',stream_out:'',dH_rxn:0,split_frac:0},
+    reactor:{name:'R-'+String(opId).padStart(3,'0'),duty:0,stream_in:'',stream_out:'',dH_rxn:-200,split_frac:0},
+  };
+  const d={...defaults[type],...data};
+  ops.push({id,type,...d});
+  renderOps();
+}
+
+function removeOp(id){
+  ops=ops.filter(o=>o.id!==id);
+  renderOps();
+}
+
+function renderOps(){
+  const list=document.getElementById('op-list');
+  list.innerHTML='';
+  ops.forEach(o=>{
+    const tagCls='ot-'+o.type;
+    const labels={mixer:'MIXER',splitter:'SPLITTER',hx:'HEAT EXCH',reactor:'REACTOR'};
+    const div=document.createElement('div');
+    div.className='op-row';
+    const showDuty=o.type==='hx'||o.type==='reactor';
+    const showSplit=o.type==='splitter';
+    const showDH=o.type==='reactor';
+    div.innerHTML=`
+      <div class="op-hdr">
+        <span class="op-type-tag ${tagCls}">${labels[o.type]}</span>
+        <input class="stream-name-input" value="${o.name}" onchange="updateOp('${o.id}','name',this.value)">
+        <button class="del-btn" onclick="removeOp('${o.id}')">×</button>
+      </div>
+      <div class="g2">
+        <div class="field"><label class="lbl">Stream in</label><input type="text" value="${o.stream_in}" placeholder="Stream name" onchange="updateOp('${o.id}','stream_in',this.value)"></div>
+        <div class="field"><label class="lbl">Stream out</label><input type="text" value="${o.stream_out}" placeholder="Stream name" onchange="updateOp('${o.id}','stream_out',this.value)"></div>
+      </div>
+      ${showDuty?`<div class="field"><label class="lbl">Duty (kW, +ve=heat in, -ve=heat out)</label><input type="number" value="${o.duty}" onchange="updateOp('${o.id}','duty',+this.value)"></div>`:''}
+      ${showDH?`<div class="field"><label class="lbl">Heat of reaction ΔHrxn (kJ/mol, -ve=exothermic)</label><input type="number" value="${o.dH_rxn}" step="1" onchange="updateOp('${o.id}','dH_rxn',+this.value)"></div>`:''}
+      ${showSplit?`<div class="field"><label class="lbl">Split fraction to stream out</label><input type="number" value="${o.split_frac}" step="0.01" min="0" max="1" onchange="updateOp('${o.id}','split_frac',+this.value)"></div>`:''}`;
+    list.appendChild(div);
+  });
+}
+
+function updateOp(id,key,val){
+  const o=ops.find(x=>x.id===id);
+  if(o) o[key]=val;
+}
+
+// ── TEMPLATE LOADER ───────────────────────────────────
+function loadTemplate(tpl, btn){
+  document.querySelectorAll('.tpl-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  streams=[]; ops=[]; streamId=0; opId=0;
+  const T=TEMPLATES[tpl];
+  T.streams.forEach(s=>{ streamId++; streams.push({id:'s'+streamId,...s}); });
+  T.ops.forEach(o=>{ opId++; ops.push({id:'op'+opId,...o}); });
+  renderStreams(); renderOps();
+  document.getElementById('closure-area').style.display='none';
+  document.getElementById('energy-summary').style.display='none';
+  document.getElementById('sankey-wrap').style.display='none';
+  document.getElementById('stream-table-wrap').style.display='none';
+  document.getElementById('comp-balance-wrap').style.display='none';
+}
+
+// ── CALCULATION ENGINE ────────────────────────────────
+function calculate(){
+  if(streams.length<2){setAlert('alert-mass','awk','Add at least 2 streams (1 feed + 1 product) to run a balance.');return;}
+
+  const feeds=streams.filter(s=>s.type==='feed');
+  const products=streams.filter(s=>s.type==='product');
+  const utilities=streams.filter(s=>s.type==='utility');
+  const tol=+document.getElementById('tol').value/100;
+
+  // ── MASS BALANCE ──────────────────────────────────
+  const totalFeedMass=feeds.reduce((a,s)=>a+s.flow,0);
+  const totalProdMass=products.reduce((a,s)=>a+s.flow,0);
+  const massClosure=(totalProdMass/totalFeedMass)*100;
+  const massErr=Math.abs(totalFeedMass-totalProdMass);
+  const massErrPct=massErr/totalFeedMass*100;
+
+  // ── ENERGY BALANCE ────────────────────────────────
+  // Enthalpy of each stream: H = m * Cp * T + m * x_vap * Hvap  (relative to 0°C liquid ref)
+  function streamEnthalpy(s){
+    const sensible=s.flow*s.Cp*s.T/3600; // kW (flow kg/h → /3600 for kg/s)
+    const latent=s.phase==='vapor'?s.flow*s.Hvap/3600:0;
+    return sensible+latent;
+  }
+
+  const H_feeds=feeds.reduce((a,s)=>a+streamEnthalpy(s),0);
+  const H_prods=products.reduce((a,s)=>a+streamEnthalpy(s),0);
+  const Q_ops=ops.reduce((a,o)=>a+o.duty,0); // net heat added by unit ops (kW)
+
+  // Reaction heat contribution
+  const Q_rxn=ops.filter(o=>o.type==='reactor').reduce((a,o)=>{
+    // ΔHrxn in kJ/mol; estimate molar flow from stream_in
+    const sIn=streams.find(s=>s.name===o.stream_in);
+    if(!sIn||!sIn.MW||sIn.MW===0) return a;
+    const molarFlow=sIn.flow/(sIn.MW*3.6); // mol/s
+    return a + molarFlow*o.dH_rxn; // kW
+  },0);
+
+  const H_utility_in=utilities.reduce((a,s)=>a+streamEnthalpy(s),0);
+  // Energy balance: H_feeds + H_utility_in + Q_ops + Q_rxn ≈ H_prods + H_utility_out
+  // We check: (H_prods - H_feeds) vs (Q_ops + Q_rxn + H_utility_in)
+  const energyIn=H_feeds+H_utility_in+Math.max(0,Q_ops)+Math.max(0,Q_rxn);
+  const energyOut=H_prods+Math.abs(Math.min(0,Q_ops))+Math.abs(Math.min(0,Q_rxn));
+  const netDuty=Q_ops+Q_rxn; // total net heat transfer
+  const energyImbalance=Math.abs(energyIn-energyOut-H_prods+H_feeds);
+
+  // ── CLOSURE CHECK ─────────────────────────────────
+  document.getElementById('closure-area').style.display='';
+  clrAlert('alert-mass'); clrAlert('alert-energy');
+
+  const massOk=massErrPct<=tol*100;
+  setAlert('alert-mass', massOk?'aok':'awk',
+    `Mass balance: IN = ${totalFeedMass.toFixed(1)} kg/h | OUT = ${totalProdMass.toFixed(1)} kg/h | Error = ${massErrPct.toFixed(2)}% (tolerance: ${(tol*100).toFixed(1)}%)`);
+
+  const energyOk=true; // informational only at FEL-3
+  setAlert('alert-energy','ainf',
+    `Energy: Feed enthalpy = ${H_feeds.toFixed(1)} kW | Product enthalpy = ${H_prods.toFixed(1)} kW | Net process duty = ${netDuty.toFixed(1)} kW | Reaction heat = ${Q_rxn.toFixed(1)} kW`);
+
+  // Gauges
+  const gauges=[
+    {lbl:'Total feed flow',val:totalFeedMass.toFixed(0),unit:'kg/h',pct:100,color:'var(--teal)'},
+    {lbl:'Total product flow',val:totalProdMass.toFixed(0),unit:'kg/h',pct:Math.min(totalProdMass/totalFeedMass*100,100),color:massOk?'var(--green)':'var(--red)'},
+    {lbl:'Mass closure',val:massClosure.toFixed(2)+'%',unit:massOk?'✓ balanced':'✗ check inputs',pct:Math.min(massClosure,100),color:massOk?'var(--green)':'var(--red)'},
+    {lbl:'Net process duty',val:(Math.abs(netDuty)/1000).toFixed(3),unit:'MW net',pct:Math.min(Math.abs(netDuty)/100,100),color:'var(--orange)'},
+  ];
+  document.getElementById('balance-gauges').innerHTML=gauges.map(g=>`
+    <div class="b-gauge">
+      <div class="bg-lbl">${g.lbl}</div>
+      <div class="bg-val ${massOk||g.lbl!=='Mass closure'?'ok':'er'}">${g.val}</div>
+      <div class="bg-unit">${g.unit}</div>
+      <div class="bg-bar"><div class="bg-fill" style="width:${g.pct.toFixed(1)}%;background:${g.color};"></div></div>
+    </div>`).join('');
+
+  // ── ENERGY SUMMARY CARDS ──────────────────────────
+  const opHrs=+document.getElementById('op-hrs').value;
+  const eCards=[
+    {cls:'e-in',lbl:'Feed stream enthalpy',val:H_feeds.toFixed(1),unit:'kW'},
+    {cls:'e-out',lbl:'Product stream enthalpy',val:H_prods.toFixed(1),unit:'kW'},
+    {cls:'e-neu',lbl:'Utility heat input',val:H_utility_in.toFixed(1),unit:'kW'},
+    {cls:'e-in',lbl:'Net process duty',val:netDuty.toFixed(1),unit:'kW'},
+    {cls:'e-out',lbl:'Reaction heat (ΔHrxn)',val:Q_rxn.toFixed(1),unit:'kW'},
+    {cls:'e-neu',lbl:'Annual energy',val:((Math.abs(netDuty)*opHrs)/1000).toFixed(0),unit:'MWh/yr'},
+  ];
+  document.getElementById('energy-grid').innerHTML=eCards.map(c=>`
+    <div class="e-card ${c.cls}">
+      <div class="e-lbl">${c.lbl}</div>
+      <div class="e-val">${c.val}</div>
+      <div class="e-unit">${c.unit}</div>
+    </div>`).join('');
+  document.getElementById('energy-summary').style.display='';
+
+  // ── SANKEY DIAGRAM ────────────────────────────────
+  drawSankey(streams, ops, H_feeds, H_prods, netDuty, Q_rxn);
+
+  // ── STREAM TABLE ──────────────────────────────────
+  buildStreamTable(streams, ops);
+
+  // ── COMPONENT BALANCE ─────────────────────────────
+  buildComponentBalance(streams);
+
+  document.getElementById('stream-table-wrap').style.display='';
+  document.getElementById('comp-balance-wrap').style.display='';
+}
+
+// ── SANKEY — auto-sizing boxes ────────────────────────
+function drawSankey(streams, ops, H_feeds, H_prods, netDuty, Q_rxn){
+  const feeds=streams.filter(s=>s.type==='feed');
+  const products=streams.filter(s=>s.type==='product');
+  const utilities=streams.filter(s=>s.type==='utility');
+  const totalMass=feeds.reduce((a,s)=>a+s.flow,0)||1;
+
+  // Auto-size: measure text to determine box dimensions
+  // Each box shows: name (line1), flow kg/h (line2), T°C | phase (line3)
+  // Box width = longest text * ~6.5px per char at font-size 10, min 110px
+  // Box height = 3 lines * 14px + 12px padding = 54px min
+  const FONT_W = 6.2; // approx px per char at size 10
+  const LINE_H = 14;
+  const PAD_X = 12, PAD_Y = 10;
+
+  function boxSize(s){
+    const lines = [
+      s.name,
+      s.flow.toFixed(0)+' kg/h',
+      s.T+'°C | '+s.phase+(s.components?' | '+s.components.split(',')[0].trim().substring(0,12):'')
+    ];
+    const maxLen = Math.max(...lines.map(l=>l.length));
+    const w = Math.max(120, maxLen * FONT_W + PAD_X*2);
+    const h = lines.length * LINE_H + PAD_Y*2;
+    return {w, h, lines};
+  }
+
+  // Compute all box sizes
+  const feedBoxes = feeds.map(s=>({s, ...boxSize(s)}));
+  const prodBoxes = products.map(s=>({s, ...boxSize(s)}));
+  const utilBoxes = utilities.map(s=>({s, ...boxSize(s)}));
+
+  // Layout constants
+  const MARGIN_X = 20; // from edge
+  const CENTER_GAP = 40; // gap between box edge and center block
+  const maxFeedW = Math.max(...feedBoxes.map(b=>b.w), 10);
+  const maxProdW = Math.max(...prodBoxes.map(b=>b.w), 10);
+  const maxUtilW = Math.max(...utilBoxes.map(b=>b.w), 10);
+
+  // SVG total height: enough for feeds/products vertically
+  const maxSideCount = Math.max(feeds.length, products.length, 1);
+  const BOX_SPACING = 20;
+  const sideH = feedBoxes.reduce((a,b)=>a+b.h+BOX_SPACING, 0);
+  const prodSideH = prodBoxes.reduce((a,b)=>a+b.h+BOX_SPACING, 0);
+  const utilH = utilBoxes.length > 0 ? Math.max(...utilBoxes.map(b=>b.h)) + 50 : 0;
+
+  const SVG_H = Math.max(sideH, prodSideH) + 80 + utilH;
+  const SVG_W = maxFeedW + maxProdW + maxUtilW + 260; // center box 140px + gaps
+
+  // Center block position
+  const centerW = 140, centerH = 70;
+  const midX = SVG_W / 2;
+  const midY = (SVG_H - utilH) / 2;
+
+  // Update SVG viewBox dynamically
+  const svg = document.getElementById('sankey-svg');
+  svg.setAttribute('viewBox', `0 0 ${SVG_W} ${SVG_H}`);
+
+  let html = '';
+
+  // Central process box
+  html += `<rect x="${midX-centerW/2}" y="${midY-centerH/2}" width="${centerW}" height="${centerH}" rx="8" fill="#1a56db"/>`;
+  html += `<text x="${midX}" y="${midY-12}" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="13" font-weight="600" fill="#fff">Process System</text>`;
+  html += `<text x="${midX}" y="${midY+6}" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,0.8)">${document.getElementById('proj-name').value||'FEL-3 Study'}</text>`;
+  html += `<text x="${midX}" y="${midY+22}" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,0.65)">${netDuty>=0?'+':''}${netDuty.toFixed(0)} kW net duty</text>`;
+
+  // FEEDS — left side, vertically centered
+  const feedTotalH = feedBoxes.reduce((a,b)=>a+b.h+BOX_SPACING,-BOX_SPACING);
+  let fy = midY - feedTotalH/2;
+  const feedX = MARGIN_X;
+
+  feedBoxes.forEach(({s,w,h,lines},i) => {
+    const cy = fy + h/2;
+    // Bezier connector
+    const connX1 = feedX + w;
+    const connX2 = midX - centerW/2;
+    html += `<path d="M${connX1},${cy} C${(connX1+connX2)/2},${cy} ${(connX1+connX2)/2},${midY} ${connX2},${midY}" stroke="#1a56db" stroke-width="${Math.max(1.5, s.flow/totalMass*8)}" fill="none" opacity="0.35"/>`;
+    // Box
+    html += `<rect x="${feedX}" y="${fy}" width="${w}" height="${h}" rx="5" fill="#eef2ff" stroke="#1a56db" stroke-width="1.5"/>`;
+    // Text lines
+    const tx = feedX + w/2;
+    html += `<text x="${tx}" y="${fy+PAD_Y+LINE_H*0.8}" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" font-weight="500" fill="#1a56db">${lines[0]}</text>`;
+    html += `<text x="${tx}" y="${fy+PAD_Y+LINE_H*1.8}" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#1648c0">${lines[1]}</text>`;
+    html += `<text x="${tx}" y="${fy+PAD_Y+LINE_H*2.8}" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#5a6070">${s.T}°C · ${s.phase}</text>`;
+    fy += h + BOX_SPACING;
+  });
+
+  // PRODUCTS — right side
+  const prodTotalH = prodBoxes.reduce((a,b)=>a+b.h+BOX_SPACING,-BOX_SPACING);
+  let py = midY - prodTotalH/2;
+  const prodX = SVG_W - MARGIN_X - maxProdW;
+
+  prodBoxes.forEach(({s,w,h,lines},i) => {
+    const cy = py + h/2;
+    const connX1 = midX + centerW/2;
+    const connX2 = prodX;
+    html += `<path d="M${connX1},${midY} C${(connX1+connX2)/2},${midY} ${(connX1+connX2)/2},${cy} ${connX2},${cy}" stroke="#dc2626" stroke-width="${Math.max(1.5, s.flow/totalMass*8)}" fill="none" opacity="0.35"/>`;
+    html += `<rect x="${prodX}" y="${py}" width="${w}" height="${h}" rx="5" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>`;
+    const tx = prodX + w/2;
+    html += `<text x="${tx}" y="${py+PAD_Y+LINE_H*0.8}" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" font-weight="500" fill="#dc2626">${lines[0]}</text>`;
+    html += `<text x="${tx}" y="${py+PAD_Y+LINE_H*1.8}" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#b91c1c">${lines[1]}</text>`;
+    html += `<text x="${tx}" y="${py+PAD_Y+LINE_H*2.8}" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#5a6070">${s.T}°C · ${s.phase}</text>`;
+    py += h + BOX_SPACING;
+  });
+
+  // UTILITIES — bottom row
+  if(utilities.length > 0){
+    const utilY = SVG_H - utilH + 20;
+    const utilTotalW = utilBoxes.reduce((a,b)=>a+b.w+BOX_SPACING,-BOX_SPACING);
+    let ux = midX - utilTotalW/2;
+    utilBoxes.forEach(({s,w,h,lines},i) => {
+      const cx = ux + w/2;
+      html += `<path d="M${cx},${utilY} C${cx},${(utilY+midY+centerH/2)/2} ${midX},${(utilY+midY+centerH/2)/2} ${midX},${midY+centerH/2}" stroke="#d97706" stroke-width="1.5" fill="none" opacity="0.4" stroke-dasharray="6,3"/>`;
+      html += `<rect x="${ux}" y="${utilY}" width="${w}" height="${h}" rx="5" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/>`;
+      const tx = ux + w/2;
+      html += `<text x="${tx}" y="${utilY+PAD_Y+LINE_H*0.8}" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" font-weight="500" fill="#d97706">${lines[0]}</text>`;
+      html += `<text x="${tx}" y="${utilY+PAD_Y+LINE_H*1.8}" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#b45309">${lines[1]}</text>`;
+      if(h > LINE_H*2+PAD_Y*2)
+        html += `<text x="${tx}" y="${utilY+PAD_Y+LINE_H*2.8}" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#5a6070">${s.T}°C · ${s.phase}</text>`;
+      ux += w + BOX_SPACING;
+    });
+  }
+
+  // Legend
+  const ly = 16;
+  [[  '#1a56db','Feed'],[  '#dc2626','Product'],[  '#d97706','Utility (dashed)']].forEach(([c,lbl],i)=>{
+    const lx = 20 + i*110;
+    html += `<rect x="${lx}" y="${ly-3}" width="18" height="3" rx="1" fill="${c}"/>`;
+    html += `<text x="${lx+22}" y="${ly+1}" font-family="DM Mono,monospace" font-size="9" fill="#5a6070">${lbl}</text>`;
+  });
+
+  svg.innerHTML = html;
+  document.getElementById('sankey-wrap').style.display='';
+}
+
+// ── STREAM TABLE ──────────────────────────────────────
+function buildStreamTable(streams, ops){
+  const allStreams=[...streams.filter(s=>s.type==='feed'), ...streams.filter(s=>s.type==='product'), ...streams.filter(s=>s.type==='utility')];
+  const colClass={feed:'feed-col',product:'prod-col',utility:'util-col'};
+
+  const props=[
+    {key:'name',label:'Stream name',fmt:v=>v},
+    {key:'type',label:'Stream type',fmt:v=>v.charAt(0).toUpperCase()+v.slice(1)},
+    {key:'phase',label:'Phase',fmt:v=>v},
+    {key:'flow',label:'Mass flow (kg/h)',fmt:v=>v.toFixed(1)},
+    {key:'_mflow_kgs',label:'Mass flow (kg/s)',fmt:v=>v.toFixed(4)},
+    {key:'T',label:'Temperature (°C)',fmt:v=>v.toFixed(1)},
+    {key:'P',label:'Pressure (kPa abs)',fmt:v=>v.toFixed(1)},
+    {key:'Cp',label:'Cp (kJ/kg·K)',fmt:v=>v.toFixed(3)},
+    {key:'MW',label:'Mol. weight (g/mol)',fmt:v=>v.toFixed(1)},
+    {key:'Hvap',label:'Hvap (kJ/kg)',fmt:v=>v.toFixed(0)},
+    {key:'_enthalpy',label:'Enthalpy (kW)',fmt:v=>v.toFixed(2)},
+    {key:'_enthalpy_mw',label:'Enthalpy (MW)',fmt:v=>v.toFixed(4)},
+    {key:'components',label:'Composition',fmt:v=>v},
+  ];
+
+  // Augment streams with derived values
+  const aug=allStreams.map(s=>({
+    ...s,
+    _mflow_kgs:s.flow/3600,
+    _enthalpy:(s.flow*s.Cp*s.T/3600)+(s.phase==='vapor'?s.flow*s.Hvap/3600:0),
+    _enthalpy_mw:((s.flow*s.Cp*s.T/3600)+(s.phase==='vapor'?s.flow*s.Hvap/3600:0))/1000,
+  }));
+
+  let html='<table class="st-table"><thead><tr>';
+  html+=`<th class="prop-col">Property</th>`;
+  aug.forEach(s=>{html+=`<th class="${colClass[s.type]||''}">${s.name}</th>`;});
+  html+='</tr></thead><tbody>';
+
+  props.forEach(p=>{
+    html+=`<tr><td class="prop-col">${p.label}</td>`;
+    aug.forEach(s=>{
+      const val=s[p.key]!==undefined?p.fmt(s[p.key]):'—';
+      html+=`<td>${val}</td>`;
+    });
+    html+='</tr>';
+  });
+
+  html+='</tbody></table>';
+  document.getElementById('st-wrap').innerHTML=html;
+}
+
+// ── COMPONENT BALANCE ─────────────────────────────────
+function buildComponentBalance(streams){
+  // Parse components from strings and build tie-out table
+  const feeds=streams.filter(s=>s.type==='feed');
+  const prods=streams.filter(s=>s.type==='product');
+
+  // Collect all component names mentioned
+  const compSet=new Set();
+  [...feeds,...prods].forEach(s=>{
+    s.components.split(',').forEach(c=>{
+      const name=c.trim().split(' ')[0];
+      if(name) compSet.add(name);
+    });
+  });
+  const comps=[...compSet];
+
+  function parseComp(s,comp){
+    // Parse "ComponentName XX%" from string
+    const parts=s.components.split(',');
+    for(const p of parts){
+      const t=p.trim();
+      if(t.toLowerCase().startsWith(comp.toLowerCase())){
+        const m=t.match(/([\d.]+)%/);
+        if(m) return parseFloat(m[1])/100;
+      }
+    }
+    return null;
+  }
+
+  let html='<table class="st-table"><thead><tr>';
+  html+=`<th class="prop-col">Component</th>`;
+  feeds.forEach(s=>html+=`<th class="feed-col">${s.name} (kg/h)</th>`);
+  html+=`<th style="background:#1840a0;color:#fff;">Total In (kg/h)</th>`;
+  prods.forEach(s=>html+=`<th class="prod-col">${s.name} (kg/h)</th>`);
+  html+=`<th style="background:#c84800;color:#fff;">Total Out (kg/h)</th>`;
+  html+=`<th style="background:#206820;color:#fff;">Balance Err %</th>`;
+  html+='</tr></thead><tbody>';
+
+  comps.forEach(comp=>{
+    html+=`<tr><td class="prop-col">${comp}</td>`;
+    let totalIn=0;
+    feeds.forEach(s=>{
+      const frac=parseComp(s,comp);
+      const flow=frac!==null?s.flow*frac:0;
+      totalIn+=flow;
+      html+=`<td class="num">${flow.toFixed(1)}</td>`;
+    });
+    html+=`<td class="num" style="font-weight:500;">${totalIn.toFixed(1)}</td>`;
+    let totalOut=0;
+    prods.forEach(s=>{
+      const frac=parseComp(s,comp);
+      const flow=frac!==null?s.flow*frac:0;
+      totalOut+=flow;
+      html+=`<td class="num">${flow.toFixed(1)}</td>`;
+    });
+    html+=`<td class="num" style="font-weight:500;">${totalOut.toFixed(1)}</td>`;
+    const err=totalIn>0?((totalOut-totalIn)/totalIn*100):0;
+    const ec=Math.abs(err)<2?'ok':Math.abs(err)<10?'wk':'er';
+    html+=`<td class="num ${ec}">${err.toFixed(2)}%</td>`;
+    html+='</tr>';
+  });
+
+  // Totals row
+  html+=`<tr style="background:var(--s3);font-weight:500;">`;
+  html+=`<td class="prop-col">TOTAL</td>`;
+  let grandIn=0;
+  feeds.forEach(s=>{grandIn+=s.flow;html+=`<td class="num">${s.flow.toFixed(1)}</td>`;});
+  html+=`<td class="num">${grandIn.toFixed(1)}</td>`;
+  let grandOut=0;
+  prods.forEach(s=>{grandOut+=s.flow;html+=`<td class="num">${s.flow.toFixed(1)}</td>`;});
+  html+=`<td class="num">${grandOut.toFixed(1)}</td>`;
+  const totalErr=grandIn>0?((grandOut-grandIn)/grandIn*100):0;
+  const tec=Math.abs(totalErr)<2?'ok':Math.abs(totalErr)<5?'wk':'er';
+  html+=`<td class="num ${tec}">${totalErr.toFixed(2)}%</td>`;
+  html+='</tr></tbody></table>';
+  document.getElementById('comp-st-wrap').innerHTML=html;
+}
+
+// ── INIT ──────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  loadTemplate('generic', document.querySelector('.tpl-btn'));
+});
+</script>
+
+
+</div>
+<footer class="pd-footer">
+  <div class="pd-footer-inner">
+    <div>
+      <div class="pd-footer-logo">Process<em>Desk</em></div>
+      <p class="pd-footer-desc">Free FEL-3 process engineering calculators. Nine modules covering the full pre-FEED scope. Built by engineers, for engineers.</p>
+    </div>
+    <div class="pd-footer-col">
+      <h4>Calculators</h4>
+      <a href="fel3_hydraulics.html">Liquid Hydraulics</a>
+      <a href="fel3_gas_hydraulics.html">Gas Hydraulics</a>
+      <a href="fel3_heat_exchanger.html">Heat Exchanger</a>
+      <a href="fel3_relief_valve.html">Relief Valve</a>
+      <a href="fel3_pump_selection.html">Pump Selection</a>
+    </div>
+    <div class="pd-footer-col">
+      <h4>More tools</h4>
+      <a href="fel3_meb.html">Mass &amp; Energy Balance</a>
+      <a href="fel3_cost_estimator.html">Cost Estimator</a>
+      <a href="fel3_economics.html">Project Economics</a>
+      <a href="fel3_dashboard.html">Dashboard</a>
+    </div>
+    <div class="pd-footer-col">
+      <h4>Company</h4>
+      <a href="/cdn-cgi/l/email-protection#52313d3c263331261222203d3137212136372139217c313d3f">Contact</a>
+      <a href="/cdn-cgi/l/email-protection#41222e2f352022350131332e222432322524322a326f222e2c7e3234232b2422357c11332e61362028352d283235">Pro waitlist</a>
+      <a href="/cdn-cgi/l/email-protection#34575b5a405557407444465b575147475051475f471a575b590b4741565e515740097550425146405d475d5a53">Advertise with us</a>
+    </div>
+  </div>
+  <div class="pd-footer-bottom">
+    <p>© 2026 

@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pump Selection & System Curve Calculator — NPSH | ProcessDesk</title>
+<meta name="description" content="Free centrifugal pump selection calculator. H-Q and system curve intersection, NPSH cavitation check, affinity laws, BEP deviation, specific speed. FEL-3 process engineering tool.">
+<link rel="canonical" href="https://processdesks.com/fel3_pump_selection.html">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg:#f8f9fb; --s1:#ffffff; --s2:#f2f4f7; --s3:#e8ebf0;
+  --border:#e2e6ec; --border2:#d0d5de;
+  --text:#0f1420; --text2:#5a6070; --text3:#9aa0b0;
+  --accent:#1a56db; --accent2:#1648c0;
+  --accent-bg:#eef2ff; --accent-light:#c7d4fa;
+  --green:#059669; --green-bg:#ecfdf5;
+  --red:#dc2626; --red-bg:#fef2f2;
+  --amber:#d97706; --amber-bg:#fffbeb;
+  --orange:#ea580c; --orange-bg:#fff7ed;
+  --purple:#7c3aed; --purple-bg:#f5f3ff;
+  --teal:#0891b2; --teal-bg:#ecfeff;
+  --radius:12px; --rsm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.05);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+
+.pd-nav { position:fixed; top:0; left:0; right:0; z-index:9999; background:rgba(255,255,255,0.97); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.pd-nav-inner { max-width:1280px; margin:0 auto; height:54px; display:flex; align-items:center; padding:0 1.5rem; gap:0; }
+.pd-logo { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:var(--text); text-decoration:none; letter-spacing:0.3px; margin-right:1.5rem; white-space:nowrap; flex-shrink:0; }
+.pd-logo em { font-style:normal; color:var(--accent); }
+.pd-tools { display:flex; align-items:center; gap:0; overflow-x:auto; flex:1; scrollbar-width:none; }
+.pd-tools::-webkit-scrollbar { display:none; }
+.pd-tool { font-size:11px; color:var(--text2); text-decoration:none; padding:6px 9px; border-radius:var(--rsm); white-space:nowrap; transition:all 0.15s; font-weight:500; }
+.pd-tool:hover { color:var(--accent); background:var(--accent-bg); }
+.pd-tool.active { color:var(--accent); background:var(--accent-bg); font-weight:600; }
+.pd-home { font-size:11px; color:#fff; background:var(--accent); text-decoration:none; padding:6px 14px; border-radius:var(--rsm); white-space:nowrap; font-weight:600; margin-left:auto; flex-shrink:0; transition:background 0.15s; }
+.pd-home:hover { background:var(--accent2); }
+body { padding-top:54px; }
+
+
+.pd-footer { background:#0f1420; color:rgba(255,255,255,0.6); padding:3rem 2rem 1.5rem; margin-top:3rem; }
+.pd-footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:2.5rem; margin-bottom:2rem; }
+@media(max-width:720px){ .pd-footer-inner { grid-template-columns:1fr 1fr; gap:1.5rem; } }
+@media(max-width:420px){ .pd-footer-inner { grid-template-columns:1fr; } }
+.pd-footer-logo { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:#fff; margin-bottom:0.6rem; }
+.pd-footer-logo em { font-style:normal; color:#93c5fd; }
+.pd-footer-desc { font-size:12px; line-height:1.75; max-width:220px; }
+.pd-footer-col h4 { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; color:rgba(255,255,255,0.3); text-transform:uppercase; margin-bottom:0.85rem; }
+.pd-footer-col a { display:block; font-size:12px; color:rgba(255,255,255,0.55); text-decoration:none; margin-bottom:7px; transition:color 0.15s; }
+.pd-footer-col a:hover { color:#fff; }
+.pd-footer-bottom { max-width:1280px; margin:0 auto; padding-top:1.25rem; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.pd-footer-bottom p { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.25); }
+
+
+.page { max-width:1280px; margin:0 auto; padding:0 1.5rem 2rem; }
+/* Module header */
+.mod-header { padding:1.5rem 0 1.25rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:flex-end; gap:1rem; flex-wrap:wrap; }
+.mod-logo { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; color:var(--text2); letter-spacing:0.5px; }
+.mod-logo em { font-style:normal; color:var(--accent); }
+.mod-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.02em; }
+.mod-subtitle { font-size:13px; color:var(--text2); margin-top:3px; }
+.mod-badges { display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; align-items:center; }
+.mod-badge { font-family:'DM Mono',monospace; font-size:10px; padding:4px 10px; border-radius:3px; border:1px solid; letter-spacing:0.04em; }
+.mb-blue { background:var(--accent-bg); color:var(--accent); border-color:var(--accent-light); }
+.mb-green { background:var(--green-bg); color:var(--green); border-color:#a7f3d0; }
+.mb-amber { background:var(--amber-bg); color:var(--amber); border-color:#fcd34d; }
+.mb-red { background:var(--red-bg); color:var(--red); border-color:#fca5a5; }
+/* Layout grids */
+.col2 { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; margin-bottom:1rem; }
+.col3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-bottom:1rem; }
+.g2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.75rem; }
+.g3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.75rem; }
+@media(max-width:900px){ .col2,.col3 { grid-template-columns:1fr; } }
+@media(max-width:540px){ .g2,.g3 { grid-template-columns:1fr; } }
+/* Cards */
+.card { background:var(--s1); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.25rem; margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow); }
+.card-title { font-family:'DM Mono',monospace; font-size:10px; font-weight:500; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.85rem; display:flex; align-items:center; gap:8px; }
+.card-title::after { content:''; flex:1; height:1px; background:var(--border); }
+/* Form elements */
+.field { margin-bottom:0.65rem; }
+.lbl { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); margin-bottom:3px; display:block; letter-spacing:0.04em; }
+.ir { display:flex; gap:5px; align-items:center; }
+.unit { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); min-width:52px; flex-shrink:0; }
+input[type="number"], input[type="text"], select, textarea {
+  background:var(--s2); border:1px solid var(--border2); border-radius:var(--rsm);
+  color:var(--text); font-family:'DM Mono',monospace; font-size:12px;
+  padding:6px 9px; width:100%; outline:none; transition:border-color 0.15s; -webkit-appearance:none;
+}
+input:focus, select:focus, textarea:focus { border-color:var(--accent); background:var(--s1); }
+.ir input, .ir select { flex:1; width:auto; min-width:0; }
+/* Toggle */
+.tog { display:flex; border:1px solid var(--border2); border-radius:var(--rsm); overflow:hidden; margin-bottom:0.85rem; }
+.tb { flex:1; padding:8px 6px; font-family:'DM Mono',monospace; font-size:11px; background:transparent; border:none; cursor:pointer; color:var(--text2); transition:all 0.15s; }
+.tb.av { background:var(--accent); color:#fff; font-weight:500; }
+/* Run button */
+.run-btn { width:100%; padding:12px; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.5px; background:var(--accent); color:#fff; border:none; border-radius:var(--rsm); cursor:pointer; transition:background 0.15s; margin-bottom:1rem; }
+.run-btn:hover { background:var(--accent2); }
+/* Metrics */
+.mg { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:1rem; }
+@media(max-width:600px){ .mg { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.metric { background:var(--s2); border-radius:var(--rsm); padding:0.75rem 1rem; border:1px solid var(--border); }
+.ml { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); margin-bottom:4px; letter-spacing:0.04em; }
+.mv { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; color:var(--text); }
+.mv.acc { color:var(--accent); }
+.mv.gr { color:var(--green); }
+.mv.rd { color:var(--red); }
+.mv.am { color:var(--amber); }
+.mu { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); }
+/* Alerts */
+.alert { border-radius:0 var(--rsm) var(--rsm) 0; padding:8px 12px; font-family:'DM Mono',monospace; font-size:11px; line-height:1.6; margin-bottom:8px; display:none; }
+.alert.show { display:block; }
+.aok  { background:var(--green-bg); border-left:3px solid var(--green); color:var(--green); }
+.awk  { background:var(--amber-bg); border-left:3px solid var(--amber); color:var(--amber); }
+.aer  { background:var(--red-bg);   border-left:3px solid var(--red);   color:var(--red); }
+.ainf { background:var(--accent-bg);border-left:3px solid var(--accent);color:var(--accent); }
+/* Tables */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; font-size:11px; }
+th { text-align:left; padding:7px 10px; border-bottom:1px solid var(--border2); color:var(--text2); font-size:10px; letter-spacing:0.06em; background:var(--s2); }
+td { padding:6px 10px; border-bottom:1px solid var(--border); color:var(--text); }
+tr:last-child td { border-bottom:none; }
+td.num { text-align:right; }
+td.ok  { color:var(--green); }
+td.wk  { color:var(--amber); }
+td.er  { color:var(--red); }
+tr.sel { background:var(--accent-bg); }
+/* Divider */
+.divider { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); letter-spacing:0.1em; text-transform:uppercase; display:flex; align-items:center; gap:10px; margin:1.5rem 0 1rem; }
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border2); }
+.note { font-family:'DM Mono',monospace; font-size:11px; color:var(--text2); line-height:1.7; }
+/* Chart containers */
+.chart-wrap { background:var(--s1); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow); }
+.chart-title { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem; }
+.chart-box { position:relative; width:100%; }
+
+
+
+/* ProcessDesk shared nav */
+.pd-nav{position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(255,255,255,0.97);backdrop-filter:blur(10px);border-bottom:1px solid #e2e6ec;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.pd-nav-inner{max-width:1280px;margin:0 auto;height:54px;display:flex;align-items:center;gap:0;padding:0 1.5rem;}
+.pd-logo{font-family:monospace;font-size:15px;font-weight:600;color:#0f1420;text-decoration:none;letter-spacing:0.3px;margin-right:1.5rem;white-space:nowrap;}
+.pd-logo em{font-style:normal;color:#1a56db;}
+.pd-tools{display:flex;align-items:center;gap:0;overflow-x:auto;flex:1;scrollbar-width:none;}
+.pd-tools::-webkit-scrollbar{display:none;}
+.pd-tool{font-size:11px;color:#5a6070;text-decoration:none;padding:6px 10px;border-radius:5px;white-space:nowrap;transition:all 0.15s;font-weight:500;}
+.pd-tool:hover{color:#1a56db;background:#eef2ff;}
+.pd-tool.active{color:#1a56db;background:#eef2ff;font-weight:600;}
+.pd-home{font-size:11px;color:#fff;background:#1a56db;text-decoration:none;padding:6px 14px;border-radius:5px;white-space:nowrap;font-weight:600;margin-left:auto;flex-shrink:0;transition:background 0.15s;}
+.pd-home:hover{background:#1648c0;}
+body{padding-top:54px;}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f7f5f0;
+  --s1:#ffffff;
+  --s2:#eeebe4;
+  --s3:#e4e0d8;
+  --s4:#d8d4ca;
+  --border:rgba(0,0,0,0.08);
+  --border2:rgba(0,0,0,0.15);
+  --border3:rgba(0,0,0,0.25);
+  --text:#1a1814;
+  --text2:#6a6560;
+  --text3:#b0ab9f;
+  --accent:#1a4fa0;
+  --accent2:#0e3070;
+  --accent-bg:#edf2fc;
+  --accent-light:#d0dff8;
+  --pump:#e05020;
+  --pump-bg:#fdf0eb;
+  --sys:#1a8a50;
+  --sys-bg:#eaf5f0;
+  --npsh:#9030b0;
+  --npsh-bg:#f5eefa;
+  --warn:#c07010;
+  --warn-bg:#fdf5e0;
+  --red:#c02010;
+  --red-bg:#fdecea;
+  --radius:10px;
+  --rsm:5px;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.page{max-width:1200px;margin:0 auto;padding:0 1.5rem 3rem;}
+
+/* HEADER */
+.hdr{padding:1.5rem 0 1rem;margin-bottom:1.5rem;}
+.hdr-inner{display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap;padding-bottom:1rem;border-bottom:3px solid var(--text);}
+.logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:30px;font-weight:700;letter-spacing:3px;line-height:1;}
+.logo em{font-style:normal;color:var(--accent);}
+.logo-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:0.07em;margin-top:5px;}
+.badge-row{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center;}
+.badge{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:0.05em;padding:4px 10px;border-radius:2px;border:1px solid;}
+.b-pump{background:var(--pump-bg);color:var(--pump);border-color:var(--pump);}
+.b-sys{background:var(--sys-bg);color:var(--sys);border-color:var(--sys);}
+.b-npsh{background:var(--npsh-bg);color:var(--npsh);border-color:var(--npsh);}
+
+/* LAYOUT */
+.main-grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:1.25rem;align-items:start;}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.75rem;}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;}
+@media(max-width:600px){.g2,.g3{grid-template-columns:1fr;}}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--border2);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1rem;}
+.card.pump-card{border-left:3px solid var(--pump);}
+.card.sys-card{border-left:3px solid var(--sys);}
+.card.npsh-card{border-left:3px solid var(--npsh);}
+.ct{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text2);margin-bottom:0.85rem;display:flex;align-items:center;gap:8px;}
+.ct::after{content:'';flex:1;height:1px;background:var(--border);}
+.ct.pump-ct{color:var(--pump);}
+.ct.sys-ct{color:var(--sys);}
+.ct.npsh-ct{color:var(--npsh);}
+
+/* FORM */
+.field{margin-bottom:0.65rem;}
+.lbl{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);margin-bottom:3px;display:block;letter-spacing:0.04em;}
+.ir{display:flex;gap:5px;align-items:center;}
+.unit{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text3);min-width:44px;}
+input,select{background:var(--s2);border:1px solid var(--border2);border-radius:var(--rsm);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:12px;padding:6px 9px;width:100%;outline:none;transition:border-color 0.15s,background 0.15s;}
+input:focus,select:focus{border-color:var(--accent);background:var(--s1);}
+.ir input,.ir select{flex:1;width:auto;}
+
+/* AFFINITY TOGGLE */
+.tog{display:flex;border:1px solid var(--border2);border-radius:var(--rsm);overflow:hidden;margin-bottom:0.85rem;}
+.tb{flex:1;padding:7px 6px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;background:transparent;border:none;cursor:pointer;color:var(--text2);transition:all 0.15s;}
+.tb.ap{background:var(--pump);color:#fff;}
+.tb.as{background:var(--sys);color:#fff;}
+.tb.an{background:var(--accent);color:#fff;}
+
+/* RUN BTN */
+.run-btn{width:100%;padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;letter-spacing:4px;text-transform:uppercase;background:var(--accent);color:#fff;border:none;border-radius:var(--rsm);cursor:pointer;transition:background 0.15s;margin-bottom:1rem;}
+.run-btn:hover{background:var(--accent2);}
+
+/* CHART AREA */
+.chart-wrap{background:var(--s1);border:1px solid var(--border2);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;overflow:hidden;}
+.chart-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text2);margin-bottom:1rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.chart-legend{display:flex;gap:16px;flex-wrap:wrap;margin-left:auto;}
+.leg-item{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);}
+.leg-dot{width:24px;height:3px;border-radius:2px;}
+.chart-box{position:relative;width:100%;}
+
+canvas{display:block;}
+
+/* OPERATING POINT CALLOUT */
+.op-callout{background:var(--accent-bg);border:1px solid var(--accent-light);border-radius:var(--rsm);padding:10px 14px;margin-bottom:1rem;display:flex;gap:2rem;flex-wrap:wrap;align-items:center;}
+.op-item{text-align:center;}
+.op-val{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:700;color:var(--accent);line-height:1;}
+.op-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);margin-top:2px;}
+
+/* METRICS */
+.mg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:1rem;}
+@media(max-width:500px){.mg{grid-template-columns:repeat(2,1fr);}}
+.metric{background:var(--s2);border-radius:var(--rsm);padding:0.7rem 0.9rem;border:1px solid var(--border);}
+.ml{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);margin-bottom:3px;}
+.mv{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:600;color:var(--text);}
+.mv.pump{color:var(--pump);}
+.mv.sys{color:var(--sys);}
+.mv.npsh{color:var(--npsh);}
+.mv.acc{color:var(--accent);}
+.mv.warn{color:var(--warn);}
+.mv.red{color:var(--red);}
+.mu{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text3);}
+
+/* ALERTS */
+.alert{border-radius:0 var(--rsm) var(--rsm) 0;padding:8px 12px;font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.6;margin-bottom:8px;display:none;}
+.alert.show{display:block;}
+.aok {background:var(--sys-bg); border-left:3px solid var(--sys); color:var(--sys);}
+.awk {background:var(--warn-bg);border-left:3px solid var(--warn);color:var(--warn);}
+.aer {background:var(--red-bg); border-left:3px solid var(--red); color:var(--red);}
+.ainf{background:var(--accent-bg);border-left:3px solid var(--accent);color:var(--accent);}
+.anpsh{background:var(--npsh-bg);border-left:3px solid var(--npsh);color:var(--npsh);}
+
+/* AFFINITY TABLE */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-family:'Share Tech Mono',monospace;font-size:11px;min-width:500px;}
+th{text-align:left;padding:7px 10px;border-bottom:1px solid var(--border2);color:var(--text2);font-size:10px;letter-spacing:0.06em;background:var(--s2);}
+td{padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text);}
+tr:last-child td{border-bottom:none;}
+td.num{text-align:right;}
+td.ok{color:var(--sys);}
+td.wk{color:var(--warn);}
+td.er{color:var(--red);}
+tr.sel-row{background:var(--accent-bg);}
+
+.divider{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.15em;color:var(--text3);text-transform:uppercase;display:flex;align-items:center;gap:10px;margin:1.5rem 0 1rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2);}
+
+.note{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);line-height:1.7;}
+
+footer{margin-top:2.5rem;padding-top:1rem;border-top:2px solid var(--border2);font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+
+/* ── ProcessDesk Feedback Widget ──────────────────── */
+.fb-btn {
+  position: fixed; bottom: 24px; right: 24px; z-index: 8888;
+  background: var(--accent); color: #fff;
+  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500;
+  padding: 10px 18px; border-radius: 24px; border: none; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(26,86,219,0.35);
+  display: flex; align-items: center; gap: 7px;
+  transition: all 0.2s; letter-spacing: 0.03em;
+}
+.fb-btn:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,86,219,0.4); }
+.fb-btn svg { flex-shrink: 0; }
+
+.fb-overlay {
+  position: fixed; inset: 0; z-index: 8889;
+  background: rgba(15,20,32,0.45); backdrop-filter: blur(3px);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.fb-overlay.open { opacity: 1; pointer-events: all; }
+
+.fb-panel {
+  position: fixed; bottom: 80px; right: 24px; z-index: 8890;
+  width: 360px; max-width: calc(100vw - 32px);
+  background: #fff; border: 1px solid var(--border2);
+  border-radius: 16px; box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+  opacity: 0; transform: translateY(16px) scale(0.97);
+  pointer-events: none; transition: all 0.2s;
+}
+.fb-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+
+.fb-header {
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.fb-header-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--accent-bg); display: flex; align-items: center;
+  justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.fb-header-text { flex: 1; }
+.fb-header-title {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;
+  font-weight: 700; color: var(--text); margin-bottom: 1px;
+}
+.fb-header-sub {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--text2); letter-spacing: 0.04em;
+}
+.fb-close {
+  width: 28px; height: 28px; border: none; background: var(--s2);
+  border-radius: 50%; cursor: pointer; font-size: 14px; color: var(--text2);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s; flex-shrink: 0;
+}
+.fb-close:hover { background: var(--s3); color: var(--text); }
+
+.fb-body { padding: 1rem 1.25rem; }
+
+.fb-field { margin-bottom: 0.85rem; }
+.fb-lbl {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--text2); letter-spacing: 0.06em; margin-bottom: 5px;
+  display: block; text-transform: uppercase;
+}
+.fb-select, .fb-textarea {
+  width: 100%; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; background: var(--s2); border: 1px solid var(--border2);
+  border-radius: 8px; color: var(--text); outline: none;
+  transition: border-color 0.15s;
+}
+.fb-select { padding: 8px 10px; appearance: none; -webkit-appearance: none; cursor: pointer; }
+.fb-textarea { padding: 10px 12px; resize: vertical; min-height: 90px; line-height: 1.6; }
+.fb-select:focus, .fb-textarea:focus { border-color: var(--accent); background: #fff; }
+
+.fb-rating { display: flex; gap: 6px; }
+.fb-star {
+  font-size: 22px; cursor: pointer; transition: transform 0.1s;
+  opacity: 0.35; line-height: 1;
+}
+.fb-star.active { opacity: 1; }
+.fb-star:hover { transform: scale(1.2); }
+
+.fb-submit {
+  width: 100%; padding: 11px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; font-weight: 700; background: var(--accent); color: #fff;
+  border: none; border-radius: 8px; cursor: pointer;
+  transition: background 0.15s; letter-spacing: 0.02em;
+}
+.fb-submit:hover { background: var(--accent2); }
+.fb-submit:disabled { background: var(--text3); cursor: not-allowed; }
+
+.fb-char-count {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  color: var(--text3); text-align: right; margin-top: 3px;
+}
+
+.fb-success {
+  padding: 1.5rem 1.25rem; text-align: center; display: none;
+}
+.fb-success-icon { font-size: 40px; margin-bottom: 10px; }
+.fb-success-title {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px;
+  font-weight: 700; color: var(--text); margin-bottom: 6px;
+}
+.fb-success-msg {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--text2); line-height: 1.7;
+}
+@media print { .fb-btn, .fb-panel, .fb-overlay { display: none !important; } }
+
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="pd-nav">
+  <div class="pd-nav-inner">
+    <a href="/" class="pd-logo">Process<em>Desk</em></a>
+    <div class="pd-tools">
+    <a href="fel3_hydraulics.html" class="pd-tool" data-page="fel3_hydraulics">Liquid Hydraulics</a>
+    <a href="fel3_gas_hydraulics.html" class="pd-tool" data-page="fel3_gas_hydraulics">Gas Hydraulics</a>
+    <a href="fel3_heat_exchanger.html" class="pd-tool" data-page="fel3_heat_exchanger">Heat Exchanger</a>
+    <a href="fel3_relief_valve.html" class="pd-tool" data-page="fel3_relief_valve">Relief Valve</a>
+    <a href="fel3_pump_selection.html" class="pd-tool" data-page="fel3_pump_selection">Pump Selection</a>
+    <a href="fel3_meb.html" class="pd-tool" data-page="fel3_meb">M&amp;E Balance</a>
+    <a href="fel3_cost_estimator.html" class="pd-tool" data-page="fel3_cost_estimator">Cost Estimator</a>
+    <a href="fel3_economics.html" class="pd-tool" data-page="fel3_economics">Project Economics</a>
+    <a href="fel3_dashboard.html" class="pd-tool" data-page="fel3_dashboard">Dashboard</a>
+    </div>
+    <a href="/" class="pd-home">← All tools</a>
+  </div>
+</nav>
+<script>
+(function(){
+  var p='fel3_pump_selection';
+  document.querySelectorAll('.pd-tool[data-page]').forEach(function(a){
+    if(a.dataset.page===p) a.classList.add('active');
+  });
+})();
+</script>
+<div class="page">
+  <div class="mod-header">
+    <div>
+      <div class="mod-logo">Process<em>Desk</em> · Module 05</div>
+      <div class="mod-title">Pump Selection & System Curve</div>
+      <div class="mod-subtitle">H-Q System Curve Intersection · NPSH Analysis · Affinity Laws · Specific Speed</div>
+    </div>
+    <div class="mod-badges"><span class="mod-badge mb-blue">H-Q Curve</span><span class="mod-badge mb-amber">NPSH</span><span class="mod-badge mb-green">FEL-3 / AACE Class 3</span></div>
+  </div>      <div class="logo-sub">FEL-3 Pump Selection & System Curve Engine — Centrifugal Pumps</div>
+    </div>
+    <div class="badge-row">
+      <span class="badge b-pump">PUMP CURVE</span>
+      <span class="badge b-sys">SYSTEM CURVE</span>
+      <span class="badge b-npsh">NPSH ANALYSIS</span>
+    </div>
+  </div>
+</div>
+
+<div class="main-grid">
+
+<!-- ── LEFT PANEL: INPUTS ─────────────────────────── -->
+<div>
+
+  <!-- FLUID -->
+  <div class="card">
+    <div class="ct">Fluid Properties</div>
+    <div class="field"><label class="lbl">Fluid description</label><input type="text" id="fluid" value="Process water"></div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Density (ρ)</label><div class="ir"><input type="number" id="rho" value="995" step="1"><span class="unit">kg/m³</span></div></div>
+      <div class="field"><label class="lbl">Viscosity (μ)</label><div class="ir"><input type="number" id="visc" value="0.8" step="0.01"><span class="unit">cP</span></div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Vapour pressure (Pv)</label><div class="ir"><input type="number" id="pv" value="3.2" step="0.1"><span class="unit">kPa abs</span></div></div>
+      <div class="field"><label class="lbl">Liquid temperature</label><div class="ir"><input type="number" id="temp" value="60" step="1"><span class="unit">°C</span></div></div>
+    </div>
+  </div>
+
+  <!-- SYSTEM CURVE -->
+  <div class="card sys-card">
+    <div class="ct sys-ct">System Curve Inputs</div>
+    <div class="field"><label class="lbl">Static head (elevation + pressure diff.)</label><div class="ir"><input type="number" id="Hstatic" value="20" step="0.5"><span class="unit">m</span></div></div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Suction-side pipe ID</label><div class="ir"><input type="number" id="ds" value="100" step="5"><span class="unit">mm</span></div></div>
+      <div class="field"><label class="lbl">Discharge-side pipe ID</label><div class="ir"><input type="number" id="dd" value="80" step="5"><span class="unit">mm</span></div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Suction pipe length</label><div class="ir"><input type="number" id="Ls" value="15" step="1"><span class="unit">m</span></div></div>
+      <div class="field"><label class="lbl">Discharge pipe length</label><div class="ir"><input type="number" id="Ld" value="80" step="1"><span class="unit">m</span></div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Pipe roughness (ε)</label><select id="rough"><option value="0.046" selected>CS commercial (0.046 mm)</option><option value="0.0015">SS drawn (0.0015 mm)</option><option value="0.0">PVC/HDPE smooth</option><option value="0.26">Cast iron (0.26 mm)</option></select></div>
+      <div class="field"><label class="lbl">Total K — fittings (suction)</label><div class="ir"><input type="number" id="Ks" value="5" step="0.5"><span class="unit">—</span></div></div>
+    </div>
+    <div class="field"><label class="lbl">Total K — fittings (discharge)</label><div class="ir"><input type="number" id="Kd2" value="15" step="0.5"><span class="unit">—</span></div></div>
+    <div class="field"><label class="lbl">Design flow rate</label><div class="ir"><input type="number" id="Qdes" value="50" step="1"><span class="unit">m³/h</span></div></div>
+  </div>
+
+  <!-- PUMP CURVE -->
+  <div class="card pump-card">
+    <div class="ct pump-ct">Pump Curve — Polynomial Coefficients</div>
+    <div class="note" style="margin-bottom:0.75rem;">H = A − B·Q − C·Q² &nbsp;|&nbsp; Enter from pump datasheet or catalogue. Default = typical end-suction centrifugal.</div>
+    <div class="g2">
+      <div class="field"><label class="lbl">A — shutoff head</label><div class="ir"><input type="number" id="pA" value="65" step="0.5"><span class="unit">m</span></div></div>
+      <div class="field"><label class="lbl">B — linear coeff.</label><div class="ir"><input type="number" id="pB" value="0.08" step="0.001"><span class="unit">m·h/m³</span></div></div>
+    </div>
+    <div class="field"><label class="lbl">C — quadratic coeff.</label><div class="ir"><input type="number" id="pC" value="0.012" step="0.0001"><span class="unit">m·h²/m⁶</span></div></div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Pump efficiency at BEP (%)</label><div class="ir"><input type="number" id="eta-bep" value="78" step="1" min="20" max="95"><span class="unit">%</span></div></div>
+      <div class="field"><label class="lbl">BEP flow rate</label><div class="ir"><input type="number" id="Qbep" value="55" step="1"><span class="unit">m³/h</span></div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Rated speed (N)</label><div class="ir"><input type="number" id="speed" value="2950" step="50"><span class="unit">rpm</span></div></div>
+      <div class="field"><label class="lbl">Motor efficiency</label><div class="ir"><input type="number" id="eta-mot" value="92" step="1" min="50" max="99"><span class="unit">%</span></div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="lbl">NPSHr at BEP</label><div class="ir"><input type="number" id="NPSHr-bep" value="4.5" step="0.1"><span class="unit">m</span></div></div>
+      <div class="field"><label class="lbl">NPSHr margin factor</label><div class="ir"><input type="number" id="npsh-margin" value="0.5" step="0.1" min="0"><span class="unit">m (add)</span></div></div>
+    </div>
+  </div>
+
+  <!-- NPSH AVAILABLE -->
+  <div class="card npsh-card">
+    <div class="ct npsh-ct">NPSH Available — Suction System</div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Suction vessel pressure (Ps)</label><div class="ir"><input type="number" id="Ps" value="101.325" step="1"><span class="unit">kPa abs</span></div></div>
+      <div class="field"><label class="lbl">Suction static head (Zs)</label><div class="ir"><input type="number" id="Zs" value="3" step="0.5"><span class="unit">m (+ above pump)</span></div></div>
+    </div>
+    <div class="note">NPSHa = (Ps − Pv)/(ρg) + Zs − hf_suction</div>
+  </div>
+
+  <!-- AFFINITY LAWS -->
+  <div class="card">
+    <div class="ct">Affinity Laws — Speed Variation</div>
+    <div class="tog">
+      <button class="tb an" id="aff-on" onclick="setAffinity(true)">Include speed variants</button>
+      <button class="tb" id="aff-off" onclick="setAffinity(false)">Rated speed only</button>
+    </div>
+    <div id="aff-speeds">
+      <div class="g2">
+        <div class="field"><label class="lbl">Speed 1</label><div class="ir"><input type="number" id="N1" value="2200" step="50"><span class="unit">rpm</span></div></div>
+        <div class="field"><label class="lbl">Speed 2</label><div class="ir"><input type="number" id="N2" value="2600" step="50"><span class="unit">rpm</span></div></div>
+      </div>
+      <div class="field"><label class="lbl">Speed 3 (rated)</label><div class="ir"><input type="number" id="N3" value="2950" step="50"><span class="unit">rpm</span></div></div>
+    </div>
+  </div>
+
+  <button class="run-btn" onclick="calculate()">▶ GENERATE CURVES</button>
+
+</div>
+
+<!-- ── RIGHT PANEL: CHARTS + RESULTS ─────────────── -->
+<div>
+
+  <!-- MAIN H-Q CHART -->
+  <div class="chart-wrap">
+    <div class="chart-title">
+      H-Q Pump & System Curves
+      <div class="chart-legend">
+        <span class="leg-item"><span class="leg-dot" style="background:var(--pump)"></span>Pump curve (rated)</span>
+        <span class="leg-item"><span class="leg-dot" style="background:var(--sys)"></span>System curve</span>
+        <span class="leg-item"><span class="leg-dot" style="background:var(--pump);opacity:0.45;border-top:2px dashed var(--pump);height:0"></span>Speed variants</span>
+        <span class="leg-item"><span class="leg-dot" style="background:var(--npsh)"></span>NPSHa / NPSHr</span>
+      </div>
+    </div>
+    <div class="chart-box" style="height:340px;"><canvas id="hq-chart"></canvas></div>
+  </div>
+
+  <!-- EFFICIENCY + POWER CHART -->
+  <div class="chart-wrap">
+    <div class="chart-title">
+      Efficiency & Shaft Power vs. Flow
+      <div class="chart-legend">
+        <span class="leg-item"><span class="leg-dot" style="background:var(--accent)"></span>Efficiency (%)</span>
+        <span class="leg-item"><span class="leg-dot" style="background:var(--pump)"></span>Shaft power (kW)</span>
+      </div>
+    </div>
+    <div class="chart-box" style="height:200px;"><canvas id="eff-chart"></canvas></div>
+  </div>
+
+  <!-- OPERATING POINT -->
+  <div id="op-area" style="display:none;">
+    <div class="op-callout" id="op-callout"></div>
+    <div id="alert-op" class="alert"></div>
+    <div id="alert-npsh" class="alert"></div>
+    <div id="alert-bep" class="alert"></div>
+    <div id="alert-visc" class="alert"></div>
+  </div>
+
+  <!-- RESULT METRICS -->
+  <div id="metrics-area" style="display:none;">
+    <div class="divider">Operating Point Summary</div>
+    <div class="mg" id="op-metrics"></div>
+
+    <div class="divider">NPSH Analysis</div>
+    <div class="mg" id="npsh-metrics"></div>
+
+    <div class="divider">Affinity Laws — Speed Variants</div>
+    <div id="affinity-area">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Speed (rpm)</th><th>Speed ratio</th><th>Q at OP (m³/h)</th><th>H at OP (m)</th><th>Power (kW)</th><th>% of rated Q</th><th>Status</th></tr>
+          </thead>
+          <tbody id="aff-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="divider">Specific Speed & Pump Selection Guide</div>
+    <div class="card">
+      <div class="ct">Specific Speed (Ns) — Pump Type Indicator</div>
+      <div id="ns-area"></div>
+    </div>
+
+    <div class="divider">FEL-3 Pump Datasheet</div>
+    <div class="card">
+      <div class="ct">Pump Tag Sheet</div>
+      <table style="min-width:unset;"><tbody id="ds-body"></tbody></table>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+let affinity=true;
+let hqChart=null, effChart=null;
+
+function setAffinity(v){
+  affinity=v;
+  document.getElementById('aff-on').className ='tb'+(v?' an':'');
+  document.getElementById('aff-off').className='tb'+(!v?' an':'');
+  document.getElementById('aff-speeds').style.display=v?'':'none';
+}
+
+// Colebrook-White
+function colebrook(Re,eps_D){
+  if(Re<1) return 64;
+  if(Re<2300) return 64/Re;
+  let f=0.02;
+  for(let i=0;i<50;i++){
+    const t=eps_D/3.7+2.51/(Re*Math.sqrt(f));
+    if(t<=0) break;
+    const fn=1/(-2*Math.log10(t))**2;
+    if(Math.abs(fn-f)<1e-10){f=fn;break;}
+    f=fn;
+  }
+  return f;
+}
+
+// System head at flow Q (m³/h)
+function systemHead(Q_m3h, rho, mu_cP, ds_mm, dd_mm, Ls, Ld, eps_mm, Ks, Kd, Hstatic){
+  const Q=Q_m3h/3600; // m³/s
+  const mu=mu_cP*1e-3;
+  const As=Math.PI*(ds_mm/1000)**2/4;
+  const Ad=Math.PI*(dd_mm/1000)**2/4;
+  const Vs=Q/As, Vd=Q/Ad;
+  const Res=rho*Vs*(ds_mm/1000)/mu;
+  const Red=rho*Vd*(dd_mm/1000)/mu;
+  const eps_Ds=(eps_mm/1000)/(ds_mm/1000);
+  const eps_Dd=(eps_mm/1000)/(dd_mm/1000);
+  const fs=colebrook(Res,eps_Ds);
+  const fd=colebrook(Red,eps_Dd);
+  const hfs=fs*(Ls/(ds_mm/1000))*Vs*Vs/(2*9.81);
+  const hfd=fd*(Ld/(dd_mm/1000))*Vd*Vd/(2*9.81);
+  const hks=Ks*Vs*Vs/(2*9.81);
+  const hkd=Kd*Vd*Vd/(2*9.81);
+  return Hstatic + hfs + hfd + hks + hkd;
+}
+
+// Pump head at flow Q
+function pumpHead(Q, A, B, C){ return Math.max(0, A - B*Q - C*Q*Q); }
+
+// Pump efficiency model (parabolic around BEP)
+function pumpEff(Q, Qbep, eta_bep){
+  const ratio=Q/Qbep;
+  return Math.max(0, eta_bep * (1 - 2.5*(ratio-1)**2));
+}
+
+// NPSHr model: rises with Q² (simplified)
+function npshR(Q, NPSHr_bep, Qbep){
+  return Math.max(0.5, NPSHr_bep * Math.pow(Q/Qbep, 1.6));
+}
+
+// Find operating point by bisection
+function findOP(A,B,C,rho,mu,ds,dd,Ls,Ld,eps,Ks,Kd,Hstatic){
+  let lo=0.1, hi=200;
+  for(let i=0;i<80;i++){
+    const mid=(lo+hi)/2;
+    const hp=pumpHead(mid,A,B,C);
+    const hs=systemHead(mid,rho,mu,ds,dd,Ls,Ld,eps,Ks,Kd,Hstatic);
+    if(hp>hs) lo=mid; else hi=mid;
+    if(hi-lo<0.001) break;
+  }
+  return (lo+hi)/2;
+}
+
+function setAlert(id,cls,msg){const e=document.getElementById(id);e.className='alert '+cls+' show';e.textContent=msg;}
+function clrAlert(id){document.getElementById(id).className='alert';}
+
+function calculate(){
+  const rho=+document.getElementById('rho').value;
+  const mu=+document.getElementById('visc').value;
+  const Pv=+document.getElementById('pv').value*1000; // Pa
+  const ds=+document.getElementById('ds').value;
+  const dd=+document.getElementById('dd').value;
+  const Ls=+document.getElementById('Ls').value;
+  const Ld=+document.getElementById('Ld').value;
+  const eps=+document.getElementById('rough').value;
+  const Ks=+document.getElementById('Ks').value;
+  const Kd2=+document.getElementById('Kd2').value;
+  const Hstatic=+document.getElementById('Hstatic').value;
+  const Qdes=+document.getElementById('Qdes').value;
+  const A=+document.getElementById('pA').value;
+  const B=+document.getElementById('pB').value;
+  const C=+document.getElementById('pC').value;
+  const eta_bep=+document.getElementById('eta-bep').value;
+  const Qbep=+document.getElementById('Qbep').value;
+  const speed=+document.getElementById('speed').value;
+  const eta_mot=+document.getElementById('eta-mot').value;
+  const NPSHr_bep=+document.getElementById('NPSHr-bep').value;
+  const npsh_margin=+document.getElementById('npsh-margin').value;
+  const Ps=+document.getElementById('Ps').value*1000; // Pa
+  const Zs=+document.getElementById('Zs').value;
+  const g=9.81;
+
+  // Q range for curves
+  const Qmax=Math.max(A/B*0.85, Qdes*1.8, Qbep*1.6);
+  const pts=120;
+  const Qs=Array.from({length:pts},(_,i)=>i*Qmax/(pts-1)+0.01);
+
+  // Pump curve
+  const Hp=Qs.map(q=>pumpHead(q,A,B,C));
+  // System curve
+  const Hs=Qs.map(q=>systemHead(q,rho,mu,ds,dd,Ls,Ld,eps,Ks,Kd2,Hstatic));
+  // Efficiency
+  const Eff=Qs.map(q=>pumpEff(q,Qbep,eta_bep));
+  // NPSHr
+  const NR=Qs.map(q=>npshR(q,NPSHr_bep,Qbep));
+
+  // Suction friction loss at design Q
+  const hfs_des=(()=>{
+    const Q=Qdes/3600;
+    const As=Math.PI*(ds/1000)**2/4;
+    const Vs=Q/As;
+    const Re=rho*Vs*(ds/1000)/(mu*1e-3);
+    const fs=colebrook(Re,(eps/1000)/(ds/1000));
+    return fs*(Ls/(ds/1000))*Vs*Vs/(2*g) + Ks*Vs*Vs/(2*g);
+  })();
+  const NPSHa=(Ps-Pv)/(rho*g)+Zs-hfs_des;
+
+  // NPSHa line (flat)
+  const Na=Qs.map(()=>NPSHa);
+
+  // Operating point
+  const Qop=findOP(A,B,C,rho,mu,ds,dd,Ls,Ld,eps,Ks,Kd2,Hstatic);
+  const Hop=pumpHead(Qop,A,B,C);
+  const Effop=pumpEff(Qop,Qbep,eta_bep)/100;
+  const NPSHr_op=npshR(Qop,NPSHr_bep,Qbep);
+  const NPSHa_op=NPSHa; // independent of Q for simplification
+  const Phyd=rho*g*Qop/3600*Hop/1000; // kW hydraulic
+  const Pshaft=Phyd/Math.max(Effop,0.01);
+  const Pmotor=Pshaft/(eta_mot/100);
+  const STD=[0.18,0.37,0.55,0.75,1.1,1.5,2.2,3,4,5.5,7.5,11,15,18.5,22,30,37,45,55,75,90,110,132,160,185,200,250,315,400];
+  const motSpec=STD.find(s=>s>=Pmotor*1.15)||Pmotor*1.15;
+
+  // Specific speed (SI: rpm, m³/s, m)
+  const Ns=speed*(Qbep/3600)**0.5/(Hop**0.75);
+  // Ns_US = Ns * 51.64
+  const Ns_US=(Ns*51.64).toFixed(0);
+
+  // Affinity law variants
+  const speeds=affinity?[+document.getElementById('N1').value,+document.getElementById('N2').value,+document.getElementById('N3').value]:[speed];
+
+  // ── BUILD CHARTS ──────────────────────────────────
+  const grid='rgba(0,0,0,0.06)';
+  const tickColor='#6a6560';
+
+  // Pump curves at different speeds (affinity)
+  const speedDatasets=speeds.map((N,i)=>{
+    const ratio=N/speed;
+    const Hp_N=Qs.map(q=>pumpHead(q*ratio,A,B,C)*(ratio**2)/(ratio**2)* // H scales N²
+      // Correct: Q_N = Q*ratio, H_N = H*(ratio)²... but we plot vs same Q axis
+      // Actually for affinity: plot separate curve where each point is Q*ratio, H*(ratio)^2
+      // We compute: for a given Q on x-axis, the pump at speed N produces H = f(Q/ratio)*ratio²
+      Math.pow(ratio,2));
+    // Better: H_N(Q) = A - B*(Q/ratio)*ratio² ... simplified: A*ratio² - B*Q*ratio - C*Q²
+    // Correct affinity: H_N = A*(N/N0)^2 - B*(N/N0)*Q - C*Q^2
+    return null; // placeholder, recalculate below
+  });
+
+  const affDatasets=speeds.map((N,i)=>{
+    const r=N/speed;
+    const color=i===speeds.length-1?`rgba(224,80,32,${affinity&&speeds.length>1?0.35:1})`:
+                i===0?'rgba(224,80,32,0.25)':'rgba(224,80,32,0.55)';
+    const dash=affinity&&i<speeds.length-1?[6,4]:[];
+    return {
+      label:`Pump ${N}rpm`,
+      data:Qs.map((q,j)=>({x:q,y:Math.max(0,A*r*r - B*r*q - C*q*q)})),
+      borderColor:color,
+      borderWidth:i===speeds.length-1?2.5:1.5,
+      borderDash:dash,
+      pointRadius:0,
+      tension:0.4,
+      fill:false,
+      yAxisID:'y'
+    };
+  });
+
+  const hqData={
+    datasets:[
+      ...affDatasets,
+      {label:'System',data:Qs.map((q,i)=>({x:q,y:Hs[i]})),borderColor:'#1a8a50',borderWidth:2.5,pointRadius:0,tension:0.3,fill:false,yAxisID:'y'},
+      {label:'NPSHa',data:Na.map((v,i)=>({x:Qs[i],y:v})),borderColor:'#9030b0',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:0,fill:false,yAxisID:'y'},
+      {label:'NPSHr',data:NR.map((v,i)=>({x:Qs[i],y:v})),borderColor:'#9030b0',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false,yAxisID:'y'},
+      {label:'OP',data:[{x:Qop,y:Hop}],borderColor:'#1a4fa0',backgroundColor:'#1a4fa0',pointRadius:8,pointStyle:'crossRot',borderWidth:3,showLine:false,yAxisID:'y'},
+    ]
+  };
+
+  if(hqChart) hqChart.destroy();
+  hqChart=new Chart(document.getElementById('hq-chart'),{
+    type:'scatter',
+    data:hqData,
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      animation:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Q=${ctx.parsed.x.toFixed(1)} m³/h, H=${ctx.parsed.y.toFixed(1)} m`}}},
+      scales:{
+        x:{type:'linear',title:{display:true,text:'Flow rate Q (m³/h)',color:tickColor,font:{family:'Share Tech Mono',size:11}},grid:{color:grid},ticks:{color:tickColor,font:{family:'Share Tech Mono',size:10}},min:0},
+        y:{title:{display:true,text:'Head H (m)',color:tickColor,font:{family:'Share Tech Mono',size:11}},grid:{color:grid},ticks:{color:tickColor,font:{family:'Share Tech Mono',size:10}},min:0}
+      }
+    }
+  });
+
+  // Efficiency + Power chart
+  const effData={
+    datasets:[
+      {label:'Efficiency (%)',data:Qs.map((q,i)=>({x:q,y:Eff[i]})),borderColor:'#1a4fa0',borderWidth:2,pointRadius:0,tension:0.4,fill:false,yAxisID:'yE'},
+      {label:'Shaft power (kW)',data:Qs.map(q=>{const e=pumpEff(q,Qbep,eta_bep)/100;const h=pumpHead(q,A,B,C);const p=rho*g*(q/3600)*h/1000/Math.max(e,0.01);return{x:q,y:Math.min(p,1000)};}),borderColor:'#e05020',borderWidth:2,pointRadius:0,tension:0.4,fill:false,yAxisID:'yP'},
+      {label:'BEP',data:[{x:Qbep,y:eta_bep}],borderColor:'#1a4fa0',backgroundColor:'#1a4fa0',pointRadius:6,showLine:false,yAxisID:'yE'},
+      {label:'OP eff',data:[{x:Qop,y:pumpEff(Qop,Qbep,eta_bep)}],borderColor:'#1a8a50',backgroundColor:'#1a8a50',pointRadius:6,showLine:false,yAxisID:'yE'},
+    ]
+  };
+  if(effChart) effChart.destroy();
+  effChart=new Chart(document.getElementById('eff-chart'),{
+    type:'scatter',
+    data:effData,
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      animation:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{type:'linear',title:{display:true,text:'Flow rate Q (m³/h)',color:tickColor,font:{family:'Share Tech Mono',size:11}},grid:{color:grid},ticks:{color:tickColor,font:{family:'Share Tech Mono',size:10}},min:0},
+        yE:{title:{display:true,text:'Efficiency (%)',color:'#1a4fa0',font:{family:'Share Tech Mono',size:11}},position:'left',min:0,max:100,ticks:{color:'#1a4fa0',font:{family:'Share Tech Mono',size:10}},grid:{color:grid}},
+        yP:{title:{display:true,text:'Power (kW)',color:'#e05020',font:{family:'Share Tech Mono',size:11}},position:'right',min:0,ticks:{color:'#e05020',font:{family:'Share Tech Mono',size:10}},grid:{display:false}}
+      }
+    }
+  });
+
+  // Operating point callout
+  const effOp_pct=pumpEff(Qop,Qbep,eta_bep);
+  document.getElementById('op-callout').innerHTML=`
+    <div class="op-item"><div class="op-val">${Qop.toFixed(1)}</div><div class="op-lbl">Q operating (m³/h)</div></div>
+    <div class="op-item"><div class="op-val">${Hop.toFixed(1)}</div><div class="op-lbl">H operating (m)</div></div>
+    <div class="op-item"><div class="op-val">${effOp_pct.toFixed(1)}%</div><div class="op-lbl">Pump efficiency</div></div>
+    <div class="op-item"><div class="op-val">${Pshaft.toFixed(2)}</div><div class="op-lbl">Shaft power (kW)</div></div>
+    <div class="op-item"><div class="op-val">${motSpec.toFixed(1)}</div><div class="op-lbl">Spec motor (kW)</div></div>
+  `;
+  document.getElementById('op-area').style.display='';
+
+  // Alerts
+  clrAlert('alert-op'); clrAlert('alert-npsh'); clrAlert('alert-bep'); clrAlert('alert-visc');
+  const desDeviation=Math.abs(Qop-Qdes)/Qdes*100;
+  if(desDeviation>15) setAlert('alert-op','awk',`Operating point Q = ${Qop.toFixed(1)} m³/h deviates ${desDeviation.toFixed(1)}% from design (${Qdes} m³/h). Review pump selection or system curve.`);
+  else setAlert('alert-op','aok',`Operating point ${Qop.toFixed(1)} m³/h within ${desDeviation.toFixed(1)}% of design flow ${Qdes} m³/h.`);
+
+  const npshMargin=NPSHa-(NPSHr_op+npsh_margin);
+  if(NPSHa<NPSHr_op) setAlert('alert-npsh','aer',`CAVITATION RISK — NPSHa (${NPSHa.toFixed(2)} m) < NPSHr (${NPSHr_op.toFixed(2)} m). Raise suction vessel, lower pump elevation, or reduce inlet losses immediately.`);
+  else if(npshMargin<0.5) setAlert('alert-npsh','awk',`NPSHa margin = ${npshMargin.toFixed(2)} m — marginal. Recommend minimum 0.5 m margin above NPSHr. Review suction design.`);
+  else setAlert('alert-npsh','anpsh',`NPSHa = ${NPSHa.toFixed(2)} m | NPSHr = ${NPSHr_op.toFixed(2)} m | Margin = ${npshMargin.toFixed(2)} m. Suction acceptable.`);
+
+  const bepDev=Math.abs(Qop-Qbep)/Qbep*100;
+  if(bepDev>30) setAlert('alert-bep','awk',`Operating point is ${bepDev.toFixed(1)}% from BEP (${Qbep} m³/h). Risk of vibration, recirculation, and reduced seal life. Target 70–110% of BEP.`);
+  else setAlert('alert-bep','aok',`Operating point ${bepDev.toFixed(1)}% from BEP — within preferred operating region.`);
+
+  if(mu>50) setAlert('alert-visc','awk',`Viscosity ${mu} cP — apply HI viscosity correction factors (Hydraulic Institute). Actual Q, H, and efficiency will be reduced from water-based curves.`);
+
+  // Metrics
+  document.getElementById('op-metrics').innerHTML=[
+    {lbl:'Q operating',val:Qop.toFixed(2),unit:'m³/h',cls:'sys'},
+    {lbl:'H operating',val:Hop.toFixed(2),unit:'m',cls:'pump'},
+    {lbl:'Pump efficiency',val:effOp_pct.toFixed(1)+'%',unit:'at OP',cls:effOp_pct<60?'red':effOp_pct<70?'warn':'acc'},
+    {lbl:'Hydraulic power',val:Phyd.toFixed(2),unit:'kW',cls:''},
+    {lbl:'Shaft power',val:Pshaft.toFixed(2),unit:'kW',cls:'pump'},
+    {lbl:'Motor power',val:Pmotor.toFixed(2),unit:'kW',cls:''},
+    {lbl:'Motor spec size',val:motSpec.toFixed(1),unit:'kW std',cls:'acc'},
+    {lbl:'BEP deviation',val:bepDev.toFixed(1)+'%',unit:'from BEP',cls:bepDev>30?'red':bepDev>15?'warn':'sys'},
+    {lbl:'Design Q target',val:Qdes.toFixed(0),unit:'m³/h',cls:''},
+  ].map(m=>`<div class="metric"><div class="ml">${m.lbl}</div><div class="mv ${m.cls}">${m.val}</div><div class="mu">${m.unit}</div></div>`).join('');
+
+  document.getElementById('npsh-metrics').innerHTML=[
+    {lbl:'NPSHa',val:NPSHa.toFixed(2),unit:'m',cls:NPSHa<NPSHr_op?'red':'npsh'},
+    {lbl:'NPSHr at OP',val:NPSHr_op.toFixed(2),unit:'m',cls:''},
+    {lbl:'NPSHr + margin',val:(NPSHr_op+npsh_margin).toFixed(2),unit:'m',cls:''},
+    {lbl:'NPSH margin',val:npshMargin.toFixed(2),unit:'m',cls:npshMargin<0?'red':npshMargin<0.5?'warn':'sys'},
+    {lbl:'Suction hf loss',val:hfs_des.toFixed(3),unit:'m',cls:''},
+    {lbl:'Suction head Zs',val:Zs.toFixed(1),unit:'m',cls:''},
+  ].map(m=>`<div class="metric"><div class="ml">${m.lbl}</div><div class="mv ${m.cls}">${m.val}</div><div class="mu">${m.unit}</div></div>`).join('');
+
+  // Affinity table
+  const tbody=document.getElementById('aff-body');
+  tbody.innerHTML='';
+  const allSpeeds=affinity?speeds:[speed];
+  allSpeeds.forEach(N=>{
+    const r=N/speed;
+    // OP on affinity curve: Q scales with r, H scales r²
+    const Qop_N=Qop*r;
+    const Hop_N=Hop*r*r;
+    const Pshaft_N=Pshaft*r*r*r;
+    const pctQ=(Qop_N/Qop*100).toFixed(1);
+    const isRated=Math.abs(N-speed)<1;
+    let st='',sc='';
+    if(Qop_N<Qdes*0.7){st='Below turn-down';sc='er';}
+    else if(Qop_N>Qdes*1.2){st='Oversized';sc='wk';}
+    else{st='Acceptable';sc='ok';}
+    const tr=document.createElement('tr');
+    if(isRated) tr.classList.add('sel-row');
+    tr.innerHTML=`<td>${N}${isRated?' ◀':''}</td><td class="num">${r.toFixed(3)}</td><td class="num">${Qop_N.toFixed(1)}</td><td class="num">${Hop_N.toFixed(1)}</td><td class="num">${Pshaft_N.toFixed(2)}</td><td class="num">${pctQ}%</td><td class="${sc}">${st}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Specific speed
+  const nsZone=Ns<0.2?{type:'Axial/Mixed-flow',note:'Very low Ns — verify centrifugal is appropriate. Consider multistage or axial-flow pump.'}:
+               Ns<0.5?{type:'Radial centrifugal (low Ns)',note:'Typical end-suction or between-bearing pump. Standard selection for this duty.'}:
+               Ns<1.0?{type:'Mixed-flow centrifugal',note:'Mixed-flow impeller. Common for medium flow, medium head duties.'}:
+                      {type:'Axial-flow (propeller)',note:'High flow, low head. Axial-flow pump likely most efficient.'};
+  document.getElementById('ns-area').innerHTML=`
+    <div class="g2">
+      <div><div class="lbl">Specific speed (SI)</div><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:700;color:var(--accent);">${Ns.toFixed(3)}</div><div class="mu">rpm·(m³/s)^0.5 / m^0.75</div></div>
+      <div><div class="lbl">Specific speed (US conventional)</div><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:700;color:var(--pump);">${Ns_US}</div><div class="mu">rpm·gpm^0.5 / ft^0.75</div></div>
+    </div>
+    <div style="margin-top:0.75rem;padding:8px 12px;background:var(--accent-bg);border-left:3px solid var(--accent);border-radius:0 var(--rsm) var(--rsm) 0;">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;color:var(--accent);margin-bottom:3px;">${nsZone.type}</div>
+      <div class="note">${nsZone.note}</div>
+    </div>`;
+
+  // Datasheet
+  const dsRows=[
+    ['Tag','P-XXX-001','Service',document.getElementById('fluid').value],
+    ['Pump type','Centrifugal','Drive','Electric motor'],
+    ['Design flow (Q)',''+Qdes+' m³/h','Rated speed',''+speed+' rpm'],
+    ['Operating Q',''+Qop.toFixed(1)+' m³/h','Operating H',''+Hop.toFixed(1)+' m'],
+    ['Shutoff head (A)',''+A+' m','BEP flow',''+Qbep+' m³/h'],
+    ['BEP efficiency',''+eta_bep+'%','OP efficiency',''+effOp_pct.toFixed(1)+'%'],
+    ['Shaft power (BHP)',''+Pshaft.toFixed(2)+' kW','Motor efficiency',''+eta_mot+'%'],
+    ['Installed motor',''+motSpec.toFixed(1)+' kW','Spec. speed (US)',''+Ns_US],
+    ['NPSHa',''+NPSHa.toFixed(2)+' m','NPSHr at OP',''+NPSHr_op.toFixed(2)+' m'],
+    ['NPSH margin',''+npshMargin.toFixed(2)+' m','Cavitation risk',NPSHa<NPSHr_op?'YES — REVIEW':'None'],
+    ['Fluid',''+document.getElementById('fluid').value,'Density',''+rho+' kg/m³'],
+    ['Viscosity',''+mu+' cP','Temperature',''+document.getElementById('temp').value+' °C'],
+    ['Static head',''+Hstatic+' m','Suction pipe ID',''+ds+' mm'],
+    ['Discharge pipe ID',''+dd+' mm','Pipe material',document.getElementById('rough').value+' mm roughness'],
+  ];
+  document.getElementById('ds-body').innerHTML=dsRows.map(r=>`<tr>
+    <td style="color:var(--text2);font-size:11px;padding:5px 10px;border-bottom:1px solid var(--border);white-space:nowrap;font-family:'Share Tech Mono',monospace;">${r[0]}</td>
+    <td style="font-weight:500;font-size:12px;padding:5px 10px;border-bottom:1px solid var(--border);font-family:'Share Tech Mono',monospace;">${r[1]}</td>
+    <td style="color:var(--text2);font-size:11px;padding:5px 10px;border-bottom:1px solid var(--border);border-left:1px solid var(--border);white-space:nowrap;font-family:'Share Tech Mono',monospace;">${r[2]}</td>
+    <td style="font-weight:500;font-size:12px;padding:5px 10px;border-bottom:1px solid var(--border);font-family:'Share Tech Mono',monospace;">${r[3]}</td>
+  </tr>`).join('');
+
+  document.getElementById('metrics-area').style.display='';
+}
+
+// Click the button to generate curves
+</script>
+
+
+</div>
+<footer class="pd-footer">
+  <div class="pd-footer-inner">
+    <div>
+      <div class="pd-footer-logo">Process<em>Desk</em></div>
+      <p class="pd-footer-desc">Free FEL-3 process engineering calculators. Nine modules covering the full pre-FEED scope. Built by engineers, for engineers.</p>
+    </div>
+    <div class="pd-footer-col">
+      <h4>Calculators</h4>
+      <a href="fel3_hydraulics.html">Liquid Hydraulics</a>
+      <a href="fel3_gas_hydraulics.html">Gas Hydraulics</a>
+      <a href="fel3_heat_exchanger.html">Heat Exchanger</a>
+      <a href="fel3_relief_valve.html">Relief Valve</a>
+      <a href="fel3_pump_selection.html">Pump Selection</a>
+    </div>
+    <div class="pd-footer-col">
+      <h4>More tools</h4>
+      <a href="fel3_meb.html">Mass &amp; Energy Balance</a>
+      <a href="fel3_cost_estimator.html">Cost Estimator</a>
+      <a href="fel3_economics.html">Project Economics</a>
+      <a href="fel3_dashboard.html">Dashboard</a>
+    </div>
+    <div class="pd-footer-col">
+      <h4>Company</h4>
+      <a href="/cdn-cgi/l/email-protection#5a3935342e3b392e1a2a2835393f29293e3f29312974393537">Contact</a>
+      <a href="/cdn-cgi/l/email-protection#bbd8d4d5cfdad8cffbcbc9d4d8dec8c8dfdec8d0c895d8d4d684c8ced9d1ded8cf86ebc9d49bccdad2cfd7d2c8cf">Pro waitlist</a>
+      <a href="/cdn-cgi/l/email-protection#7b1814150f1a180f3b0b0914181e08081f1e0810085518141644080e19111e180f463a1f0d1e090f120812151c">Advertise with us</a>
+    </div>
+  </div>
+  <div class="pd-footer-bottom">
+    <p>© 2026 
