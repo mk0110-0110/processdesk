@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equipment Cost Estimator — Lang Factor CEPCI | ProcessDesk</title>
+<meta name="description" content="Free factored capital cost estimator using Lang and Hand factors with CEPCI escalation. Purchased equipment to total project cost. AACE Class 3 estimate.">
+<link rel="canonical" href="https://processdesks.com/fel3_cost_estimator.html">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg:#f8f9fb; --s1:#ffffff; --s2:#f2f4f7; --s3:#e8ebf0;
+  --border:#e2e6ec; --border2:#d0d5de;
+  --text:#0f1420; --text2:#5a6070; --text3:#9aa0b0;
+  --accent:#1a56db; --accent2:#1648c0;
+  --accent-bg:#eef2ff; --accent-light:#c7d4fa;
+  --green:#059669; --green-bg:#ecfdf5;
+  --red:#dc2626; --red-bg:#fef2f2;
+  --amber:#d97706; --amber-bg:#fffbeb;
+  --orange:#ea580c; --orange-bg:#fff7ed;
+  --purple:#7c3aed; --purple-bg:#f5f3ff;
+  --teal:#0891b2; --teal-bg:#ecfeff;
+  --radius:12px; --rsm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.05);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+
+.pd-nav { position:fixed; top:0; left:0; right:0; z-index:9999; background:rgba(255,255,255,0.97); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.pd-nav-inner { max-width:1280px; margin:0 auto; height:54px; display:flex; align-items:center; padding:0 1.5rem; gap:0; }
+.pd-logo { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:var(--text); text-decoration:none; letter-spacing:0.3px; margin-right:1.5rem; white-space:nowrap; flex-shrink:0; }
+.pd-logo em { font-style:normal; color:var(--accent); }
+.pd-tools { display:flex; align-items:center; gap:0; overflow-x:auto; flex:1; scrollbar-width:none; }
+.pd-tools::-webkit-scrollbar { display:none; }
+.pd-tool { font-size:11px; color:var(--text2); text-decoration:none; padding:6px 9px; border-radius:var(--rsm); white-space:nowrap; transition:all 0.15s; font-weight:500; }
+.pd-tool:hover { color:var(--accent); background:var(--accent-bg); }
+.pd-tool.active { color:var(--accent); background:var(--accent-bg); font-weight:600; }
+.pd-home { font-size:11px; color:#fff; background:var(--accent); text-decoration:none; padding:6px 14px; border-radius:var(--rsm); white-space:nowrap; font-weight:600; margin-left:auto; flex-shrink:0; transition:background 0.15s; }
+.pd-home:hover { background:var(--accent2); }
+body { padding-top:54px; }
+
+
+.pd-footer { background:#0f1420; color:rgba(255,255,255,0.6); padding:3rem 2rem 1.5rem; margin-top:3rem; }
+.pd-footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:2.5rem; margin-bottom:2rem; }
+@media(max-width:720px){ .pd-footer-inner { grid-template-columns:1fr 1fr; gap:1.5rem; } }
+@media(max-width:420px){ .pd-footer-inner { grid-template-columns:1fr; } }
+.pd-footer-logo { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:#fff; margin-bottom:0.6rem; }
+.pd-footer-logo em { font-style:normal; color:#93c5fd; }
+.pd-footer-desc { font-size:12px; line-height:1.75; max-width:220px; }
+.pd-footer-col h4 { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; color:rgba(255,255,255,0.3); text-transform:uppercase; margin-bottom:0.85rem; }
+.pd-footer-col a { display:block; font-size:12px; color:rgba(255,255,255,0.55); text-decoration:none; margin-bottom:7px; transition:color 0.15s; }
+.pd-footer-col a:hover { color:#fff; }
+.pd-footer-bottom { max-width:1280px; margin:0 auto; padding-top:1.25rem; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.pd-footer-bottom p { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.25); }
+
+
+.page { max-width:1280px; margin:0 auto; padding:0 1.5rem 2rem; }
+/* Module header */
+.mod-header { padding:1.5rem 0 1.25rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:flex-end; gap:1rem; flex-wrap:wrap; }
+.mod-logo { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; color:var(--text2); letter-spacing:0.5px; }
+.mod-logo em { font-style:normal; color:var(--accent); }
+.mod-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.02em; }
+.mod-subtitle { font-size:13px; color:var(--text2); margin-top:3px; }
+.mod-badges { display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; align-items:center; }
+.mod-badge { font-family:'DM Mono',monospace; font-size:10px; padding:4px 10px; border-radius:3px; border:1px solid; letter-spacing:0.04em; }
+.mb-blue { background:var(--accent-bg); color:var(--accent); border-color:var(--accent-light); }
+.mb-green { background:var(--green-bg); color:var(--green); border-color:#a7f3d0; }
+.mb-amber { background:var(--amber-bg); color:var(--amber); border-color:#fcd34d; }
+.mb-red { background:var(--red-bg); color:var(--red); border-color:#fca5a5; }
+/* Layout grids */
+.col2 { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; margin-bottom:1rem; }
+.col3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-bottom:1rem; }
+.g2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.75rem; }
+.g3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.75rem; }
+@media(max-width:900px){ .col2,.col3 { grid-template-columns:1fr; } }
+@media(max-width:540px){ .g2,.g3 { grid-template-columns:1fr; } }
+/* Cards */
+.card { background:var(--s1); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.25rem; margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow); }
+.card-title { font-family:'DM Mono',monospace; font-size:10px; font-weight:500; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.85rem; display:flex; align-items:center; gap:8px; }
+.card-title::after { content:''; flex:1; height:1px; background:var(--border); }
+/* Form elements */
+.field { margin-bottom:0.65rem; }
+.lbl { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); margin-bottom:3px; display:block; letter-spacing:0.04em; }
+.ir { display:flex; gap:5px; align-items:center; }
+.unit { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); min-width:52px; flex-shrink:0; }
+input[type="number"], input[type="text"], select, textarea {
+  background:var(--s2); border:1px solid var(--border2); border-radius:var(--rsm);
+  color:var(--text); font-family:'DM Mono',monospace; font-size:12px;
+  padding:6px 9px; width:100%; outline:none; transition:border-color 0.15s; -webkit-appearance:none;
+}
+input:focus, select:focus, textarea:focus { border-color:var(--accent); background:var(--s1); }
+.ir input, .ir select { flex:1; width:auto; min-width:0; }
+/* Toggle */
+.tog { display:flex; border:1px solid var(--border2); border-radius:var(--rsm); overflow:hidden; margin-bottom:0.85rem; }
+.tb { flex:1; padding:8px 6px; font-family:'DM Mono',monospace; font-size:11px; background:transparent; border:none; cursor:pointer; color:var(--text2); transition:all 0.15s; }
+.tb.av { background:var(--accent); color:#fff; font-weight:500; }
+/* Run button */
+.run-btn { width:100%; padding:12px; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.5px; background:var(--accent); color:#fff; border:none; border-radius:var(--rsm); cursor:pointer; transition:background 0.15s; margin-bottom:1rem; }
+.run-btn:hover { background:var(--accent2); }
+/* Metrics */
+.mg { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:1rem; }
+@media(max-width:600px){ .mg { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.metric { background:var(--s2); border-radius:var(--rsm); padding:0.75rem 1rem; border:1px solid var(--border); }
+.ml { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); margin-bottom:4px; letter-spacing:0.04em; }
+.mv { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; color:var(--text); }
+.mv.acc { color:var(--accent); }
+.mv.gr { color:var(--green); }
+.mv.rd { color:var(--red); }
+.mv.am { color:var(--amber); }
+.mu { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); }
+/* Alerts */
+.alert { border-radius:0 var(--rsm) var(--rsm) 0; padding:8px 12px; font-family:'DM Mono',monospace; font-size:11px; line-height:1.6; margin-bottom:8px; display:none; }
+.alert.show { display:block; }
+.aok  { background:var(--green-bg); border-left:3px solid var(--green); color:var(--green); }
+.awk  { background:var(--amber-bg); border-left:3px solid var(--amber); color:var(--amber); }
+.aer  { background:var(--red-bg);   border-left:3px solid var(--red);   color:var(--red); }
+.ainf { background:var(--accent-bg);border-left:3px solid var(--accent);color:var(--accent); }
+/* Tables */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; font-size:11px; }
+th { text-align:left; padding:7px 10px; border-bottom:1px solid var(--border2); color:var(--text2); font-size:10px; letter-spacing:0.06em; background:var(--s2); }
+td { padding:6px 10px; border-bottom:1px solid var(--border); color:var(--text); }
+tr:last-child td { border-bottom:none; }
+td.num { text-align:right; }
+td.ok  { color:var(--green); }
+td.wk  { color:var(--amber); }
+td.er  { color:var(--red); }
+tr.sel { background:var(--accent-bg); }
+/* Divider */
+.divider { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); letter-spacing:0.1em; text-transform:uppercase; display:flex; align-items:center; gap:10px; margin:1.5rem 0 1rem; }
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border2); }
+.note { font-family:'DM Mono',monospace; font-size:11px; color:var(--text2); line-height:1.7; }
+/* Chart containers */
+.chart-wrap { background:var(--s1); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow); }
+.chart-title { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem; }
+.chart-box { position:relative; width:100%; }
+
+
+
+/* ProcessDesk shared nav */
+.pd-nav{position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(255,255,255,0.97);backdrop-filter:blur(10px);border-bottom:1px solid #e2e6ec;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.pd-nav-inner{max-width:1280px;margin:0 auto;height:54px;display:flex;align-items:center;gap:0;padding:0 1.5rem;}
+.pd-logo{font-family:monospace;font-size:15px;font-weight:600;color:#0f1420;text-decoration:none;letter-spacing:0.3px;margin-right:1.5rem;white-space:nowrap;}
+.pd-logo em{font-style:normal;color:#1a56db;}
+.pd-tools{display:flex;align-items:center;gap:0;overflow-x:auto;flex:1;scrollbar-width:none;}
+.pd-tools::-webkit-scrollbar{display:none;}
+.pd-tool{font-size:11px;color:#5a6070;text-decoration:none;padding:6px 10px;border-radius:5px;white-space:nowrap;transition:all 0.15s;font-weight:500;}
+.pd-tool:hover{color:#1a56db;background:#eef2ff;}
+.pd-tool.active{color:#1a56db;background:#eef2ff;font-weight:600;}
+.pd-home{font-size:11px;color:#fff;background:#1a56db;text-decoration:none;padding:6px 14px;border-radius:5px;white-space:nowrap;font-weight:600;margin-left:auto;flex-shrink:0;transition:background 0.15s;}
+.pd-home:hover{background:#1648c0;}
+body{padding-top:54px;}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f4f1ec;
+  --s1:#ffffff;
+  --s2:#ede9e2;
+  --s3:#e3dfd6;
+  --s4:#d8d3c8;
+  --border:rgba(0,0,0,0.08);
+  --border2:rgba(0,0,0,0.15);
+  --border3:rgba(0,0,0,0.25);
+  --text:#1a1814;
+  --text2:#6a6358;
+  --text3:#aca89f;
+  --ink:#2a2420;
+  --rust:#b84820;
+  --rust-bg:#fdf0eb;
+  --rust-light:#e8a888;
+  --forest:#1a5c38;
+  --forest-bg:#eaf4ee;
+  --forest-light:#88c8a0;
+  --navy:#1a3268;
+  --navy-bg:#eaeffc;
+  --navy-light:#90a8d8;
+  --amber:#8c5c10;
+  --amber-bg:#faf0d8;
+  --red:#a82020;
+  --red-bg:#faeaea;
+  --radius:10px;
+  --rsm:5px;
+}
+body{font-family:'Archivo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.page{max-width:1280px;margin:0 auto;padding:0 1.5rem 3rem;}
+
+/* HEADER */
+.hdr{padding:1.75rem 0 1.25rem;margin-bottom:1.5rem;border-bottom:2px solid var(--ink);}
+.hdr-inner{display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap;}
+.logo{font-family:'Archivo',sans-serif;font-size:28px;font-weight:700;letter-spacing:2px;color:var(--ink);}
+.logo em{font-style:normal;color:var(--rust);}
+.logo-sub{font-family:'Courier Prime',monospace;font-size:11px;color:var(--text2);letter-spacing:0.06em;margin-top:4px;}
+.badge-row{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center;}
+.badge{font-family:'Courier Prime',monospace;font-size:10px;padding:4px 10px;border-radius:2px;border:1px solid;letter-spacing:0.04em;}
+.b-rust{background:var(--rust-bg);color:var(--rust);border-color:var(--rust-light);}
+.b-forest{background:var(--forest-bg);color:var(--forest);border-color:var(--forest-light);}
+.b-navy{background:var(--navy-bg);color:var(--navy);border-color:var(--navy-light);}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:1.25rem;align-items:start;}
+@media(max-width:960px){.layout{grid-template-columns:1fr;}}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.65rem;}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.65rem;}
+@media(max-width:500px){.g2,.g3{grid-template-columns:1fr;}}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--border2);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1rem;overflow:hidden;}
+.card.rust-card{border-left:3px solid var(--rust);}
+.card.forest-card{border-left:3px solid var(--forest);}
+.card.navy-card{border-left:3px solid var(--navy);}
+.ct{font-family:'Courier Prime',monospace;font-size:10px;font-weight:700;color:var(--text2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.85rem;display:flex;align-items:center;gap:8px;}
+.ct::after{content:'';flex:1;height:1px;background:var(--border);}
+.ct.rc{color:var(--rust);}
+.ct.fc{color:var(--forest);}
+.ct.nc{color:var(--navy);}
+
+/* FORM */
+.field{margin-bottom:0.6rem;}
+.lbl{font-family:'Courier Prime',monospace;font-size:10px;color:var(--text2);margin-bottom:3px;display:block;letter-spacing:0.04em;}
+.ir{display:flex;gap:5px;align-items:center;}
+.unit{font-family:'Courier Prime',monospace;font-size:10px;color:var(--text3);min-width:50px;flex-shrink:0;}
+input,select{background:var(--s2);border:1px solid var(--border2);border-radius:var(--rsm);color:var(--text);font-family:'Courier Prime',monospace;font-size:12px;padding:6px 9px;width:100%;outline:none;transition:border-color 0.15s;-webkit-appearance:none;}
+input:focus,select:focus{border-color:var(--rust);background:var(--s1);}
+.ir input,.ir select{flex:1;width:auto;min-width:0;}
+
+/* TOGGLE */
+.tog{display:flex;border:1px solid var(--border2);border-radius:var(--rsm);overflow:hidden;margin-bottom:0.85rem;}
+.tb{flex:1;padding:8px 6px;font-family:'Courier Prime',monospace;font-size:11px;background:transparent;border:none;cursor:pointer;color:var(--text2);transition:all 0.15s;letter-spacing:0.03em;}
+.tb.ar{background:var(--rust);color:#fff;font-weight:700;}
+.tb.af{background:var(--forest);color:#fff;font-weight:700;}
+.tb.an{background:var(--ink);color:#fff;font-weight:700;}
+
+/* EQUIPMENT LIST */
+.eq-list{display:flex;flex-direction:column;gap:8px;margin-bottom:0.85rem;}
+.eq-row{background:var(--s2);border:1px solid var(--border);border-radius:var(--rsm);padding:8px 10px;position:relative;}
+.eq-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.eq-tag{font-family:'Courier Prime',monospace;font-size:10px;padding:2px 8px;border-radius:2px;font-weight:700;letter-spacing:0.05em;}
+.et-vessel{background:#fdf0eb;color:#b84820;}
+.et-hx{background:#eaf4ee;color:#1a5c38;}
+.et-pump{background:#eaeffc;color:#1a3268;}
+.et-comp{background:#faf0d8;color:#8c5c10;}
+.et-heater{background:#faeaea;color:#a82020;}
+.et-tank{background:#f0eafa;color:#5030a0;}
+.eq-name-input{flex:1;font-size:12px;padding:4px 8px;min-width:0;}
+.del-btn{width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);background:var(--s1);cursor:pointer;color:var(--text2);font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
+.del-btn:hover{background:var(--red-bg);color:var(--red);border-color:var(--red);}
+.add-btns{display:flex;gap:5px;flex-wrap:wrap;}
+.add-btn{font-family:'Courier Prime',monospace;font-size:10px;padding:5px 10px;border-radius:var(--rsm);border:1px dashed var(--border2);background:transparent;cursor:pointer;color:var(--text2);transition:all 0.15s;white-space:nowrap;}
+.add-btn:hover{border-color:var(--rust);color:var(--rust);}
+
+/* RUN */
+.run-btn{width:100%;padding:13px;font-family:'Archivo',sans-serif;font-size:15px;font-weight:700;letter-spacing:3px;text-transform:uppercase;background:var(--ink);color:var(--bg);border:none;border-radius:var(--rsm);cursor:pointer;transition:opacity 0.15s;margin-bottom:1rem;}
+.run-btn:hover{opacity:0.85;}
+
+/* ALERTS */
+.alert{border-radius:0 var(--rsm) var(--rsm) 0;padding:8px 12px;font-family:'Courier Prime',monospace;font-size:11px;line-height:1.6;margin-bottom:8px;display:none;}
+.alert.show{display:block;}
+.aok{background:var(--forest-bg);border-left:3px solid var(--forest);color:var(--forest);}
+.awk{background:var(--amber-bg);border-left:3px solid var(--amber);color:var(--amber);}
+.aer{background:var(--red-bg);border-left:3px solid var(--red);color:var(--red);}
+.ainf{background:var(--navy-bg);border-left:3px solid var(--navy);color:var(--navy);}
+
+/* COST SUMMARY */
+.cost-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1rem;}
+@media(max-width:540px){.cost-strip{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.cost-kpi{background:var(--s2);border-radius:var(--rsm);padding:0.85rem 1rem;border:1px solid var(--border);}
+.ck-lbl{font-family:'Courier Prime',monospace;font-size:10px;color:var(--text2);margin-bottom:4px;letter-spacing:0.04em;}
+.ck-val{font-family:'Archivo',sans-serif;font-size:24px;font-weight:700;color:var(--text);}
+.ck-val.rust{color:var(--rust);}
+.ck-val.forest{color:var(--forest);}
+.ck-val.navy{color:var(--navy);}
+.ck-unit{font-family:'Courier Prime',monospace;font-size:10px;color:var(--text3);}
+
+/* COST BREAKDOWN BARS */
+.breakdown-wrap{margin-bottom:1rem;}
+.br-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.br-lbl{font-family:'Courier Prime',monospace;font-size:10px;color:var(--text2);min-width:160px;text-align:right;flex-shrink:0;}
+.br-track{flex:1;height:20px;background:var(--s3);border-radius:3px;overflow:hidden;position:relative;}
+.br-fill{height:100%;border-radius:3px;transition:width 0.4s;}
+.br-val{font-family:'Courier Prime',monospace;font-size:10px;color:var(--text2);min-width:70px;text-align:right;flex-shrink:0;}
+
+/* EQUIPMENT COST TABLE */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-family:'Courier Prime',monospace;font-size:11px;min-width:700px;}
+th{text-align:left;padding:7px 10px;border-bottom:1px solid var(--border3);color:var(--text2);font-size:10px;letter-spacing:0.07em;background:var(--s2);font-weight:700;}
+th.num{text-align:right;}
+td{padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text);}
+td.num{text-align:right;}
+tr.subtotal td{background:var(--s2);font-weight:700;border-top:1px solid var(--border2);}
+tr.total-row td{background:var(--ink);color:var(--bg);font-weight:700;}
+tr:hover:not(.total-row) td{background:var(--s2);}
+.type-badge{font-size:9px;padding:1px 6px;border-radius:2px;font-weight:700;letter-spacing:0.05em;}
+
+/* CEPCI PANEL */
+.cepci-row{display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;padding:8px 12px;background:var(--navy-bg);border:1px solid var(--navy-light);border-radius:var(--rsm);}
+.cepci-label{font-family:'Courier Prime',monospace;font-size:11px;color:var(--navy);flex:1;}
+.cepci-val{font-family:'Archivo',sans-serif;font-size:18px;font-weight:700;color:var(--navy);}
+
+/* LANG FACTOR DISPLAY */
+.lang-display{background:var(--rust-bg);border:1px solid var(--rust-light);border-radius:var(--rsm);padding:10px 14px;margin-bottom:0.75rem;display:flex;align-items:center;justify-content:space-between;}
+.lang-factor-val{font-family:'Archivo',sans-serif;font-size:28px;font-weight:700;color:var(--rust);}
+.lang-factor-lbl{font-family:'Courier Prime',monospace;font-size:10px;color:var(--rust);margin-top:2px;}
+
+.divider{font-family:'Courier Prime',monospace;font-size:10px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin:1.5rem 0 1rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2);}
+.note{font-family:'Courier Prime',monospace;font-size:10px;color:var(--text2);line-height:1.7;}
+footer{margin-top:2.5rem;padding-top:1rem;border-top:2px solid var(--border2);font-family:'Courier Prime',monospace;font-size:10px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+
+/* ── ProcessDesk Feedback Widget ──────────────────── */
+.fb-btn {
+  position: fixed; bottom: 24px; right: 24px; z-index: 8888;
+  background: var(--accent); color: #fff;
+  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500;
+  padding: 10px 18px; border-radius: 24px; border: none; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(26,86,219,0.35);
+  display: flex; align-items: center; gap: 7px;
+  transition: all 0.2s; letter-spacing: 0.03em;
+}
+.fb-btn:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,86,219,0.4); }
+.fb-btn svg { flex-shrink: 0; }
+
+.fb-overlay {
+  position: fixed; inset: 0; z-index: 8889;
+  background: rgba(15,20,32,0.45); backdrop-filter: blur(3px);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.fb-overlay.open { opacity: 1; pointer-events: all; }
+
+.fb-panel {
+  position: fixed; bottom: 80px; right: 24px; z-index: 8890;
+  width: 360px; max-width: calc(100vw - 32px);
+  background: #fff; border: 1px solid var(--border2);
+  border-radius: 16px; box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+  opacity: 0; transform: translateY(16px) scale(0.97);
+  pointer-events: none; transition: all 0.2s;
+}
+.fb-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+
+.fb-header {
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.fb-header-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--accent-bg); display: flex; align-items: center;
+  justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.fb-header-text { flex: 1; }
+.fb-header-title {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;
+  font-weight: 700; color: var(--text); margin-bottom: 1px;
+}
+.fb-header-sub {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--text2); letter-spacing: 0.04em;
+}
+.fb-close {
+  width: 28px; height: 28px; border: none; background: var(--s2);
+  border-radius: 50%; cursor: pointer; font-size: 14px; color: var(--text2);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s; flex-shrink: 0;
+}
+.fb-close:hover { background: var(--s3); color: var(--text); }
+
+.fb-body { padding: 1rem 1.25rem; }
+
+.fb-field { margin-bottom: 0.85rem; }
+.fb-lbl {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--text2); letter-spacing: 0.06em; margin-bottom: 5px;
+  display: block; text-transform: uppercase;
+}
+.fb-select, .fb-textarea {
+  width: 100%; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; background: var(--s2); border: 1px solid var(--border2);
+  border-radius: 8px; color: var(--text); outline: none;
+  transition: border-color 0.15s;
+}
+.fb-select { padding: 8px 10px; appearance: none; -webkit-appearance: none; cursor: pointer; }
+.fb-textarea { padding: 10px 12px; resize: vertical; min-height: 90px; line-height: 1.6; }
+.fb-select:focus, .fb-textarea:focus { border-color: var(--accent); background: #fff; }
+
+.fb-rating { display: flex; gap: 6px; }
+.fb-star {
+  font-size: 22px; cursor: pointer; transition: transform 0.1s;
+  opacity: 0.35; line-height: 1;
+}
+.fb-star.active { opacity: 1; }
+.fb-star:hover { transform: scale(1.2); }
+
+.fb-submit {
+  width: 100%; padding: 11px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; font-weight: 700; background: var(--accent); color: #fff;
+  border: none; border-radius: 8px; cursor: pointer;
+  transition: background 0.15s; letter-spacing: 0.02em;
+}
+.fb-submit:hover { background: var(--accent2); }
+.fb-submit:disabled { background: var(--text3); cursor: not-allowed; }
+
+.fb-char-count {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  color: var(--text3); text-align: right; margin-top: 3px;
+}
+
+.fb-success {
+  padding: 1.5rem 1.25rem; text-align: center; display: none;
+}
+.fb-success-icon { font-size: 40px; margin-bottom: 10px; }
+.fb-success-title {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px;
+  font-weight: 700; color: var(--text); margin-bottom: 6px;
+}
+.fb-success-msg {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--text2); line-height: 1.7;
+}
+@media print { .fb-btn, .fb-panel, .fb-overlay { display: none !important; } }
+
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="pd-nav">
+  <div class="pd-nav-inner">
+    <a href="/" class="pd-logo">Process<em>Desk</em></a>
+    <div class="pd-tools">
+    <a href="fel3_hydraulics.html" class="pd-tool" data-page="fel3_hydraulics">Liquid Hydraulics</a>
+    <a href="fel3_gas_hydraulics.html" class="pd-tool" data-page="fel3_gas_hydraulics">Gas Hydraulics</a>
+    <a href="fel3_heat_exchanger.html" class="pd-tool" data-page="fel3_heat_exchanger">Heat Exchanger</a>
+    <a href="fel3_relief_valve.html" class="pd-tool" data-page="fel3_relief_valve">Relief Valve</a>
+    <a href="fel3_pump_selection.html" class="pd-tool" data-page="fel3_pump_selection">Pump Selection</a>
+    <a href="fel3_meb.html" class="pd-tool" data-page="fel3_meb">M&amp;E Balance</a>
+    <a href="fel3_cost_estimator.html" class="pd-tool" data-page="fel3_cost_estimator">Cost Estimator</a>
+    <a href="fel3_economics.html" class="pd-tool" data-page="fel3_economics">Project Economics</a>
+    <a href="fel3_dashboard.html" class="pd-tool" data-page="fel3_dashboard">Dashboard</a>
+    </div>
+    <a href="/" class="pd-home">← All tools</a>
+  </div>
+</nav>
+<script>
+(function(){
+  var p='fel3_cost_estimator';
+  document.querySelectorAll('.pd-tool[data-page]').forEach(function(a){
+    if(a.dataset.page===p) a.classList.add('active');
+  });
+})();
+</script>
+<div class="page">
+  <div class="mod-header">
+    <div>
+      <div class="mod-logo">Process<em>Desk</em> · Module 07</div>
+      <div class="mod-title">Equipment Cost Estimator</div>
+      <div class="mod-subtitle">Lang & Hand Factors · CEPCI Escalation · Six Equipment Types · AACE Class 3 ±30%</div>
+    </div>
+    <div class="mod-badges"><span class="mod-badge mb-blue">Lang / Hand</span><span class="mod-badge mb-amber">CEPCI</span><span class="mod-badge mb-green">AACE ±30%</span></div>
+  </div>      <div class="logo-sub">FEL-3 Equipment Cost Estimator — Lang / Hand Factors · CEPCI Escalation</div>
+    </div>
+    <div class="badge-row">
+      <span class="badge b-rust">AACE CLASS 3 ±30%</span>
+      <span class="badge b-forest">LANG / HAND</span>
+      <span class="badge b-navy">CEPCI INDEX</span>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+<!-- ── LEFT INPUTS ──────────────────────────── -->
+<div>
+
+  <!-- PROJECT BASIS -->
+  <div class="card rust-card">
+    <div class="ct rc">Project Basis</div>
+    <div class="field"><label class="lbl">Project / plant name</label><input type="text" id="proj-name" value="Process Plant — FEL-3 Estimate"></div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Plant type (for Lang factor)</label>
+        <select id="plant-type" onchange="updateLangFactor()">
+          <option value="3.1">Solid processing — Lang 3.1</option>
+          <option value="4.74" selected>Solid-fluid processing — Lang 4.74</option>
+          <option value="5.9">Fluid processing — Lang 5.9</option>
+        </select>
+      </div>
+      <div class="field"><label class="lbl">Installation factor method</label>
+        <div class="tog" style="margin-bottom:0;">
+          <button class="tb ar" id="btn-lang" onclick="setFactorMethod('lang')">Lang</button>
+          <button class="tb" id="btn-hand" onclick="setFactorMethod('hand')">Hand</button>
+        </div>
+      </div>
+    </div>
+    <div id="lang-display-wrap">
+      <div class="lang-display">
+        <div><div class="lang-factor-lbl">Lang factor (f)</div><div class="lang-factor-val" id="lang-val">4.74</div></div>
+        <div class="note" style="max-width:200px;">TIC = f × Σ (purchased equipment cost)<br>Includes installation, piping, civil, instruments, electrical, insulation, painting.</div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Estimate accuracy</label>
+        <select id="accuracy">
+          <option value="50">FEL-1 / Class 5 (±50%)</option>
+          <option value="30" selected>FEL-3 / Class 3 (±30%)</option>
+          <option value="15">FEED / Class 2 (±15%)</option>
+        </select>
+      </div>
+      <div class="field"><label class="lbl">Location factor</label>
+        <select id="loc-factor">
+          <option value="1.0" selected>USA Gulf Coast — 1.00 (base)</option>
+          <option value="1.05">USA West Coast — 1.05</option>
+          <option value="1.20">Canada — 1.20</option>
+          <option value="0.85">SE Asia — 0.85</option>
+          <option value="0.75">India / Middle East — 0.75</option>
+          <option value="1.30">Australia — 1.30</option>
+          <option value="1.10">Western Europe — 1.10</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- CEPCI -->
+  <div class="card navy-card">
+    <div class="ct nc">CEPCI Cost Escalation</div>
+    <div class="note" style="margin-bottom:0.75rem;">Escalate published cost data from reference year to current year using the Chemical Engineering Plant Cost Index.</div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Reference CEPCI (data year)</label><div class="ir"><input type="number" id="cepci-ref" value="567" step="1"><span class="unit">index</span></div></div>
+      <div class="field"><label class="lbl">Current CEPCI (today)</label><div class="ir"><input type="number" id="cepci-cur" value="820" step="1"><span class="unit">index</span></div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Reference year</label><div class="ir"><input type="number" id="ref-year" value="2014" step="1"><span class="unit">year</span></div></div>
+      <div class="field"><label class="lbl">Current year</label><div class="ir"><input type="number" id="cur-year" value="2025" step="1"><span class="unit">year</span></div></div>
+    </div>
+    <div class="cepci-row" id="cepci-ratio-display">
+      <span class="cepci-label">Escalation ratio (current / reference)</span>
+      <span class="cepci-val" id="cepci-ratio">1.447</span>
+    </div>
+    <div class="note">Key CEPCI references: 2001=394, 2010=551, 2014=567, 2018=603, 2020=596, 2022=816, 2023=797, 2024=~820.</div>
+  </div>
+
+  <!-- CONTINGENCY -->
+  <div class="card">
+    <div class="ct">CAPEX Build-up Factors</div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Engineering & procurement</label><div class="ir"><input type="number" id="f-eng" value="10" step="1" min="0"><span class="unit">%</span></div></div>
+      <div class="field"><label class="lbl">Contingency</label><div class="ir"><input type="number" id="f-cont" value="15" step="1" min="0"><span class="unit">%</span></div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Owner's costs (OSBL)</label><div class="ir"><input type="number" id="f-owner" value="8" step="1" min="0"><span class="unit">%</span></div></div>
+      <div class="field"><label class="lbl">Commissioning & start-up</label><div class="ir"><input type="number" id="f-comm" value="5" step="1" min="0"><span class="unit">%</span></div></div>
+    </div>
+    <div class="note">These percentages are applied on top of TIC to build the Total Project Cost (TPC).</div>
+  </div>
+
+  <button class="run-btn" onclick="calculate()">ESTIMATE CAPEX</button>
+  <div id="alert-area">
+    <div id="alert-main" class="alert"></div>
+    <div id="alert-acc" class="alert"></div>
+  </div>
+
+</div>
+
+<!-- ── RIGHT: EQUIPMENT LIST + RESULTS ──────── -->
+<div>
+
+  <!-- EQUIPMENT BUILDER -->
+  <div class="card rust-card">
+    <div class="ct rc">Equipment List — Purchased Equipment Costs (PEC)</div>
+    <div class="note" style="margin-bottom:0.75rem;">Enter bare purchased cost at reference CEPCI conditions. The engine applies CEPCI escalation, location factor, and Lang/Hand installation factors automatically.</div>
+    <div class="eq-list" id="eq-list"></div>
+    <div class="add-btns">
+      <button class="add-btn" onclick="addEquipment('vessel')">+ Vessel / Column</button>
+      <button class="add-btn" onclick="addEquipment('hx')">+ Heat Exchanger</button>
+      <button class="add-btn" onclick="addEquipment('pump')">+ Pump & Driver</button>
+      <button class="add-btn" onclick="addEquipment('comp')">+ Compressor</button>
+      <button class="add-btn" onclick="addEquipment('heater')">+ Fired Heater</button>
+      <button class="add-btn" onclick="addEquipment('tank')">+ Storage Tank</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results-area" style="display:none;">
+
+    <div class="cost-strip" id="cost-strip"></div>
+
+    <!-- CAPEX BUILD-UP BARS -->
+    <div class="card">
+      <div class="ct">CAPEX Build-up — Installed Cost Breakdown</div>
+      <div class="breakdown-wrap" id="breakdown-wrap"></div>
+    </div>
+
+    <!-- COST BY EQUIPMENT TYPE -->
+    <div class="card">
+      <div class="ct">Cost by Equipment Type</div>
+      <div class="chart-box" style="position:relative;width:100%;height:220px;">
+        <canvas id="type-chart"></canvas>
+      </div>
+    </div>
+
+    <!-- DETAILED TABLE -->
+    <div class="divider">Equipment Cost Schedule</div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="tbl-wrap"><table id="eq-table"></table></div>
+    </div>
+
+    <!-- ACCURACY RANGE -->
+    <div class="card" id="acc-card">
+      <div class="ct">Estimate Accuracy Range</div>
+      <div id="acc-content"></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ── STATE ─────────────────────────────────────────────
+let factorMethod='lang';
+let equipment=[];
+let eqId=0;
+let typeChart=null;
+
+// ── HAND FACTORS per equipment type ──────────────────
+// Source: Turton et al. "Analysis, Synthesis & Design of Chemical Processes"
+// f_L=erection, f_P=piping, f_I=instrumentation, f_E=electrical, f_C=civil, f_S=structures, f_Ins=insulation, f_Paint
+const HAND={
+  vessel: {install:0.45,piping:0.45,instr:0.18,elec:0.10,civil:0.25,struct:0.20,insul:0.22,paint:0.05,label:'Pressure Vessel / Column'},
+  hx:     {install:0.45,piping:0.45,instr:0.18,elec:0.10,civil:0.25,struct:0.07,insul:0.22,paint:0.05,label:'Shell & Tube HX'},
+  pump:   {install:0.45,piping:0.16,instr:0.12,elec:0.08,civil:0.15,struct:0.07,insul:0.06,paint:0.05,label:'Pump & Driver'},
+  comp:   {install:0.30,piping:0.66,instr:0.30,elec:0.22,civil:0.29,struct:0.07,insul:0.21,paint:0.05,label:'Compressor'},
+  heater: {install:0.35,piping:0.35,instr:0.20,elec:0.12,civil:0.35,struct:0.25,insul:0.30,paint:0.08,label:'Fired Heater'},
+  tank:   {install:0.42,piping:0.31,instr:0.10,elec:0.08,civil:0.40,struct:0.15,insul:0.15,paint:0.08,label:'Storage Tank'},
+};
+
+const EQ_COLORS={vessel:'#b84820',hx:'#1a5c38',pump:'#1a3268',comp:'#8c5c10',heater:'#a82020',tank:'#5030a0'};
+const EQ_LABELS={vessel:'Vessel/Column',hx:'Heat Exchanger',pump:'Pump & Driver',comp:'Compressor',heater:'Fired Heater',tank:'Storage Tank'};
+const EQ_DEFAULTS={vessel:450,hx:320,pump:85,comp:1800,heater:2200,tank:380};
+
+// ── UI HELPERS ────────────────────────────────────────
+function setFactorMethod(m){
+  factorMethod=m;
+  document.getElementById('btn-lang').className='tb'+(m==='lang'?' ar':'');
+  document.getElementById('btn-hand').className='tb'+(m==='hand'?' ar':'');
+  document.getElementById('lang-display-wrap').style.display=m==='lang'?'':'none';
+}
+
+function updateLangFactor(){
+  const v=document.getElementById('plant-type').value;
+  document.getElementById('lang-val').textContent=v;
+}
+
+function updateCEPCIRatio(){
+  const ref=+document.getElementById('cepci-ref').value||1;
+  const cur=+document.getElementById('cepci-cur').value||1;
+  document.getElementById('cepci-ratio').textContent=(cur/ref).toFixed(3);
+}
+document.getElementById('cepci-ref').addEventListener('input',updateCEPCIRatio);
+document.getElementById('cepci-cur').addEventListener('input',updateCEPCIRatio);
+
+function setAlert(id,cls,msg){const e=document.getElementById(id);if(!e)return;e.className='alert '+cls+' show';e.textContent=msg;}
+function clrAlerts(){['alert-main','alert-acc'].forEach(id=>{const e=document.getElementById(id);if(e)e.className='alert';});}
+
+// ── EQUIPMENT BUILDER ─────────────────────────────────
+function addEquipment(type, data={}){
+  eqId++;
+  const id='eq'+eqId;
+  const defaults={type,name:`${EQ_LABELS[type]} ${eqId}`,pec:EQ_DEFAULTS[type],qty:1,mat:'CS',notes:''};
+  equipment.push({id,...defaults,...data});
+  renderEquipment();
+}
+
+function removeEquipment(id){
+  equipment=equipment.filter(e=>e.id!==id);
+  renderEquipment();
+}
+
+function updateEq(id,key,val){
+  const e=equipment.find(x=>x.id===id);
+  if(e) e[key]=val;
+}
+
+function renderEquipment(){
+  const list=document.getElementById('eq-list');
+  list.innerHTML='';
+  equipment.forEach(eq=>{
+    const div=document.createElement('div');
+    div.className='eq-row';
+    div.innerHTML=`
+      <div class="eq-hdr">
+        <span class="eq-tag et-${eq.type}">${EQ_LABELS[eq.type].toUpperCase()}</span>
+        <input class="eq-name-input" value="${eq.name}" onchange="updateEq('${eq.id}','name',this.value)" style="flex:1;font-size:12px;padding:4px 8px;">
+        <button class="del-btn" onclick="removeEquipment('${eq.id}')">×</button>
+      </div>
+      <div class="g3">
+        <div class="field"><label class="lbl">Purchased cost ($k)</label>
+          <input type="number" value="${eq.pec}" step="10" min="1" onchange="updateEq('${eq.id}','pec',+this.value)"></div>
+        <div class="field"><label class="lbl">Quantity</label>
+          <input type="number" value="${eq.qty}" step="1" min="1" max="20" onchange="updateEq('${eq.id}','qty',+this.value)"></div>
+        <div class="field"><label class="lbl">Material</label>
+          <select onchange="updateEq('${eq.id}','mat',this.value)">
+            <option ${eq.mat==='CS'?'selected':''}>CS</option>
+            <option ${eq.mat==='SS316'?'selected':''}>SS316</option>
+            <option ${eq.mat==='Alloy'?'selected':''}>Alloy</option>
+            <option ${eq.mat==='GRP'?'selected':''}>GRP</option>
+          </select>
+        </div>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+// ── MATERIAL COST FACTOR ──────────────────────────────
+const MAT_FACTOR={CS:1.0,SS316:1.7,Alloy:2.5,GRP:1.3};
+
+// ── HAND FACTOR TOTAL ─────────────────────────────────
+function handFactor(type){
+  const h=HAND[type];
+  return 1+h.install+h.piping+h.instr+h.elec+h.civil+h.struct+h.insul+h.paint;
+}
+
+// ── CALCULATE ─────────────────────────────────────────
+function calculate(){
+  if(equipment.length===0){setAlert('alert-main','awk','Add at least one piece of equipment to generate an estimate.');return;}
+  clrAlerts();
+
+  const cepciRef=+document.getElementById('cepci-ref').value||567;
+  const cepciCur=+document.getElementById('cepci-cur').value||820;
+  const cepciRatio=cepciCur/cepciRef;
+  const locFactor=+document.getElementById('loc-factor').value;
+  const langF=+document.getElementById('plant-type').value;
+  const fEng=+document.getElementById('f-eng').value/100;
+  const fCont=+document.getElementById('f-cont').value/100;
+  const fOwner=+document.getElementById('f-owner').value/100;
+  const fComm=+document.getElementById('f-comm').value/100;
+  const accuracy=+document.getElementById('accuracy').value;
+
+  // Calculate costs per item
+  let rows=[];
+  let totalPEC=0, totalInstalled=0;
+  const byType={};
+
+  equipment.forEach(eq=>{
+    const matF=MAT_FACTOR[eq.mat]||1.0;
+    const pecBase=eq.pec*eq.qty; // $k at ref CEPCI
+    const pecEscalated=pecBase*cepciRatio*matF; // $k at current CEPCI + material
+    const pecLocated=pecEscalated*locFactor; // $k with location
+
+    let instF, breakdown=null;
+    if(factorMethod==='lang'){
+      instF=langF;
+    } else {
+      instF=handFactor(eq.type);
+      const h=HAND[eq.type];
+      breakdown={
+        install:h.install,piping:h.piping,instr:h.instr,
+        elec:h.elec,civil:h.civil,struct:h.struct,insul:h.insul,paint:h.paint
+      };
+    }
+    const installedCost=pecLocated*instF; // $k
+
+    rows.push({...eq,pecBase,pecEscalated,pecLocated,instF,installedCost,matF,breakdown});
+    totalPEC+=pecLocated;
+    totalInstalled+=installedCost;
+
+    // Aggregate by type
+    byType[eq.type]=(byType[eq.type]||0)+installedCost;
+  });
+
+  // TIC = total installed cost
+  const TIC=totalInstalled;
+  // TPC build-up
+  const eng=TIC*fEng;
+  const cont=(TIC+eng)*fCont;
+  const owner=(TIC+eng+cont)*fOwner;
+  const comm=(TIC+eng+cont+owner)*fComm;
+  const TPC=TIC+eng+cont+owner+comm;
+  const TPCm=TPC/1000; // $M
+
+  // ── KPI STRIP ────────────────────────────────────
+  document.getElementById('cost-strip').innerHTML=[
+    {lbl:'Total PEC (current)',val:'$'+( totalPEC/1000).toFixed(2)+'M',unit:'Purchased equip. cost',cls:'rust'},
+    {lbl:'Total Installed (TIC)',val:'$'+(TIC/1000).toFixed(2)+'M',unit:'Lang/Hand applied',cls:'forest'},
+    {lbl:'Total Project Cost',val:'$'+TPCm.toFixed(2)+'M',unit:'incl. eng, cont, owner',cls:'navy'},
+    {lbl:'CEPCI escalation',val:(cepciRatio*100-100).toFixed(1)+'%',unit:`${document.getElementById('ref-year').value} → ${document.getElementById('cur-year').value}`,cls:''},
+    {lbl:'Location factor',val:locFactor.toFixed(2)+'×',unit:document.getElementById('loc-factor').options[document.getElementById('loc-factor').selectedIndex].text.split('—')[0].trim(),cls:''},
+    {lbl:'Install factor (avg)',val:(TIC/totalPEC).toFixed(2)+'×',unit:factorMethod==='lang'?'Lang factor':'Hand factor (blended)',cls:''},
+  ].map(k=>`<div class="cost-kpi"><div class="ck-lbl">${k.lbl}</div><div class="ck-val ${k.cls}">${k.val}</div><div class="ck-unit">${k.unit}</div></div>`).join('');
+
+  // ── BREAKDOWN BARS ────────────────────────────────
+  const buildupItems=[
+    {lbl:'Purchased Equip. (PEC)',val:totalPEC/1000,color:'#b84820'},
+    {lbl:'Installation & Civil',val:(TIC-totalPEC)/1000,color:'#1a5c38'},
+    {lbl:'Engineering & Proc.',val:eng/1000,color:'#1a3268'},
+    {lbl:'Contingency',val:cont/1000,color:'#8c5c10'},
+    {lbl:"Owner's Costs (OSBL)",val:owner/1000,color:'#5030a0'},
+    {lbl:'Commissioning',val:comm/1000,color:'#6a6358'},
+  ];
+  const maxVal=Math.max(...buildupItems.map(b=>b.val));
+  let cumVal=0;
+  document.getElementById('breakdown-wrap').innerHTML=buildupItems.map(b=>{
+    cumVal+=b.val;
+    const pct=(b.val/maxVal*100).toFixed(1);
+    const cumPct=(cumVal/(TPCm)*100).toFixed(0);
+    return`<div class="br-row">
+      <span class="br-lbl">${b.lbl}</span>
+      <div class="br-track">
+        <div class="br-fill" style="width:${pct}%;background:${b.color};opacity:0.8;"></div>
+        <span style="position:absolute;right:6px;top:3px;font-family:'Courier Prime',monospace;font-size:9px;color:#fff;mix-blend-mode:difference;">${cumPct}% of TPC</span>
+      </div>
+      <span class="br-val">$${b.val.toFixed(2)}M</span>
+    </div>`;
+  }).join('');
+
+  // ── TYPE CHART ────────────────────────────────────
+  const typeLabels=Object.keys(byType).map(k=>EQ_LABELS[k]);
+  const typeData=Object.values(byType).map(v=>+(v/1000).toFixed(3));
+  const typeColors=Object.keys(byType).map(k=>EQ_COLORS[k]);
+
+  if(typeChart) typeChart.destroy();
+  typeChart=new Chart(document.getElementById('type-chart'),{
+    type:'doughnut',
+    data:{labels:typeLabels,datasets:[{data:typeData,backgroundColor:typeColors,borderColor:'#fff',borderWidth:2}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:false,
+      plugins:{
+        legend:{position:'right',labels:{font:{family:'Courier Prime',size:11},color:'#6a6358',boxWidth:12,padding:12}},
+        tooltip:{callbacks:{label:ctx=>`${ctx.label}: $${ctx.parsed.toFixed(2)}M (${(ctx.parsed/typeData.reduce((a,b)=>a+b,0)*100).toFixed(0)}%)`}}
+      }
+    }
+  });
+
+  // ── EQUIPMENT TABLE ───────────────────────────────
+  let tbl=`<table><thead><tr>
+    <th>Tag / Description</th><th>Type</th><th>Qty</th><th>Mat.</th>
+    <th class="num">PEC Base ($k)</th>
+    <th class="num">CEPCI Ratio</th>
+    <th class="num">PEC Escalated ($k)</th>
+    <th class="num">Inst. Factor</th>
+    <th class="num">Installed Cost ($k)</th>
+    <th class="num">% of TIC</th>
+  </tr></thead><tbody>`;
+
+  rows.forEach(r=>{
+    const pctTIC=(r.installedCost/TIC*100).toFixed(1);
+    tbl+=`<tr>
+      <td>${r.name}</td>
+      <td><span class="type-badge et-${r.type}">${r.type.toUpperCase()}</span></td>
+      <td class="num">${r.qty}</td>
+      <td class="num">${r.mat}</td>
+      <td class="num">${r.pecBase.toFixed(0)}</td>
+      <td class="num">${cepciRatio.toFixed(3)}×</td>
+      <td class="num">${r.pecLocated.toFixed(0)}</td>
+      <td class="num">${r.instF.toFixed(2)}×</td>
+      <td class="num">${r.installedCost.toFixed(0)}</td>
+      <td class="num">${pctTIC}%</td>
+    </tr>`;
+  });
+
+  tbl+=`<tr class="subtotal">
+    <td colspan="4">SUBTOTAL — Total Installed Cost (TIC)</td>
+    <td class="num">${(totalPEC/cepciRatio/locFactor).toFixed(0)}</td>
+    <td></td>
+    <td class="num">${totalPEC.toFixed(0)}</td>
+    <td></td>
+    <td class="num">${TIC.toFixed(0)}</td>
+    <td class="num">100%</td>
+  </tr>
+  <tr class="subtotal">
+    <td colspan="8">+ Engineering & Procurement (${(fEng*100).toFixed(0)}% of TIC)</td>
+    <td class="num">${eng.toFixed(0)}</td><td></td>
+  </tr>
+  <tr class="subtotal">
+    <td colspan="8">+ Contingency (${(fCont*100).toFixed(0)}% of TIC+Eng)</td>
+    <td class="num">${cont.toFixed(0)}</td><td></td>
+  </tr>
+  <tr class="subtotal">
+    <td colspan="8">+ Owner's Costs / OSBL (${(fOwner*100).toFixed(0)}%)</td>
+    <td class="num">${owner.toFixed(0)}</td><td></td>
+  </tr>
+  <tr class="subtotal">
+    <td colspan="8">+ Commissioning & Start-up (${(fComm*100).toFixed(0)}%)</td>
+    <td class="num">${comm.toFixed(0)}</td><td></td>
+  </tr>
+  <tr class="total-row">
+    <td colspan="8">TOTAL PROJECT COST (TPC)</td>
+    <td class="num">$${(TPC).toFixed(0)}k</td>
+    <td class="num">$${TPCm.toFixed(2)}M</td>
+  </tr></tbody></table>`;
+  document.getElementById('eq-table').outerHTML=tbl;
+
+  // ── ACCURACY RANGE ────────────────────────────────
+  const low=TPCm*(1-accuracy/100);
+  const high=TPCm*(1+accuracy/100);
+  const barW=500;
+  const lowPct=((low/high)*80).toFixed(1);
+  const midPct='50';
+  document.getElementById('acc-content').innerHTML=`
+    <div style="margin-bottom:0.75rem;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-family:'Archivo',sans-serif;font-size:22px;font-weight:700;color:var(--red);">$${low.toFixed(1)}M</span>
+        <span style="font-family:'Archivo',sans-serif;font-size:28px;font-weight:700;color:var(--rust);">$${TPCm.toFixed(1)}M</span>
+        <span style="font-family:'Archivo',sans-serif;font-size:22px;font-weight:700;color:var(--forest);">$${high.toFixed(1)}M</span>
+      </div>
+      <div style="position:relative;height:24px;background:linear-gradient(90deg,#faeaea,#fdf0eb 40%,#f0f8f0 60%,#eaf4ee);border-radius:4px;border:1px solid var(--border2);">
+        <div style="position:absolute;left:50%;top:0;width:2px;height:100%;background:var(--rust);"></div>
+        <div style="position:absolute;left:25%;top:4px;height:16px;width:50%;background:rgba(184,72,32,0.15);border-radius:2px;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;font-family:'Courier Prime',monospace;font-size:10px;color:var(--text3);">
+        <span>−${accuracy}% low</span><span>Base estimate</span><span>+${accuracy}% high</span>
+      </div>
+    </div>
+    <div class="note">Estimate class: ${document.getElementById('accuracy').options[document.getElementById('accuracy').selectedIndex].text}. Base = $${TPCm.toFixed(2)}M. Range: $${low.toFixed(1)}M – $${high.toFixed(1)}M. Feed this TPC into the ProcessDesk Project Economics Engine as total CAPEX.</div>`;
+
+  // Alerts
+  setAlert('alert-main','aok',`TPC = $${TPCm.toFixed(2)}M | TIC = $${(TIC/1000).toFixed(2)}M | PEC = $${(totalPEC/1000).toFixed(2)}M | ${equipment.length} equipment items | CEPCI escalation +${((cepciRatio-1)*100).toFixed(0)}%`);
+  if(TPCm>500) setAlert('alert-acc','awk',`Large project estimate ($${TPCm.toFixed(0)}M). Verify all purchased costs against vendor quotes or published databases (Aspen Capital Cost Estimator, APEA, Matche) before advancing to FEL-2.`);
+
+  document.getElementById('results-area').style.display='';
+}
+
+// ── DEFAULT EQUIPMENT ────────────────────────────────
+function loadDefaults(){
+  [
+    {type:'vessel',name:'V-101 Feed Drum',pec:320,qty:1,mat:'CS'},
+    {type:'hx',name:'E-101 Feed/Effluent HX',pec:280,qty:1,mat:'SS316'},
+    {type:'hx',name:'E-102 Product Cooler',pec:180,qty:1,mat:'CS'},
+    {type:'pump',name:'P-101A/B Feed Pumps',pec:75,qty:2,mat:'SS316'},
+    {type:'vessel',name:'T-201 Distillation Column',pec:850,qty:1,mat:'CS'},
+    {type:'heater',name:'F-101 Charge Heater',pec:1800,qty:1,mat:'CS'},
+    {type:'tank',name:'TK-101 Feed Storage',pec:420,qty:2,mat:'CS'},
+    {type:'comp',name:'K-101 Gas Compressor',pec:1600,qty:1,mat:'CS'},
+  ].forEach(d=>addEquipment(d.type,d));
+}
+
+loadDefaults();
+updateCEPCIRatio();
+</script>
+
+
+</div>
+<footer class="pd-footer">
+  <div class="pd-footer-inner">
+    <div>
+      <div class="pd-footer-logo">Process<em>Desk</em></div>
+      <p class="pd-footer-desc">Free FEL-3 process engineering calculators. Nine modules covering the full pre-FEED scope. Built by engineers, for engineers.</p>
+    </div>
+    <div class="pd-footer-col">
+      <h4>Calculators</h4>
+      <a href="fel3_hydraulics.html">Liquid Hydraulics</a>
+      <a href="fel3_gas_hydraulics.html">Gas Hydraulics</a>
+      <a href="fel3_heat_exchanger.html">Heat Exchanger</a>
+      <a href="fel3_relief_valve.html">Relief Valve</a>
+      <a href="fel3_pump_selection.html">Pump Selection</a>
+    </div>
+    <div class="pd-footer-col">
+      <h4>More tools</h4>
+      <a href="fel3_meb.html">Mass &amp; Energy Balance</a>
+      <a href="fel3_cost_estimator.html">Cost Estimator</a>
+      <a href="fel3_economics.html">Project Economics</a>
+      <a href="fel3_dashboard.html">Dashboard</a>
+    </div>
+    <div class="pd-footer-col">
+      <h4>Company</h4>
+      <a href="/cdn-cgi/l/email-protection#12717d7c667371665262607d7177616176776179613c717d7f">Contact</a>
+      <a href="/cdn-cgi/l/email-protection#6b0804051f0a081f2b1b1904080e18180f0e1800184508040654181e09010e081f563b19044b1c0a021f0702181f">Pro waitlist</a>
+      <a href="/cdn-cgi/l/email-protection#fa9995948e9b998eba8a8895999f89899e9f899189d4999597c5898f98909f998ec7bb9e8c9f888e938993949d">Advertise with us</a>
+    </div>
+  </div>
+  <div class="pd-footer-bottom">
+    <p>© 2026
+</body>
+</html>

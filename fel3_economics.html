@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Economics Calculator — NPV IRR Payback | ProcessDesk</title>
+<meta name="description" content="Free project economics calculator with full DCF model. NPV, IRR, discounted payback, phased CAPEX, sensitivity tornado chart. FEL-3 capital investment decision tool.">
+<link rel="canonical" href="https://processdesks.com/fel3_economics.html">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg:#f8f9fb; --s1:#ffffff; --s2:#f2f4f7; --s3:#e8ebf0;
+  --border:#e2e6ec; --border2:#d0d5de;
+  --text:#0f1420; --text2:#5a6070; --text3:#9aa0b0;
+  --accent:#1a56db; --accent2:#1648c0;
+  --accent-bg:#eef2ff; --accent-light:#c7d4fa;
+  --green:#059669; --green-bg:#ecfdf5;
+  --red:#dc2626; --red-bg:#fef2f2;
+  --amber:#d97706; --amber-bg:#fffbeb;
+  --orange:#ea580c; --orange-bg:#fff7ed;
+  --purple:#7c3aed; --purple-bg:#f5f3ff;
+  --teal:#0891b2; --teal-bg:#ecfeff;
+  --radius:12px; --rsm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.05);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+
+.pd-nav { position:fixed; top:0; left:0; right:0; z-index:9999; background:rgba(255,255,255,0.97); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.pd-nav-inner { max-width:1280px; margin:0 auto; height:54px; display:flex; align-items:center; padding:0 1.5rem; gap:0; }
+.pd-logo { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:var(--text); text-decoration:none; letter-spacing:0.3px; margin-right:1.5rem; white-space:nowrap; flex-shrink:0; }
+.pd-logo em { font-style:normal; color:var(--accent); }
+.pd-tools { display:flex; align-items:center; gap:0; overflow-x:auto; flex:1; scrollbar-width:none; }
+.pd-tools::-webkit-scrollbar { display:none; }
+.pd-tool { font-size:11px; color:var(--text2); text-decoration:none; padding:6px 9px; border-radius:var(--rsm); white-space:nowrap; transition:all 0.15s; font-weight:500; }
+.pd-tool:hover { color:var(--accent); background:var(--accent-bg); }
+.pd-tool.active { color:var(--accent); background:var(--accent-bg); font-weight:600; }
+.pd-home { font-size:11px; color:#fff; background:var(--accent); text-decoration:none; padding:6px 14px; border-radius:var(--rsm); white-space:nowrap; font-weight:600; margin-left:auto; flex-shrink:0; transition:background 0.15s; }
+.pd-home:hover { background:var(--accent2); }
+body { padding-top:54px; }
+
+
+.pd-footer { background:#0f1420; color:rgba(255,255,255,0.6); padding:3rem 2rem 1.5rem; margin-top:3rem; }
+.pd-footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:2.5rem; margin-bottom:2rem; }
+@media(max-width:720px){ .pd-footer-inner { grid-template-columns:1fr 1fr; gap:1.5rem; } }
+@media(max-width:420px){ .pd-footer-inner { grid-template-columns:1fr; } }
+.pd-footer-logo { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:#fff; margin-bottom:0.6rem; }
+.pd-footer-logo em { font-style:normal; color:#93c5fd; }
+.pd-footer-desc { font-size:12px; line-height:1.75; max-width:220px; }
+.pd-footer-col h4 { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; color:rgba(255,255,255,0.3); text-transform:uppercase; margin-bottom:0.85rem; }
+.pd-footer-col a { display:block; font-size:12px; color:rgba(255,255,255,0.55); text-decoration:none; margin-bottom:7px; transition:color 0.15s; }
+.pd-footer-col a:hover { color:#fff; }
+.pd-footer-bottom { max-width:1280px; margin:0 auto; padding-top:1.25rem; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.pd-footer-bottom p { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.25); }
+
+
+.page { max-width:1280px; margin:0 auto; padding:0 1.5rem 2rem; }
+/* Module header */
+.mod-header { padding:1.5rem 0 1.25rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:flex-end; gap:1rem; flex-wrap:wrap; }
+.mod-logo { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; color:var(--text2); letter-spacing:0.5px; }
+.mod-logo em { font-style:normal; color:var(--accent); }
+.mod-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.02em; }
+.mod-subtitle { font-size:13px; color:var(--text2); margin-top:3px; }
+.mod-badges { display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; align-items:center; }
+.mod-badge { font-family:'DM Mono',monospace; font-size:10px; padding:4px 10px; border-radius:3px; border:1px solid; letter-spacing:0.04em; }
+.mb-blue { background:var(--accent-bg); color:var(--accent); border-color:var(--accent-light); }
+.mb-green { background:var(--green-bg); color:var(--green); border-color:#a7f3d0; }
+.mb-amber { background:var(--amber-bg); color:var(--amber); border-color:#fcd34d; }
+.mb-red { background:var(--red-bg); color:var(--red); border-color:#fca5a5; }
+/* Layout grids */
+.col2 { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; margin-bottom:1rem; }
+.col3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-bottom:1rem; }
+.g2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.75rem; }
+.g3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.75rem; }
+@media(max-width:900px){ .col2,.col3 { grid-template-columns:1fr; } }
+@media(max-width:540px){ .g2,.g3 { grid-template-columns:1fr; } }
+/* Cards */
+.card { background:var(--s1); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.25rem; margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow); }
+.card-title { font-family:'DM Mono',monospace; font-size:10px; font-weight:500; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.85rem; display:flex; align-items:center; gap:8px; }
+.card-title::after { content:''; flex:1; height:1px; background:var(--border); }
+/* Form elements */
+.field { margin-bottom:0.65rem; }
+.lbl { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); margin-bottom:3px; display:block; letter-spacing:0.04em; }
+.ir { display:flex; gap:5px; align-items:center; }
+.unit { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); min-width:52px; flex-shrink:0; }
+input[type="number"], input[type="text"], select, textarea {
+  background:var(--s2); border:1px solid var(--border2); border-radius:var(--rsm);
+  color:var(--text); font-family:'DM Mono',monospace; font-size:12px;
+  padding:6px 9px; width:100%; outline:none; transition:border-color 0.15s; -webkit-appearance:none;
+}
+input:focus, select:focus, textarea:focus { border-color:var(--accent); background:var(--s1); }
+.ir input, .ir select { flex:1; width:auto; min-width:0; }
+/* Toggle */
+.tog { display:flex; border:1px solid var(--border2); border-radius:var(--rsm); overflow:hidden; margin-bottom:0.85rem; }
+.tb { flex:1; padding:8px 6px; font-family:'DM Mono',monospace; font-size:11px; background:transparent; border:none; cursor:pointer; color:var(--text2); transition:all 0.15s; }
+.tb.av { background:var(--accent); color:#fff; font-weight:500; }
+/* Run button */
+.run-btn { width:100%; padding:12px; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.5px; background:var(--accent); color:#fff; border:none; border-radius:var(--rsm); cursor:pointer; transition:background 0.15s; margin-bottom:1rem; }
+.run-btn:hover { background:var(--accent2); }
+/* Metrics */
+.mg { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:1rem; }
+@media(max-width:600px){ .mg { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.metric { background:var(--s2); border-radius:var(--rsm); padding:0.75rem 1rem; border:1px solid var(--border); }
+.ml { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); margin-bottom:4px; letter-spacing:0.04em; }
+.mv { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; color:var(--text); }
+.mv.acc { color:var(--accent); }
+.mv.gr { color:var(--green); }
+.mv.rd { color:var(--red); }
+.mv.am { color:var(--amber); }
+.mu { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); }
+/* Alerts */
+.alert { border-radius:0 var(--rsm) var(--rsm) 0; padding:8px 12px; font-family:'DM Mono',monospace; font-size:11px; line-height:1.6; margin-bottom:8px; display:none; }
+.alert.show { display:block; }
+.aok  { background:var(--green-bg); border-left:3px solid var(--green); color:var(--green); }
+.awk  { background:var(--amber-bg); border-left:3px solid var(--amber); color:var(--amber); }
+.aer  { background:var(--red-bg);   border-left:3px solid var(--red);   color:var(--red); }
+.ainf { background:var(--accent-bg);border-left:3px solid var(--accent);color:var(--accent); }
+/* Tables */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; font-size:11px; }
+th { text-align:left; padding:7px 10px; border-bottom:1px solid var(--border2); color:var(--text2); font-size:10px; letter-spacing:0.06em; background:var(--s2); }
+td { padding:6px 10px; border-bottom:1px solid var(--border); color:var(--text); }
+tr:last-child td { border-bottom:none; }
+td.num { text-align:right; }
+td.ok  { color:var(--green); }
+td.wk  { color:var(--amber); }
+td.er  { color:var(--red); }
+tr.sel { background:var(--accent-bg); }
+/* Divider */
+.divider { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); letter-spacing:0.1em; text-transform:uppercase; display:flex; align-items:center; gap:10px; margin:1.5rem 0 1rem; }
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border2); }
+.note { font-family:'DM Mono',monospace; font-size:11px; color:var(--text2); line-height:1.7; }
+/* Chart containers */
+.chart-wrap { background:var(--s1); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow); }
+.chart-title { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem; }
+.chart-box { position:relative; width:100%; }
+
+
+.main{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:1.25rem;align-items:start;}
+@media(max-width:960px){.main{grid-template-columns:1fr;}}
+.card.accent-top{border-top:2px solid var(--accent);}
+.card.green-top{border-top:2px solid var(--green);}
+.card.blue-top{border-top:2px solid var(--teal);}
+.kpi-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1rem;}
+@media(max-width:600px){.kpi-strip{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.kpi{background:var(--s2);border:1px solid var(--border);border-radius:var(--rsm);padding:0.85rem 1rem;}
+.kpi-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);margin-bottom:4px;}
+.kpi-val{font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:700;line-height:1;color:var(--text);}
+.kpi-val.gr{color:var(--green);}
+.kpi-val.rd{color:var(--red);}
+.kpi-val.am{color:var(--amber);}
+.kpi-val.acc{color:var(--accent);}
+.kpi-unit{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px;}
+.payback-track{height:10px;background:var(--s3);border-radius:5px;position:relative;}
+.payback-fill{height:100%;border-radius:5px;transition:width 0.5s;}
+.payback-marker{position:absolute;top:-4px;width:2px;height:18px;background:var(--accent);transform:translateX(-50%);}
+.tornado-wrap{display:flex;flex-direction:column;gap:6px;margin-top:0.5rem;}
+.tornado-row{display:flex;align-items:center;gap:8px;}
+.tornado-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);min-width:140px;text-align:right;flex-shrink:0;}
+.tornado-bars{flex:1;position:relative;height:24px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.tornado-bar-neg{position:absolute;right:50%;top:3px;height:18px;border-radius:2px 0 0 2px;background:var(--red);opacity:0.8;}
+.tornado-bar-pos{position:absolute;left:50%;top:3px;height:18px;border-radius:0 2px 2px 0;background:var(--green);opacity:0.8;}
+.tornado-center{position:absolute;left:50%;top:0;width:1px;height:100%;background:var(--border2);}
+.tornado-val{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);min-width:80px;white-space:nowrap;}
+.cf-wrap{overflow-x:auto;}
+.cf-wrap table td.num{text-align:right;}
+.cf-wrap tr.total-row td{background:var(--accent-bg);font-weight:600;color:var(--accent);}
+.cf-wrap tr.cumcf-row td{color:var(--accent);}
+.pos-val{color:var(--green);}
+.neg-val{color:var(--red);}
+
+
+/* ── ProcessDesk Feedback Widget ──────────────────── */
+.fb-btn {
+  position: fixed; bottom: 24px; right: 24px; z-index: 8888;
+  background: var(--accent); color: #fff;
+  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500;
+  padding: 10px 18px; border-radius: 24px; border: none; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(26,86,219,0.35);
+  display: flex; align-items: center; gap: 7px;
+  transition: all 0.2s; letter-spacing: 0.03em;
+}
+.fb-btn:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,86,219,0.4); }
+.fb-btn svg { flex-shrink: 0; }
+
+.fb-overlay {
+  position: fixed; inset: 0; z-index: 8889;
+  background: rgba(15,20,32,0.45); backdrop-filter: blur(3px);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.fb-overlay.open { opacity: 1; pointer-events: all; }
+
+.fb-panel {
+  position: fixed; bottom: 80px; right: 24px; z-index: 8890;
+  width: 360px; max-width: calc(100vw - 32px);
+  background: #fff; border: 1px solid var(--border2);
+  border-radius: 16px; box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+  opacity: 0; transform: translateY(16px) scale(0.97);
+  pointer-events: none; transition: all 0.2s;
+}
+.fb-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+
+.fb-header {
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.fb-header-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--accent-bg); display: flex; align-items: center;
+  justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.fb-header-text { flex: 1; }
+.fb-header-title {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;
+  font-weight: 700; color: var(--text); margin-bottom: 1px;
+}
+.fb-header-sub {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--text2); letter-spacing: 0.04em;
+}
+.fb-close {
+  width: 28px; height: 28px; border: none; background: var(--s2);
+  border-radius: 50%; cursor: pointer; font-size: 14px; color: var(--text2);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s; flex-shrink: 0;
+}
+.fb-close:hover { background: var(--s3); color: var(--text); }
+
+.fb-body { padding: 1rem 1.25rem; }
+
+.fb-field { margin-bottom: 0.85rem; }
+.fb-lbl {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--text2); letter-spacing: 0.06em; margin-bottom: 5px;
+  display: block; text-transform: uppercase;
+}
+.fb-select, .fb-textarea {
+  width: 100%; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; background: var(--s2); border: 1px solid var(--border2);
+  border-radius: 8px; color: var(--text); outline: none;
+  transition: border-color 0.15s;
+}
+.fb-select { padding: 8px 10px; appearance: none; -webkit-appearance: none; cursor: pointer; }
+.fb-textarea { padding: 10px 12px; resize: vertical; min-height: 90px; line-height: 1.6; }
+.fb-select:focus, .fb-textarea:focus { border-color: var(--accent); background: #fff; }
+
+.fb-rating { display: flex; gap: 6px; }
+.fb-star {
+  font-size: 22px; cursor: pointer; transition: transform 0.1s;
+  opacity: 0.35; line-height: 1;
+}
+.fb-star.active { opacity: 1; }
+.fb-star:hover { transform: scale(1.2); }
+
+.fb-submit {
+  width: 100%; padding: 11px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; font-weight: 700; background: var(--accent); color: #fff;
+  border: none; border-radius: 8px; cursor: pointer;
+  transition: background 0.15s; letter-spacing: 0.02em;
+}
+.fb-submit:hover { background: var(--accent2); }
+.fb-submit:disabled { background: var(--text3); cursor: not-allowed; }
+
+.fb-char-count {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  color: var(--text3); text-align: right; margin-top: 3px;
+}
+
+.fb-success {
+  padding: 1.5rem 1.25rem; text-align: center; display: none;
+}
+.fb-success-icon { font-size: 40px; margin-bottom: 10px; }
+.fb-success-title {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px;
+  font-weight: 700; color: var(--text); margin-bottom: 6px;
+}
+.fb-success-msg {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--text2); line-height: 1.7;
+}
+@media print { .fb-btn, .fb-panel, .fb-overlay { display: none !important; } }
+
+</style>
+</head>
+<body>
+<nav class="pd-nav">
+  <div class="pd-nav-inner">
+    <a href="/" class="pd-logo">Process<em>Desk</em></a>
+    <div class="pd-tools">
+    <a href="fel3_hydraulics.html" class="pd-tool" data-page="fel3_hydraulics">Liquid Hydraulics</a>
+    <a href="fel3_gas_hydraulics.html" class="pd-tool" data-page="fel3_gas_hydraulics">Gas Hydraulics</a>
+    <a href="fel3_heat_exchanger.html" class="pd-tool" data-page="fel3_heat_exchanger">Heat Exchanger</a>
+    <a href="fel3_relief_valve.html" class="pd-tool" data-page="fel3_relief_valve">Relief Valve</a>
+    <a href="fel3_pump_selection.html" class="pd-tool" data-page="fel3_pump_selection">Pump Selection</a>
+    <a href="fel3_meb.html" class="pd-tool" data-page="fel3_meb">M&amp;E Balance</a>
+    <a href="fel3_cost_estimator.html" class="pd-tool" data-page="fel3_cost_estimator">Cost Estimator</a>
+    <a href="fel3_economics.html" class="pd-tool" data-page="fel3_economics">Project Economics</a>
+    <a href="fel3_dashboard.html" class="pd-tool" data-page="fel3_dashboard">Dashboard</a>
+    </div>
+    <a href="/" class="pd-home">← All tools</a>
+  </div>
+</nav>
+<script>
+(function(){
+  var p='fel3_economics';
+  document.querySelectorAll('.pd-tool[data-page]').forEach(function(a){
+    if(a.dataset.page===p) a.classList.add('active');
+  });
+})();
+</script>
+<div class="page">
+  <div class="mod-header">
+    <div>
+      <div class="mod-logo">Process<em>Desk</em> · Module 08</div>
+      <div class="mod-title">Project Economics Engine</div>
+      <div class="mod-subtitle">NPV · IRR · Discounted Cash Flow · Payback · Sensitivity Tornado Chart</div>
+    </div>
+    <div class="mod-badges">
+      <span class="mod-badge mb-blue">NPV / IRR</span>
+      <span class="mod-badge mb-amber">DCF</span>
+      <span class="mod-badge mb-green">Sensitivity</span>
+    </div>
+  </div>
+
+<div class="main">
+<!-- ── LEFT INPUTS ──────────────────────────────── -->
+<div>
+
+  <!-- PROJECT BASIS -->
+  <div class="card" style="border-top:2px solid var(--accent);">
+    <div class="ct gc">Project Basis</div>
+    <div class="field"><label class="lbl">Project name</label><input type="text" id="proj" value="Industrial Process Plant — FEL-3"></div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Project life</label><div class="ir"><input type="number" id="life" value="20" step="1" min="1" max="40"><span class="unit">years</span></div></div>
+      <div class="field"><label class="lbl">Construction period</label><div class="ir"><input type="number" id="const-yrs" value="2" step="1" min="1" max="5"><span class="unit">years</span></div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Discount rate (WACC)</label><div class="ir"><input type="number" id="wacc" value="10" step="0.5" min="1"><span class="unit">%/yr</span></div></div>
+      <div class="field"><label class="lbl">Tax rate</label><div class="ir"><input type="number" id="tax" value="25" step="1" min="0" max="60"><span class="unit">%</span></div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Depreciation method</label>
+        <select id="dep-method">
+          <option value="sl">Straight-line (SL)</option>
+          <option value="db">Declining balance (DB 150%)</option>
+          <option value="none">No depreciation</option>
+        </select>
+      </div>
+      <div class="field"><label class="lbl">Salvage value</label><div class="ir"><input type="number" id="salvage" value="5" step="1" min="0"><span class="unit">% of CAPEX</span></div></div>
+    </div>
+    <div class="field"><label class="lbl">Inflation / escalation rate</label><div class="ir"><input type="number" id="inflation" value="2.5" step="0.5" min="0"><span class="unit">%/yr</span></div></div>
+  </div>
+
+  <!-- CAPEX -->
+  <div class="card" style="border-top:2px solid var(--accent);">
+    <div class="ct gc">Capital Expenditure — Phased Spend</div>
+    <div class="note" style="margin-bottom:0.75rem;">Total CAPEX distributed across construction years. Year 0 = project sanction.</div>
+    <div class="field"><label class="lbl">Total CAPEX</label><div class="ir"><input type="number" id="capex" value="80" step="1"><span class="unit">$M</span></div></div>
+    <div id="capex-phase-fields"></div>
+    <div class="g2" style="margin-top:0.5rem;">
+      <div class="field"><label class="lbl">CAPEX contingency</label><div class="ir"><input type="number" id="contingency" value="15" step="1" min="0"><span class="unit">%</span></div></div>
+      <div class="field"><label class="lbl">Working capital</label><div class="ir"><input type="number" id="wc" value="5" step="1" min="0"><span class="unit">% of CAPEX</span></div></div>
+    </div>
+    <div class="field"><label class="lbl">Annual maintenance (OPEX fixed)</label><div class="ir"><input type="number" id="maint" value="2" step="0.5" min="0"><span class="unit">% of CAPEX/yr</span></div></div>
+  </div>
+
+  <!-- REVENUE -->
+  <div class="card" style="border-top:2px solid var(--green);">
+    <div class="ct grc">Revenue</div>
+    <div class="tog">
+      <button class="tb av" id="rev-price" onclick="setRevMode('price')">Price × Volume</button>
+      <button class="tb" id="rev-direct" onclick="setRevMode('direct')">Direct annual revenue</button>
+    </div>
+    <div id="rev-price-fields">
+      <div class="g2">
+        <div class="field"><label class="lbl">Product selling price</label><div class="ir"><input type="number" id="price" value="850" step="10"><span class="unit">$/tonne</span></div></div>
+        <div class="field"><label class="lbl">Annual production</label><div class="ir"><input type="number" id="prod" value="120" step="1"><span class="unit">kt/yr</span></div></div>
+      </div>
+      <div class="field"><label class="lbl">Plant ramp-up (yr 1 of operations)</label><div class="ir"><input type="number" id="rampup" value="70" step="5" min="10" max="100"><span class="unit">% capacity</span></div></div>
+    </div>
+    <div id="rev-direct-fields" style="display:none;">
+      <div class="field"><label class="lbl">Annual gross revenue (steady state)</label><div class="ir"><input type="number" id="rev-direct-val" value="102" step="1"><span class="unit">$M/yr</span></div></div>
+    </div>
+  </div>
+
+  <!-- OPEX -->
+  <div class="card" style="border-top:2px solid var(--teal);">
+    <div class="ct bc">Operating Expenditure (OPEX)</div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Raw materials / feedstock</label><div class="ir"><input type="number" id="op-rm" value="30" step="1"><span class="unit">$M/yr</span></div></div>
+      <div class="field"><label class="lbl">Utilities (steam, power, CW)</label><div class="ir"><input type="number" id="op-util" value="8" step="0.5"><span class="unit">$M/yr</span></div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="lbl">Labour & overhead</label><div class="ir"><input type="number" id="op-lab" value="6" step="0.5"><span class="unit">$M/yr</span></div></div>
+      <div class="field"><label class="lbl">Other OPEX (catalyst, chemicals)</label><div class="ir"><input type="number" id="op-other" value="3" step="0.5"><span class="unit">$M/yr</span></div></div>
+    </div>
+    <div class="field"><label class="lbl">Operating hours per year</label><div class="ir"><input type="number" id="op-hrs" value="8000" step="100"><span class="unit">hr/yr</span></div></div>
+  </div>
+
+  <!-- SENSITIVITY RANGES -->
+  <div class="card">
+    <div class="ct">Sensitivity Analysis — Variable Ranges</div>
+    <div class="note" style="margin-bottom:0.75rem;">Swing each variable ±% from base case to build the tornado chart.</div>
+    <div id="sens-fields">
+      <div class="g2"><div class="field"><label class="lbl">CAPEX swing</label><div class="ir"><input type="number" id="sw-capex" value="20" step="5" min="5"><span class="unit">±%</span></div></div>
+      <div class="field"><label class="lbl">Product price swing</label><div class="ir"><input type="number" id="sw-price" value="20" step="5" min="5"><span class="unit">±%</span></div></div></div>
+      <div class="g2"><div class="field"><label class="lbl">OPEX swing</label><div class="ir"><input type="number" id="sw-opex" value="15" step="5" min="5"><span class="unit">±%</span></div></div>
+      <div class="field"><label class="lbl">Production volume swing</label><div class="ir"><input type="number" id="sw-prod" value="15" step="5" min="5"><span class="unit">±%</span></div></div></div>
+      <div class="g2"><div class="field"><label class="lbl">WACC swing</label><div class="ir"><input type="number" id="sw-wacc" value="3" step="1" min="1"><span class="unit">±%pts</span></div></div>
+      <div class="field"><label class="lbl">Feedstock cost swing</label><div class="ir"><input type="number" id="sw-rm" value="25" step="5" min="5"><span class="unit">±%</span></div></div></div>
+    </div>
+  </div>
+
+  <button class="run-btn" onclick="calculate()">CALCULATE ECONOMICS</button>
+
+  <div id="alert-area">
+    <div id="alert-npv" class="alert"></div>
+    <div id="alert-irr" class="alert"></div>
+    <div id="alert-pb" class="alert"></div>
+  </div>
+
+</div>
+
+<!-- ── RIGHT OUTPUTS ────────────────────────────── -->
+<div id="output-panel">
+
+  <!-- KPI STRIP -->
+  <div id="kpi-area" style="display:none;">
+    <div class="kpi-strip" id="kpi-strip"></div>
+  </div>
+
+  <!-- WATERFALL CHART -->
+  <div class="chart-card" id="wf-card" style="display:none;">
+    <div class="chart-hdr">Annual Cash Flow Waterfall</div>
+    <div class="chart-box" style="height:280px;"><canvas id="wf-chart"></canvas></div>
+  </div>
+
+  <!-- CUMULATIVE NPV CHART -->
+  <div class="chart-card" id="npv-card" style="display:none;">
+    <div class="chart-hdr">Cumulative Discounted Cash Flow (NPV Profile)</div>
+    <div class="chart-box" style="height:240px;"><canvas id="npv-chart"></canvas></div>
+  </div>
+
+  <!-- PAYBACK VISUAL -->
+  <div class="card" id="pb-card" style="display:none;">
+    <div class="ct">Payback Period</div>
+    <div id="pb-content"></div>
+  </div>
+
+  <!-- TORNADO -->
+  <div class="chart-card" id="tornado-card" style="display:none;">
+    <div class="chart-hdr">Sensitivity Tornado — NPV Impact ($M)</div>
+    <div id="tornado-wrap"></div>
+  </div>
+
+  <!-- CASH FLOW TABLE -->
+  <div id="cf-table-area" style="display:none;">
+    <div class="divider">Detailed Cash Flow Schedule</div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="cf-wrap"><table id="cf-table"></table></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.usd.js" onerror="loadChartFallback()"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ── STATE ─────────────────────────────────────────────
+let revMode='price';
+let wfChart=null, npvChart=null;
+
+// ── UI HELPERS ────────────────────────────────────────
+function setRevMode(m){
+  revMode=m;
+  document.getElementById('rev-price').className='tb'+(m==='price'?' ag':'');
+  document.getElementById('rev-direct').className='tb'+(m==='direct'?' ag':'');
+  document.getElementById('rev-price-fields').style.display=m==='price'?'':'none';
+  document.getElementById('rev-direct-fields').style.display=m==='direct'?'':'none';
+}
+
+function setAlert(id,cls,msg){
+  const e=document.getElementById(id);
+  if(!e)return;
+  e.className='alert '+cls+' show';
+  e.textContent=msg;
+}
+function clrAlerts(){['alert-npv','alert-irr','alert-pb'].forEach(id=>{
+  const e=document.getElementById(id);if(e)e.className='alert';
+});}
+
+// ── CAPEX PHASE FIELDS ────────────────────────────────
+function renderCapexPhases(){
+  const yrs=Math.min(+document.getElementById('const-yrs').value||2,5);
+  const defaults=[40,40,20,0,0];
+  let html='<div class="note" style="margin-bottom:6px;">Spend distribution (must sum to 100%)</div>';
+  for(let i=0;i<yrs;i++){
+    html+=`<div class="field"><label class="lbl">Year ${i} spend</label>
+      <div class="ir"><input type="number" id="cx-yr${i}" value="${defaults[i]||Math.round(100/yrs)}" step="5" min="0" max="100"><span class="unit">%</span></div></div>`;
+  }
+  document.getElementById('capex-phase-fields').innerHTML=html;
+}
+document.getElementById('const-yrs').addEventListener('change',renderCapexPhases);
+renderCapexPhases();
+
+// ── DCF ENGINE ────────────────────────────────────────
+function buildCashFlows(params){
+  const {capexTotal,contingency,wc,constYrs,life,wacc,tax,depMethod,salvagePct,
+         inflation,maint,opexBase,revenueBase,rampup} = params;
+
+  const capexWithCont=capexTotal*(1+contingency/100);
+  const wcAmt=capexTotal*(wc/100);
+  const salvage=capexTotal*(salvagePct/100);
+  const depBase=capexWithCont-salvage;
+  const totalYears=constYrs+life;
+
+  // CAPEX phasing
+  const capexPhase=[];
+  let phaseSum=0;
+  for(let i=0;i<constYrs;i++){
+    const pct=(+document.getElementById(`cx-yr${i}`)?.value||0)/100;
+    capexPhase.push(capexWithCont*pct);
+    phaseSum+=pct;
+  }
+  // Normalize if not 100%
+  if(phaseSum>0&&Math.abs(phaseSum-1)>0.01){
+    const scale=1/phaseSum;
+    for(let i=0;i<capexPhase.length;i++) capexPhase[i]*=scale;
+  }
+
+  const rows=[];
+  let cumCF=0, cumDCF=0;
+
+  for(let yr=0;yr<=totalYears;yr++){
+    const isConstruction=yr<constYrs;
+    const opYr=yr-constYrs; // operating year (0-indexed)
+
+    // CAPEX spend
+    const capexSpend=isConstruction?capexPhase[yr]:0;
+    // Working capital: invested at start of operations, recovered at end
+    const wcFlow=(yr===constYrs)?-wcAmt:(yr===totalYears?wcAmt:0);
+
+    if(isConstruction){
+      cumCF-=capexSpend;
+      const dcf=-capexSpend/Math.pow(1+wacc/100,yr);
+      cumDCF+=dcf;
+      rows.push({yr,phase:'Construction',revenue:0,opex:0,ebitda:0,dep:0,ebt:0,taxAmt:0,nopat:0,capex:-capexSpend,wc:wcFlow,fcf:-capexSpend+wcFlow,dcf,cumCF,cumDCF});
+    } else {
+      // Revenue with ramp-up and escalation
+      const capacityFactor=opYr===0?rampup/100:1.0;
+      const escFactor=Math.pow(1+inflation/100,opYr);
+      const revenue=revenueBase*capacityFactor*escFactor;
+
+      // OPEX with escalation + maintenance
+      const maintAmt=capexWithCont*(maint/100);
+      const opex=(opexBase*escFactor*capacityFactor)+maintAmt;
+
+      // EBITDA
+      const ebitda=revenue-opex;
+
+      // Depreciation
+      let dep=0;
+      if(depMethod==='sl') dep=depBase/life;
+      else if(depMethod==='db') dep=depBase*(1.5/life)*Math.pow(1-1.5/life,opYr);
+
+      const ebt=ebitda-dep;
+      const taxAmt=Math.max(0,ebt*(tax/100));
+      const nopat=ebt-taxAmt;
+      const fcf=nopat+dep-capexSpend+wcFlow; // add back dep (non-cash)
+
+      // Salvage at end
+      const salvageFlow=yr===totalYears?salvage:0;
+      const fcfTotal=fcf+salvageFlow;
+
+      const discFactor=Math.pow(1+wacc/100,yr);
+      const dcf=fcfTotal/discFactor;
+      cumCF+=fcfTotal;
+      cumDCF+=dcf;
+
+      rows.push({yr,phase:opYr===0?'Ramp-up':`Op Yr ${opYr}`,revenue,opex,ebitda,dep,ebt,taxAmt,nopat,capex:-capexSpend,wc:wcFlow,salvage:salvageFlow,fcf:fcfTotal,dcf,cumCF,cumDCF});
+    }
+  }
+  return rows;
+}
+
+function calcIRR(rows){
+  // Newton-Raphson on FCF stream
+  const fcfs=rows.map(r=>r.fcf+(r.capex||0)+(r.wc||0));
+  let r=0.15;
+  for(let iter=0;iter<200;iter++){
+    let npv=0, dnpv=0;
+    fcfs.forEach((cf,t)=>{
+      const d=Math.pow(1+r,t);
+      npv+=cf/d;
+      dnpv+=-t*cf/Math.pow(1+r,t+1);
+    });
+    if(Math.abs(dnpv)<1e-12) break;
+    const rn=r-npv/dnpv;
+    if(Math.abs(rn-r)<1e-8){r=rn;break;}
+    r=rn;
+    if(r<-0.99) return null;
+  }
+  return r*100;
+}
+
+function calcPayback(rows){
+  // Simple payback: cumulative undiscounted FCF
+  let cumSimple=0;
+  let simPB=null;
+  // Discounted payback: cumDCF
+  let discPB=null;
+
+  for(let i=0;i<rows.length;i++){
+    const prev=cumSimple;
+    cumSimple+=rows[i].fcf+(rows[i].capex||0)+(rows[i].wc||0);
+    if(simPB===null&&prev<0&&cumSimple>=0){
+      simPB=rows[i].yr+(-prev)/(cumSimple-prev);
+    }
+    if(discPB===null&&(rows[i].cumDCF>=0)&&i>0&&rows[i-1].cumDCF<0){
+      discPB=rows[i].yr+(rows[i-1].cumDCF)/(rows[i-1].cumDCF-rows[i].cumDCF);
+    }
+  }
+  return {simPB,discPB};
+}
+
+// ── SENSITIVITY ───────────────────────────────────────
+</script>
+
+
+</div>
+<footer class="pd-footer">
+  <div class="pd-footer-inner">
+    <div>
+      <div class="pd-footer-logo">Process<em>Desk</em></div>
+      <p class="pd-footer-desc">Free FEL-3 process engineering calculators. Nine modules covering the full pre-FEED scope. Built by engineers, for engineers.</p>
+    </div>
+    <div class="pd-footer-col">
+      <h4>Calculators</h4>
+      <a href="fel3_hydraulics.html">Liquid Hydraulics</a>
+      <a href="fel3_gas_hydraulics.html">Gas Hydraulics</a>
+      <a href="fel3_heat_exchanger.html">Heat Exchanger</a>
+      <a href="fel3_relief_valve.html">Relief Valve</a>
+      <a href="fel3_pump_selection.html">Pump Selection</a>
+    </div>
+    <div class="pd-footer-col">
+      <h4>More tools</h4>
+      <a href="fel3_meb.html">Mass &amp; Energy Balance</a>
+      <a href="fel3_cost_estimator.html">Cost Estimator</a>
+      <a href="fel3_economics.html">Project Economics</a>
+      <a href="fel3_dashboard.html">Dashboard</a>
+    </div>
+    <div class="pd-footer-col">
+      <h4>Company</h4>
+      <a href="/cdn-cgi/l/email-protection#f4979b9a80959780b484869b979187879091879f87da979b99">Contact</a>
+      <a href="/cdn-cgi/l/email-protection#c7a4a8a9b3a6a4b387b7b5a8a4a2b4b4a3a2b4acb4e9a4a8aaf8b4b2a5ada2a4b3fa97b5a8e7b0a6aeb3abaeb4b3">Pro waitlist</a>
+      <a href="/cdn-cgi/l/email-protection#0c6f6362786d6f784c7c7e636f697f7f68697f677f226f6361337f796e66696f78314d687a697e78657f65626b">Advertise with us</a>
+    </div>
+  </div>
+  <div class="pd-footer-bottom">
+    <p>© 2026 ProcessDesk. All calculations run client-side. No process data transmitted.</p>
+    <p>Not a substitute for professional engineering judgment.</p>
+  </div>
+</footer>
+
+</script><script>
+// ── STATE ─────────────────────────────────────────────
+let revMode='price';
+let wfChart=null, npvChart=null;
+
+// ── UI HELPERS ────────────────────────────────────────
+function setRevMode(m){
+  revMode=m;
+  document.getElementById('rev-price').className='tb'+(m==='price'?' ag':'');
+  document.getElementById('rev-direct').className='tb'+(m==='direct'?' ag':'');
+  document.getElementById('rev-price-fields').style.display=m==='price'?'':'none';
+  document.getElementById('rev-direct-fields').style.display=m==='direct'?'':'none';
+}
+
+function setAlert(id,cls,msg){
+  const e=document.getElementById(id);
+  if(!e)return;
+  e.className='alert '+cls+' show';
+  e.textContent=msg;
+}
+function clrAlerts(){['alert-npv','alert-irr','alert-pb'].forEach(id=>{
+  const e=document.getElementById(id);if(e)e.className='alert';
+});}
+
+// ── CAPEX PHASE FIELDS ────────────────────────────────
+function renderCapexPhases(){
+  const yrs=Math.min(+document.getElementById('const-yrs').value||2,5);
+  const defaults=[40,40,20,0,0];
+  let html='<div class="note" style="margin-bottom:6px;">Spend distribution (must sum to 100%)</div>';
+  for(let i=0;i<yrs;i++){
+    html+=`<div class="field"><label class="lbl">Year ${i} spend</label>
+      <div class="ir"><input type="number" id="cx-yr${i}" value="${defaults[i]||Math.round(100/yrs)}" step="5" min="0" max="100"><span class="unit">%</span></div></div>`;
+  }
+  document.getElementById('capex-phase-fields').innerHTML=html;
+}
+document.getElementById('const-yrs').addEventListener('change',renderCapexPhases);
+renderCapexPhases();
+
+// ── DCF ENGINE ────────────────────────────────────────
+function buildCashFlows(params){
+  const {capexTotal,contingency,wc,constYrs,life,wacc,tax,depMethod,salvagePct,
+         inflation,maint,opexBase,revenueBase,rampup} = params;
+
+  const capexWithCont=capexTotal*(1+contingency/100);
+  const wcAmt=capexTotal*(wc/100);
+  const salvage=capexTotal*(salvagePct/100);
+  const depBase=capexWithCont-salvage;
+  const totalYears=constYrs+life;
+
+  // CAPEX phasing
+  const capexPhase=[];
+  let phaseSum=0;
+  for(let i=0;i<constYrs;i++){
+    const pct=(+document.getElementById(`cx-yr${i}`)?.value||0)/100;
+    capexPhase.push(capexWithCont*pct);
+    phaseSum+=pct;
+  }
+  // Normalize if not 100%
+  if(phaseSum>0&&Math.abs(phaseSum-1)>0.01){
+    const scale=1/phaseSum;
+    for(let i=0;i<capexPhase.length;i++) capexPhase[i]*=scale;
+  }
+
+  const rows=[];
+  let cumCF=0, cumDCF=0;
+
+  for(let yr=0;yr<=totalYears;yr++){
+    const isConstruction=yr<constYrs;
+    const opYr=yr-constYrs; // operating year (0-indexed)
+
+    // CAPEX spend
+    const capexSpend=isConstruction?capexPhase[yr]:0;
+    // Working capital: invested at start of operations, recovered at end
+    const wcFlow=(yr===constYrs)?-wcAmt:(yr===totalYears?wcAmt:0);
+
+    if(isConstruction){
+      cumCF-=capexSpend;
+      const dcf=-capexSpend/Math.pow(1+wacc/100,yr);
+      cumDCF+=dcf;
+      rows.push({yr,phase:'Construction',revenue:0,opex:0,ebitda:0,dep:0,ebt:0,taxAmt:0,nopat:0,capex:-capexSpend,wc:wcFlow,fcf:-capexSpend+wcFlow,dcf,cumCF,cumDCF});
+    } else {
+      // Revenue with ramp-up and escalation
+      const capacityFactor=opYr===0?rampup/100:1.0;
+      const escFactor=Math.pow(1+inflation/100,opYr);
+      const revenue=revenueBase*capacityFactor*escFactor;
+
+      // OPEX with escalation + maintenance
+      const maintAmt=capexWithCont*(maint/100);
+      const opex=(opexBase*escFactor*capacityFactor)+maintAmt;
+
+      // EBITDA
+      const ebitda=revenue-opex;
+
+      // Depreciation
+      let dep=0;
+      if(depMethod==='sl') dep=depBase/life;
+      else if(depMethod==='db') dep=depBase*(1.5/life)*Math.pow(1-1.5/life,opYr);
+
+      const ebt=ebitda-dep;
+      const taxAmt=Math.max(0,ebt*(tax/100));
+      const nopat=ebt-taxAmt;
+      const fcf=nopat+dep-capexSpend+wcFlow; // add back dep (non-cash)
+
+      // Salvage at end
+      const salvageFlow=yr===totalYears?salvage:0;
+      const fcfTotal=fcf+salvageFlow;
+
+      const discFactor=Math.pow(1+wacc/100,yr);
+      const dcf=fcfTotal/discFactor;
+      cumCF+=fcfTotal;
+      cumDCF+=dcf;
+
+      rows.push({yr,phase:opYr===0?'Ramp-up':`Op Yr ${opYr}`,revenue,opex,ebitda,dep,ebt,taxAmt,nopat,capex:-capexSpend,wc:wcFlow,salvage:salvageFlow,fcf:fcfTotal,dcf,cumCF,cumDCF});
+    }
+  }
+  return rows;
+}
+
+function calcIRR(rows){
+  // Newton-Raphson on FCF stream
+  const fcfs=rows.map(r=>r.fcf+(r.capex||0)+(r.wc||0));
+  let r=0.15;
+  for(let iter=0;iter<200;iter++){
+    let npv=0, dnpv=0;
+    fcfs.forEach((cf,t)=>{
+      const d=Math.pow(1+r,t);
+      npv+=cf/d;
+      dnpv+=-t*cf/Math.pow(1+r,t+1);
+    });
+    if(Math.abs(dnpv)<1e-12) break;
+    const rn=r-npv/dnpv;
+    if(Math.abs(rn-r)<1e-8){r=rn;break;}
+    r=rn;
+    if(r<-0.99) return null;
+  }
+  return r*100;
+}
+
+function calcPayback(rows){
+  // Simple payback: cumulative undiscounted FCF
+  let cumSimple=0;
+  let simPB=null;
+  // Discounted payback: cumDCF
+  let discPB=null;
+
+  for(let i=0;i<rows.length;i++){
+    const prev=cumSimple;
+    cumSimple+=rows[i].fcf+(rows[i].capex||0)+(rows[i].wc||0);
+    if(simPB===null&&prev<0&&cumSimple>=0){
+      simPB=rows[i].yr+(-prev)/(cumSimple-prev);
+    }
+    if(discPB===null&&(rows[i].cumDCF>=0)&&i>0&&rows[i-1].cumDCF<0){
+      discPB=rows[i].yr+(rows[i-1].cumDCF)/(rows[i-1].cumDCF-rows[i].cumDCF);
+    }
+  }
+  return {simPB,discPB};
+}
+
+// ── SENSITIVITY ───────────────────────────────────────
+function calcSensNPV(params,varName,swing){
+  const p={...params};
+  // +swing
+  if(varName==='capex') p.capexTotal*=(1+swing/100);
+  else if(varName==='price'||varName==='prod'||varName==='revenue') p.revenueBase*=(1+swing/100);
+  else if(varName==='opex') p.opexBase*=(1+swing/100);
+  else if(varName==='rm') p.opexBase+=(p.revenueBase*swing/100*0.3);
+  else if(varName==='wacc') p.wacc+=swing;
+  const rowsUp=buildCashFlows(p);
+  const npvUp=rowsUp[rowsUp.length-1].cumDCF;
+
+  const pm={...params};
+  if(varName==='capex') pm.capexTotal*=(1-swing/100);
+  else if(varName==='price'||varName==='prod'||varName==='revenue') pm.revenueBase*=(1-swing/100);
+  else if(varName==='opex') pm.opexBase*=(1-swing/100);
+  else if(varName==='rm') pm.opexBase-=(pm.revenueBase*swing/100*0.3);
+  else if(varName==='wacc') pm.wacc-=swing;
+  const rowsDn=buildCashFlows(pm);
+  const npvDn=rowsDn[rowsDn.length-1].cumDCF;
+
+  return{up:npvUp,down:npvDn};
+}
+
+// ── MAIN CALCULATE ────────────────────────────────────
+function calculate(){
+  clrAlerts();
+
+  const capexTotal=+document.getElementById('capex').value;
+  const contingency=+document.getElementById('contingency').value;
+  const wc=+document.getElementById('wc').value;
+  const constYrs=Math.min(+document.getElementById('const-yrs').value,5);
+  const life=+document.getElementById('life').value;
+  const wacc=+document.getElementById('wacc').value;
+  const tax=+document.getElementById('tax').value;
+  const depMethod=document.getElementById('dep-method').value;
+  const salvagePct=+document.getElementById('salvage').value;
+  const inflation=+document.getElementById('inflation').value;
+  const maint=+document.getElementById('maint').value;
+  const opHrs=+document.getElementById('op-hrs').value;
+
+  // Revenue
+  let revenueBase;
+  if(revMode==='price'){
+    const price=+document.getElementById('price').value;
+    const prodKt=+document.getElementById('prod').value;
+    revenueBase=price*prodKt*1000/1e6; // $M/yr
+  } else {
+    revenueBase=+document.getElementById('rev-direct-val').value;
+  }
+  const rampup=+document.getElementById('rampup').value;
+
+  // OPEX
+  const opexBase=(+document.getElementById('op-rm').value)+
+                 (+document.getElementById('op-util').value)+
+                 (+document.getElementById('op-lab').value)+
+                 (+document.getElementById('op-other').value);
+
+  const params={capexTotal,contingency,wc,constYrs,life,wacc,tax,depMethod,
+                salvagePct,inflation,maint,opexBase,revenueBase,rampup};
+
+  const rows=buildCashFlows(params);
+  const npv=rows[rows.length-1].cumDCF;
+  const irr=calcIRR(rows);
+  const {simPB,discPB}=calcPayback(rows);
+  const capexTotal2=capexTotal*(1+contingency/100);
+  const ebitdaSteady=revenueBase-opexBase-capexTotal2*(maint/100);
+  const ebitdaMargin=revenueBase>0?(ebitdaSteady/revenueBase*100):0;
+
+  // KPIs
+  document.getElementById('kpi-strip').innerHTML=[
+    {lbl:'NPV',val:npv>=0?'+$'+npv.toFixed(1):'−$'+Math.abs(npv).toFixed(1),unit:'$M (real terms)',cls:npv>=0?'gr':'rd'},
+    {lbl:'IRR',val:irr!==null?irr.toFixed(1)+'%':'N/A',unit:'vs WACC '+wacc+'%',cls:irr!==null&&irr>wacc?'gr':irr!==null?'rd':'am'},
+    {lbl:'Payback',val:simPB?simPB.toFixed(1)+'yr':'> life',unit:'simple (undiscounted)',cls:simPB&&simPB<life/2?'gr':simPB?'am':'rd'},
+    {lbl:'EBITDA',val:'$'+ebitdaSteady.toFixed(1)+'M',unit:'margin '+ebitdaMargin.toFixed(0)+'%',cls:ebitdaSteady>0?'gr':'rd'},
+  ].map(k=>`<div class="kpi"><div class="kpi-lbl">${k.lbl}</div><div class="kpi-val ${k.cls}">${k.val}</div><div class="kpi-unit">${k.unit}</div></div>`).join('');
+  document.getElementById('kpi-area').style.display='';
+
+  // Alerts
+  if(npv<0) setAlert('alert-npv','aer',`NPV = $${npv.toFixed(1)}M — project destroys value at ${wacc}% discount rate. Reassess CAPEX, pricing, or yield assumptions.`);
+  else if(npv<capexTotal*0.1) setAlert('alert-npv','awk',`NPV = $${npv.toFixed(1)}M — marginal return. Sensitivity to CAPEX overrun or price erosion is high.`);
+  else setAlert('alert-npv','aok',`NPV = +$${npv.toFixed(1)}M at ${wacc}% WACC. Project creates value. IRR = ${irr?irr.toFixed(1)+'%':'N/A'}.`);
+
+  if(irr!==null){
+    if(irr<wacc) setAlert('alert-irr','aer',`IRR ${irr.toFixed(1)}% < WACC ${wacc}% — project does not meet hurdle rate.`);
+    else if(irr<wacc*1.3) setAlert('alert-irr','awk',`IRR ${irr.toFixed(1)}% marginally above WACC. Limited buffer against downside scenarios.`);
+    else setAlert('alert-irr','aok',`IRR ${irr.toFixed(1)}% exceeds WACC ${wacc}% by ${(irr-wacc).toFixed(1)}pts — healthy return spread.`);
+  }
+
+  if(simPB) setAlert('alert-pb','ainf',`Simple payback: ${simPB.toFixed(1)} yrs | Discounted payback: ${discPB?discPB.toFixed(1)+' yrs':'> project life'}`);
+
+  // ── WATERFALL CHART ──────────────────────────────
+  const opRows=rows.filter(r=>r.phase!=='Construction'&&r.yr<rows[rows.length-1].yr);
+  const wfLabels=rows.map(r=>`Yr ${r.yr}`);
+  const fcfData=rows.map(r=>+(r.fcf+(r.capex||0)+(r.wc||0)).toFixed(2));
+  const barColors=fcfData.map(v=>v>=0?'rgba(48,176,96,0.75)':'rgba(224,64,64,0.75)');
+
+  if(wfChart) wfChart.destroy();
+  wfChart=new Chart(document.getElementById('wf-chart'),{
+    type:'bar',
+    data:{labels:wfLabels,datasets:[{label:'Annual FCF ($M)',data:fcfData,backgroundColor:barColors,borderWidth:0}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`FCF: $${ctx.parsed.y.toFixed(2)}M`}}},
+      scales:{
+        x:{ticks:{color:'#9aa0b0',font:{family:'DM Mono',size:9}},grid:{color:'rgba(0,0,0,0.04)'}},
+        y:{ticks:{color:'#9aa0b0',font:{family:'DM Mono',size:10},callback:v=>'$'+v+'M'},grid:{color:'rgba(0,0,0,0.06)'},title:{display:true,text:'FCF ($M)',color:'#9aa0b0',font:{family:'DM Mono',size:10}}}
+      }
+    }
+  });
+  document.getElementById('wf-card').style.display='';
+
+  // ── NPV PROFILE CHART ─────────────────────────────
+  const cumDCFData=rows.map(r=>+r.cumDCF.toFixed(2));
+  const zeroLine=new Array(rows.length).fill(0);
+
+  if(npvChart) npvChart.destroy();
+  npvChart=new Chart(document.getElementById('npv-chart'),{
+    type:'line',
+    data:{labels:wfLabels,datasets:[
+      {label:'Cum. DCF',data:cumDCFData,borderColor:'#d4a840',borderWidth:2,pointRadius:2,pointBackgroundColor:'#d4a840',tension:0.3,fill:false},
+      {label:'Break-even',data:zeroLine,borderColor:'rgba(255,255,255,0.2)',borderWidth:1,borderDash:[4,3],pointRadius:0,fill:false},
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Cum DCF: $${ctx.parsed.y.toFixed(2)}M`}}},
+      scales:{
+        x:{ticks:{color:'#9aa0b0',font:{family:'DM Mono',size:9}},grid:{color:'rgba(0,0,0,0.04)'}},
+        y:{ticks:{color:'#9aa0b0',font:{family:'DM Mono',size:10},callback:v=>'$'+v+'M'},grid:{color:'rgba(0,0,0,0.06)'},title:{display:true,text:'Cumulative DCF ($M)',color:'#9aa0b0',font:{family:'DM Mono',size:10}}}
+      }
+    }
+  });
+  document.getElementById('npv-card').style.display='';
+
+  // ── PAYBACK VISUAL ────────────────────────────────
+  const maxLife=constYrs+life;
+  const simPct=simPB?Math.min(simPB/maxLife*100,100):100;
+  const discPct=discPB?Math.min(discPB/maxLife*100,100):100;
+  document.getElementById('pb-content').innerHTML=`
+    <div style="margin-bottom:0.75rem;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span class="note">Simple payback</span>
+        <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:var(--green);">${simPB?simPB.toFixed(1)+' yrs':'> life'}</span>
+      </div>
+      <div class="payback-track"><div class="payback-fill" style="width:${simPct.toFixed(1)}%;background:var(--green);"></div>${simPB?`<div class="payback-marker" style="left:${simPct.toFixed(1)}%;"></div>`:''}</div>
+      <div style="display:flex;justify-content:space-between;margin-top:2px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);"><span>Yr 0</span><span>Yr ${maxLife}</span></div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span class="note">Discounted payback</span>
+        <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:var(--accent);">${discPB?discPB.toFixed(1)+' yrs':'> life'}</span>
+      </div>
+      <div class="payback-track"><div class="payback-fill" style="width:${discPct.toFixed(1)}%;background:var(--accent);"></div>${discPB?`<div class="payback-marker" style="left:${discPct.toFixed(1)}%;"></div>`:''}</div>
+      <div style="display:flex;justify-content:space-between;margin-top:2px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);"><span>Yr 0</span><span>Yr ${maxLife}</span></div>
+    </div>`;
+  document.getElementById('pb-card').style.display='';
+
+  // ── TORNADO ───────────────────────────────────────
+  const baseNPV=npv;
+  const sensVars=[
+    {key:'price',lbl:'Product price',sw:+document.getElementById('sw-price').value},
+    {key:'capex',lbl:'CAPEX',sw:+document.getElementById('sw-capex').value},
+    {key:'opex',lbl:'Total OPEX',sw:+document.getElementById('sw-opex').value},
+    {key:'prod',lbl:'Production volume',sw:+document.getElementById('sw-prod').value},
+    {key:'rm',lbl:'Feedstock cost',sw:+document.getElementById('sw-rm').value},
+    {key:'wacc',lbl:'Discount rate (WACC)',sw:+document.getElementById('sw-wacc').value},
+  ];
+  const sensResults=sensVars.map(v=>{
+    const {up,down}=calcSensNPV(params,v.key,v.sw);
+    const impact=Math.abs(up-down);
+    return{...v,npvUp:up,npvDn:down,impact,deltaUp:up-baseNPV,deltaDn:down-baseNPV};
+  }).sort((a,b)=>b.impact-a.impact);
+
+  const maxImpact=Math.max(...sensResults.map(s=>s.impact),1);
+  const halfW=46; // % of bar space = 50% each side
+
+  let tornadoHTML='<div class="tornado-wrap">';
+  sensResults.forEach(s=>{
+    const posBar=Math.max(0,s.deltaUp)/(maxImpact/2)*halfW;
+    const negBar=Math.abs(Math.min(0,s.deltaUp))/(maxImpact/2)*halfW;
+    // Bar shows: +swing vs base
+    const upPct=Math.abs(s.deltaUp)/(maxImpact)*halfW;
+    const dnPct=Math.abs(s.deltaDn)/(maxImpact)*halfW;
+    const upIsPos=s.deltaUp>0;
+    tornadoHTML+=`<div class="tornado-row">
+      <span class="tornado-lbl">${s.lbl} ±${s.sw}${s.key==='wacc'?'pts':'%'}</span>
+      <div class="tornado-bars">
+        <div class="tornado-center"></div>
+        <div class="tornado-bar-${upIsPos?'gr':'rd'}" style="width:${upPct.toFixed(1)}%;${upIsPos?'left:50%;border-radius:0 2px 2px 0':'right:50%;border-radius:2px 0 0 2px'}"></div>
+        <div class="tornado-bar-${!upIsPos?'gr':'rd'}" style="width:${dnPct.toFixed(1)}%;${!upIsPos?'left:50%;border-radius:0 2px 2px 0':'right:50%;border-radius:2px 0 0 2px'}"></div>
+      </div>
+      <span class="tornado-val">${s.deltaUp>0?'+':''}${s.deltaUp.toFixed(1)} / ${s.deltaDn>0?'+':''}${s.deltaDn.toFixed(1)}</span>
+    </div>`;
+  });
+  tornadoHTML+='<div style="display:flex;gap:12px;margin-top:8px;padding-left:148px;font-family:'DM Mono',monospace;font-size:9px;"><span style="color:var(--red);">■ NPV decrease</span><span style="color:var(--green);">■ NPV increase</span><span style="color:var(--text2);">&nbsp;Values = ΔNPV ($M) at ±swing</span></div>';
+  tornadoHTML+='</div>';
+  document.getElementById('tornado-wrap').innerHTML=tornadoHTML;
+  document.getElementById('tornado-card').style.display='';
+
+  // ── CASH FLOW TABLE ───────────────────────────────
+  const fmtM=v=>`<span class="${v>0?'pos-val':v<0?'neg-val':''}">${v>0?'+':''}${v.toFixed(2)}</span>`;
+  let tbl=`<table id="cf-table"><thead><tr>
+    <th>Year / Phase</th><th>Revenue ($M)</th><th>OPEX ($M)</th><th>EBITDA ($M)</th>
+    <th>Deprec. ($M)</th><th>Tax ($M)</th><th>CAPEX ($M)</th>
+    <th>FCF ($M)</th><th>DCF ($M)</th><th>Cum DCF ($M)</th>
+  </tr></thead><tbody>`;
+  rows.forEach(r=>{
+    tbl+=`<tr>
+      <td>${r.yr} — ${r.phase}</td>
+      <td class="num">${r.revenue?fmtM(r.revenue):'—'}</td>
+      <td class="num">${r.opex?fmtM(-r.opex):'—'}</td>
+      <td class="num">${r.ebitda?fmtM(r.ebitda):'—'}</td>
+      <td class="num">${r.dep?fmtM(-r.dep):'—'}</td>
+      <td class="num">${r.taxAmt?fmtM(-r.taxAmt):'—'}</td>
+      <td class="num">${r.capex?fmtM(r.capex):'—'}</td>
+      <td class="num">${fmtM(r.fcf+(r.capex||0)+(r.wc||0))}</td>
+      <td class="num">${fmtM(r.dcf)}</td>
+      <td class="num cumcf-row">${fmtM(r.cumDCF)}</td>
+    </tr>`;
+  });
+  tbl+=`</tbody><tfoot><tr class="total-row">
+    <td>PROJECT TOTAL</td><td></td><td></td><td></td><td></td><td></td><td></td>
+    <td class="num">${fmtM(rows.reduce((a,r)=>a+r.fcf+(r.capex||0)+(r.wc||0),0))}</td>
+    <td class="num">${fmtM(npv)}</td>
+    <td class="num">${fmtM(npv)}</td>
+  </tr></tfoot></table>`;
+  document.getElementById('cf-table-area').innerHTML=tbl;
+  document.getElementById('cf-table-area').style.display='';
+}
+</script>
+
+<!-- ProcessDesk Feedback Widget -->
+<button class="fb-btn no-print" id="fb-open-btn" onclick="fbOpen()">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <path d="M14 1H2C1.45 1 1 1.45 1 2v9c0 .55.45 1 1 1h3l3 3 3-3h3c.55 0 1-.45 1-1V2c0-.55-.45-1-1-1z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+  </svg>
+  Feedback
+</button>
+
+<div class="fb-overlay" id="fb-overlay" onclick="fbClose()"></div>
+
+<div class="fb-panel" id="fb-panel">
+  <div class="fb-header">
+    <div class="fb-header-icon">💬</div>
+    <div class="fb-header-text">
+      <div class="fb-header-title">Share your feedback</div>
+      <div class="fb-header-sub">ProcessDesk · Help us improve</div>
+    </div>
+    <button class="fb-close" onclick="fbClose()">✕</button>
+  </div>
+
+  <div class="fb-body" id="fb-body">
+    <div class="fb-field">
+      <label class="fb-lbl">Which tool is this about?</label>
+      <select class="fb-select" id="fb-module">
+        <option value="auto">Auto-detect current page</option>
+<option value="index">Landing page / General</option>
+<option value="fel3_hydraulics">Module 01 — Liquid Hydraulics</option>
+<option value="fel3_gas_hydraulics">Module 02 — Gas Hydraulics</option>
+<option value="fel3_heat_exchanger">Module 03 — Heat Exchanger</option>
+<option value="fel3_relief_valve">Module 04 — Relief Valve</option>
+<option value="fel3_pump_selection">Module 05 — Pump Selection</option>
+<option value="fel3_meb">Module 06 — Mass & Energy Balance</option>
+<option value="fel3_cost_estimator">Module 07 — Cost Estimator</option>
+<option value="fel3_economics">Module 08 — Project Economics</option>
+<option value="fel3_dashboard">Module 09 — Project Dashboard</option>
+      </select>
+    </div>
+
+    <div class="fb-field">
+      <label class="fb-lbl">Type of feedback</label>
+      <select class="fb-select" id="fb-type">
+        <option value="general">General feedback</option>
+        <option value="bug">Something is wrong / bug report</option>
+        <option value="calculation">Calculation or methodology question</option>
+        <option value="feature">Feature request</option>
+        <option value="ui">Design / usability suggestion</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="fb-field">
+      <label class="fb-lbl">How useful is this tool?</label>
+      <div class="fb-rating" id="fb-stars">
+        <span class="fb-star" data-v="1" onclick="fbRate(1)">★</span>
+        <span class="fb-star" data-v="2" onclick="fbRate(2)">★</span>
+        <span class="fb-star" data-v="3" onclick="fbRate(3)">★</span>
+        <span class="fb-star" data-v="4" onclick="fbRate(4)">★</span>
+        <span class="fb-star" data-v="5" onclick="fbRate(5)">★</span>
+      </div>
+    </div>
+
+    <div class="fb-field">
+      <label class="fb-lbl">Your feedback</label>
+      <textarea class="fb-textarea" id="fb-text"
+        placeholder="Tell us what's working, what's broken, or what you'd like to see..."
+        maxlength="1000" oninput="fbCount()"></textarea>
+      <div class="fb-char-count" id="fb-char">0 / 1000</div>
+    </div>
+
+    <div class="fb-field">
+      <label class="fb-lbl">Email (optional — for follow-up)</label>
+      <input type="email" id="fb-email" placeholder="your@email.com"
+        style="width:100%;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;background:var(--s2);border:1px solid var(--border2);border-radius:8px;color:var(--text);padding:8px 12px;outline:none;transition:border-color 0.15s;"
+        onfocus="this.style.borderColor='var(--accent)';this.style.background='#fff'"
+        onblur="this.style.borderColor='';this.style.background=''">
+    </div>
+
+    <button class="fb-submit" id="fb-submit" onclick="fbSubmit()">Send Feedback →</button>
+  </div>
+
+  <div class="fb-success" id="fb-success">
+    <div class="fb-success-icon">✅</div>
+    <div class="fb-success-title">Thanks for your feedback!</div>
+    <div class="fb-success-msg">We read every submission and use it to improve ProcessDesk.<br>If you left an email, we'll follow up shortly.</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var rating = 0;
+
+  // Auto-detect current module
+  var page = window.location.pathname.split('/').pop().replace('.html','') || 'index';
+  var sel = document.getElementById('fb-module');
+  if (sel) {
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === page) {
+        sel.selectedIndex = i; break;
+      }
+    }
+  }
+
+  window.fbOpen = function() {
+    document.getElementById('fb-panel').classList.add('open');
+    document.getElementById('fb-overlay').classList.add('open');
+    document.getElementById('fb-text').focus();
+  };
+
+  window.fbClose = function() {
+    document.getElementById('fb-panel').classList.remove('open');
+    document.getElementById('fb-overlay').classList.remove('open');
+  };
+
+  window.fbRate = function(v) {
+    rating = v;
+    document.querySelectorAll('.fb-star').forEach(function(s) {
+      s.classList.toggle('active', parseInt(s.dataset.v) <= v);
+    });
+  };
+
+  window.fbCount = function() {
+    var t = document.getElementById('fb-text');
+    document.getElementById('fb-char').textContent = t.value.length + ' / 1000';
+  };
+
+  window.fbSubmit = function() {
+    var text = document.getElementById('fb-text').value.trim();
+    var module = document.getElementById('fb-module').value;
+    var type = document.getElementById('fb-type').value;
+    var email = document.getElementById('fb-email').value.trim();
+
+    if (!text) {
+      document.getElementById('fb-text').style.borderColor = 'var(--red)';
+      document.getElementById('fb-text').focus();
+      return;
+    }
+
+    var btn = document.getElementById('fb-submit');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    // Build mailto fallback — works without a backend
+    var subject = encodeURIComponent('[ProcessDesk Feedback] ' + module + ' — ' + type);
+    var body = encodeURIComponent(
+      'Module: ' + module + '\n' +
+      'Type: ' + type + '\n' +
+      'Rating: ' + (rating || 'not rated') + '/5\n' +
+      'Email: ' + (email || 'not provided') + '\n\n' +
+      'Feedback:\n' + text
+    );
+
+    // Try Formspree first if configured, fall back to mailto
+    var FORMSPREE_ID = ''; // Add your Formspree form ID here e.g. 'xpwzgkdo'
+    if (FORMSPREE_ID) {
+      fetch('https://formspree.io/f/' + FORMSPREE_ID, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ module: module, type: type, rating: rating, email: email, message: text })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function() { fbShowSuccess(); })
+      .catch(function() { window.location.href = 'mailto:contact@processdesks.com?subject=' + subject + '&body=' + body; fbShowSuccess(); });
+    } else {
+      // Direct mailto
+      window.location.href = 'mailto:contact@processdesks.com?subject=' + subject + '&body
+</body>
+</html>
