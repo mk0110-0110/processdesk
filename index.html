@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProcessDesk — Free FEL-3 Process Engineering Calculators</title>
+<meta name="description" content="Free browser-based FEL-3 engineering calculators for process engineers. Pipe sizing, heat exchanger design, relief valve sizing API 520, pump selection, mass and energy balance, equipment cost estimation, and project economics NPV IRR. No login required.">
+<meta name="keywords" content="FEL-3 calculator, pipe sizing calculator, relief valve sizing API 520, heat exchanger LMTD calculator, pump selection NPSH, mass energy balance, equipment cost estimator Lang factor CEPCI, NPV IRR project economics, process engineering tools, AACE Class 3 estimate">
+<meta name="author" content="ProcessDesk">
+<meta property="og:title" content="ProcessDesk — Free FEL-3 Process Engineering Calculators">
+<meta property="og:description" content="Nine free browser-based FEL-3 engineering calculators. Pipe sizing to project economics. Built by process engineers, for process engineers.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://processdesks.com">
+<link rel="canonical" href="https://processdesks.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f8f9fb;--s1:#ffffff;--s2:#f2f4f7;--s3:#e8ebf0;
+  --border:#e2e6ec;--border2:#d0d5de;
+  --text:#0f1420;--text2:#5a6070;--text3:#9aa0b0;
+  --accent:#1a56db;--accent2:#1648c0;--accent-bg:#eef2ff;--accent-light:#c7d4fa;
+  --teal:#0891b2;--teal-bg:#ecfeff;
+  --green:#059669;--green-bg:#ecfdf5;
+  --red:#dc2626;--red-bg:#fef2f2;
+  --amber:#d97706;--amber-bg:#fffbeb;
+  --purple:#7c3aed;--purple-bg:#f5f3ff;
+  --orange:#ea580c;--orange-bg:#fff7ed;
+  --radius:12px;--rsm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.05);
+  --shadow-lg:0 10px 30px rgba(0,0,0,0.08),0 4px 8px rgba(0,0,0,0.04);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;}
+.nav-inner{max-width:1200px;margin:0 auto;height:60px;display:flex;align-items:center;gap:2rem;}
+.nav-logo{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--text);letter-spacing:0.5px;text-decoration:none;}
+.nav-logo em{font-style:normal;color:var(--accent);}
+.nav-links{display:flex;gap:1.5rem;margin-left:auto;align-items:center;}
+.nav-links a{font-size:13px;color:var(--text2);text-decoration:none;font-weight:500;transition:color 0.15s;}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{font-size:13px;padding:8px 18px;border-radius:var(--rsm);background:var(--accent);color:#fff !important;text-decoration:none;font-weight:600;transition:background 0.15s;white-space:nowrap;}
+.nav-cta:hover{background:var(--accent2) !important;}
+@media(max-width:680px){.nav-links a:not(.nav-cta){display:none;}}
+
+/* HERO */
+.hero{padding:9rem 2rem 5rem;text-align:center;background:var(--s1);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(26,86,219,0.05),transparent);pointer-events:none;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;margin-bottom:1.5rem;background:var(--accent-bg);border:1px solid var(--accent-light);padding:5px 14px;border-radius:20px;}
+h1{font-size:clamp(32px,5.5vw,64px);font-weight:700;line-height:1.1;letter-spacing:-0.03em;margin-bottom:1.25rem;}
+h1 em{font-style:normal;color:var(--accent);}
+.hero-sub{font-size:clamp(15px,1.8vw,18px);color:var(--text2);max-width:600px;line-height:1.75;margin:0 auto 2.5rem;}
+.hero-sub strong{color:var(--text);font-weight:600;}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:3.5rem;}
+.btn-primary{font-size:14px;padding:13px 28px;border-radius:var(--rsm);background:var(--accent);color:#fff;text-decoration:none;font-weight:600;transition:all 0.15s;box-shadow:0 2px 8px rgba(26,86,219,0.25);}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);}
+.btn-secondary{font-size:14px;padding:13px 28px;border-radius:var(--rsm);background:var(--s1);color:var(--text2);text-decoration:none;font-weight:500;border:1px solid var(--border2);transition:all 0.15s;}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+.hero-stats{display:flex;flex-wrap:wrap;justify-content:center;background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;max-width:700px;margin:0 auto;}
+.stat{flex:1;min-width:140px;padding:1.25rem 1rem;text-align:center;border-right:1px solid var(--border);}
+.stat:last-child{border-right:none;}
+.stat-num{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--accent);display:block;margin-bottom:2px;}
+.stat-lbl{font-size:11px;color:var(--text3);letter-spacing:0.04em;}
+
+/* TRUST BAR */
+.trust-bar{background:var(--s2);border-bottom:1px solid var(--border);padding:0.85rem 2rem;}
+.trust-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;justify-content:center;}
+.trust-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;}
+.trust-items{display:flex;gap:1.25rem;flex-wrap:wrap;}
+.trust-item{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);display:flex;align-items:center;gap:5px;}
+.trust-item::before{content:'✓';color:var(--green);font-weight:700;}
+
+/* AD */
+.ad-wrap{padding:1.25rem 2rem;background:var(--s1);border-bottom:1px solid var(--border);}
+.ad-inner{max-width:1200px;margin:0 auto;}
+.ad-slot{background:var(--s2);border:1px dashed var(--border2);border-radius:var(--rsm);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);}
+
+/* SECTIONS */
+section{padding:5rem 2rem;}
+.section-inner{max-width:1200px;margin:0 auto;}
+.section-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.15em;color:var(--accent);text-transform:uppercase;margin-bottom:0.6rem;display:block;}
+h2{font-size:clamp(26px,3.5vw,40px);font-weight:700;letter-spacing:-0.025em;line-height:1.2;margin-bottom:0.85rem;}
+h2 em{font-style:normal;color:var(--accent);}
+.section-sub{font-size:16px;color:var(--text2);line-height:1.75;max-width:540px;}
+
+/* MODULES */
+.modules-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem;}
+@media(max-width:900px){.modules-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.modules-grid{grid-template-columns:1fr;}}
+.module-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;transition:all 0.2s;text-decoration:none;display:block;box-shadow:var(--shadow);}
+.module-card:hover{border-color:var(--accent-light);box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.mc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.75rem;}
+.mc-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.mc-arrow{font-size:16px;color:var(--text3);transition:all 0.2s;}
+.module-card:hover .mc-arrow{color:var(--accent);transform:translate(2px,-2px);}
+.mc-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:4px;}
+.mc-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3;}
+.mc-desc{font-size:12px;color:var(--text2);line-height:1.65;}
+.mc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;}
+.mc-tag{font-family:'DM Mono',monospace;font-size:9px;padding:2px 8px;border-radius:20px;background:var(--s2);color:var(--text3);border:1px solid var(--border);}
+.ic-teal{background:var(--teal-bg);} .ic-blue{background:var(--accent-bg);}
+.ic-red{background:var(--red-bg);} .ic-green{background:var(--green-bg);}
+.ic-amber{background:var(--amber-bg);} .ic-purple{background:var(--purple-bg);}
+.ic-orange{background:var(--orange-bg);}
+
+/* HOW */
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:2.5rem;}
+@media(max-width:720px){.how-grid{grid-template-columns:1fr;}}
+.how-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;box-shadow:var(--shadow);}
+.how-num{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--accent-light);line-height:1;margin-bottom:1rem;}
+.how-title{font-size:15px;font-weight:700;margin-bottom:8px;}
+.how-desc{font-size:13px;color:var(--text2);line-height:1.7;}
+
+/* METHODOLOGY */
+.meth-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:2.5rem;}
+@media(max-width:600px){.meth-grid{grid-template-columns:1fr;}}
+.meth-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rsm);padding:1.25rem 1.5rem;display:flex;gap:0.875rem;box-shadow:var(--shadow);}
+.meth-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.meth-title{font-size:13px;font-weight:700;margin-bottom:4px;}
+.meth-desc{font-size:12px;color:var(--text2);line-height:1.65;}
+
+/* WHY */
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;margin-top:2.5rem;}
+@media(max-width:720px){.why-grid{grid-template-columns:1fr;}}
+.why-list{display:flex;flex-direction:column;gap:1.25rem;}
+.why-item{display:flex;gap:1rem;}
+.why-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--s2);border:1px solid var(--border);}
+.why-title{font-size:14px;font-weight:700;margin-bottom:3px;}
+.why-desc{font-size:12px;color:var(--text2);line-height:1.65;}
+.code-visual{background:#1e2330;border-radius:var(--radius);padding:1.75rem;font-family:'DM Mono',monospace;box-shadow:var(--shadow-lg);}
+.code-bar{display:flex;gap:6px;margin-bottom:1.25rem;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.cd1{background:#ff5f57;}.cd2{background:#febc2e;}.cd3{background:#28c840;}
+.code-block{font-size:12px;line-height:1.9;color:#8892a4;}
+.code-comment{color:#4a5568;}.code-fn{color:#7dd3fc;}.code-kw{color:#f472b6;}
+.code-num{color:#fbbf24;}.code-op{color:#a78bfa;}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem;}
+@media(max-width:720px){.pricing-grid{grid-template-columns:1fr;}}
+.price-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);}
+.price-card.featured{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow-md);}
+.price-badge{font-family:'DM Mono',monospace;font-size:10px;background:var(--accent);color:#fff;padding:3px 10px;border-radius:3px;letter-spacing:0.06em;display:inline-block;margin-bottom:1rem;}
+.price-name{font-size:18px;font-weight:700;margin-bottom:4px;}
+.price-amount{font-size:36px;font-weight:700;color:var(--accent);line-height:1;margin:0.75rem 0;font-family:'DM Mono',monospace;}
+.price-amount span{font-size:14px;color:var(--text2);font-weight:400;}
+.price-desc{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);}
+.price-features{display:flex;flex-direction:column;gap:9px;margin-bottom:1.5rem;}
+.pf{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px;font-weight:500;}
+.pf-check{width:16px;height:16px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--green);flex-shrink:0;border:1px solid #a7f3d0;}
+.pf-soon{width:16px;height:16px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text3);flex-shrink:0;border:1px solid var(--border);}
+.pf.dimmed{color:var(--text3);}
+.price-btn{display:block;text-align:center;padding:11px;border-radius:var(--rsm);font-size:13px;text-decoration:none;transition:all 0.15s;font-weight:600;}
+.price-btn-free{background:var(--s2);color:var(--text);border:1px solid var(--border2);}
+.price-btn-free:hover{border-color:var(--accent);color:var(--accent);}
+.price-btn-paid{background:var(--accent);color:#fff;}
+.price-btn-paid:hover{background:var(--accent2);}
+
+/* CTA */
+.cta-section{background:var(--accent);padding:5rem 2rem;text-align:center;}
+.cta-inner{max-width:580px;margin:0 auto;}
+.cta-section h2{color:#fff;}
+.cta-section .section-eyebrow{color:rgba(255,255,255,0.7);}
+.cta-section p{color:rgba(255,255,255,0.8);font-size:16px;line-height:1.75;margin:1rem 0 2rem;}
+.btn-white{font-size:14px;padding:13px 28px;border-radius:var(--rsm);background:#fff;color:var(--accent);text-decoration:none;font-weight:700;transition:all 0.15s;}
+.btn-white:hover{background:var(--s2);transform:translateY(-1px);}
+
+/* FOOTER */
+footer{background:#0f1420;color:rgba(255,255,255,0.6);padding:3.5rem 2rem 2rem;}
+.footer-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem;}
+@media(max-width:720px){.footer-inner{grid-template-columns:1fr 1fr;gap:2rem;}}
+@media(max-width:420px){.footer-inner{grid-template-columns:1fr;}}
+.footer-logo{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:#fff;margin-bottom:0.75rem;}
+.footer-logo em{font-style:normal;color:#93c5fd;}
+.footer-desc{font-size:12px;line-height:1.75;max-width:240px;}
+.footer-col h4{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:1rem;}
+.footer-col a{display:block;font-size:12px;color:rgba(255,255,255,0.55);text-decoration:none;margin-bottom:8px;transition:color 0.15s;}
+.footer-col a:hover{color:#fff;}
+.footer-bottom{max-width:1200px;margin:0 auto;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.footer-bottom p{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,0.25);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.hero>*:not(.hero-bg){animation:fadeUp 0.55s ease both;}
+.hero-eyebrow{animation-delay:0.05s;}h1{animation-delay:0.15s;}
+.hero-sub{animation-delay:0.25s;}.hero-actions{animation-delay:0.32s;}
+.hero-stats{animation-delay:0.4s;}
+
+/* ── ProcessDesk Feedback Widget ──────────────────── */
+.fb-btn {
+  position: fixed; bottom: 24px; right: 24px; z-index: 8888;
+  background: var(--accent); color: #fff;
+  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500;
+  padding: 10px 18px; border-radius: 24px; border: none; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(26,86,219,0.35);
+  display: flex; align-items: center; gap: 7px;
+  transition: all 0.2s; letter-spacing: 0.03em;
+}
+.fb-btn:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,86,219,0.4); }
+.fb-btn svg { flex-shrink: 0; }
+
+.fb-overlay {
+  position: fixed; inset: 0; z-index: 8889;
+  background: rgba(15,20,32,0.45); backdrop-filter: blur(3px);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.fb-overlay.open { opacity: 1; pointer-events: all; }
+
+.fb-panel {
+  position: fixed; bottom: 80px; right: 24px; z-index: 8890;
+  width: 360px; max-width: calc(100vw - 32px);
+  background: #fff; border: 1px solid var(--border2);
+  border-radius: 16px; box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+  opacity: 0; transform: translateY(16px) scale(0.97);
+  pointer-events: none; transition: all 0.2s;
+}
+.fb-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+
+.fb-header {
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.fb-header-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--accent-bg); display: flex; align-items: center;
+  justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.fb-header-text { flex: 1; }
+.fb-header-title {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;
+  font-weight: 700; color: var(--text); margin-bottom: 1px;
+}
+.fb-header-sub {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--text2); letter-spacing: 0.04em;
+}
+.fb-close {
+  width: 28px; height: 28px; border: none; background: var(--s2);
+  border-radius: 50%; cursor: pointer; font-size: 14px; color: var(--text2);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s; flex-shrink: 0;
+}
+.fb-close:hover { background: var(--s3); color: var(--text); }
+
+.fb-body { padding: 1rem 1.25rem; }
+
+.fb-field { margin-bottom: 0.85rem; }
+.fb-lbl {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--text2); letter-spacing: 0.06em; margin-bottom: 5px;
+  display: block; text-transform: uppercase;
+}
+.fb-select, .fb-textarea {
+  width: 100%; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; background: var(--s2); border: 1px solid var(--border2);
+  border-radius: 8px; color: var(--text); outline: none;
+  transition: border-color 0.15s;
+}
+.fb-select { padding: 8px 10px; appearance: none; -webkit-appearance: none; cursor: pointer; }
+.fb-textarea { padding: 10px 12px; resize: vertical; min-height: 90px; line-height: 1.6; }
+.fb-select:focus, .fb-textarea:focus { border-color: var(--accent); background: #fff; }
+
+.fb-rating { display: flex; gap: 6px; }
+.fb-star {
+  font-size: 22px; cursor: pointer; transition: transform 0.1s;
+  opacity: 0.35; line-height: 1;
+}
+.fb-star.active { opacity: 1; }
+.fb-star:hover { transform: scale(1.2); }
+
+.fb-submit {
+  width: 100%; padding: 11px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; font-weight: 700; background: var(--accent); color: #fff;
+  border: none; border-radius: 8px; cursor: pointer;
+  transition: background 0.15s; letter-spacing: 0.02em;
+}
+.fb-submit:hover { background: var(--accent2); }
+.fb-submit:disabled { background: var(--text3); cursor: not-allowed; }
+
+.fb-char-count {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  color: var(--text3); text-align: right; margin-top: 3px;
+}
+
+.fb-success {
+  padding: 1.5rem 1.25rem; text-align: center; display: none;
+}
+.fb-success-icon { font-size: 40px; margin-bottom: 10px; }
+.fb-success-title {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px;
+  font-weight: 700; color: var(--text); margin-bottom: 6px;
+}
+.fb-success-msg {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--text2); line-height: 1.7;
+}
+@media print { .fb-btn, .fb-panel, .fb-overlay { display: none !important; } }
+
+
+/* Module card thumbnail */
+.mc-thumb{border-radius:8px;overflow:hidden;margin:-1.5rem -1.5rem 1rem -1.5rem;background:var(--s2);border-bottom:1px solid var(--border);padding:0.5rem;}
+.mc-thumb svg{display:block;width:100%;height:auto;}
+.mc-body{}
+.module-card{padding:1.5rem;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">Process<em>Desk</em></a>
+    <div class="nav-links">
+      <a href="#modules">Calculators</a>
+      <a href="#methodology">Methodology</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#modules" class="nav-cta">Open a Calculator →</a>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-eyebrow">Free · Browser-Based · No Login Required</div>
+  <h1>FEL-3 engineering calculators<br>that <em>actually work</em></h1>
+  <p class="hero-sub">Nine process engineering tools covering the full pre-FEED scope — from pipe sizing to project economics. <strong>Rigorous methodology. Decision-grade outputs.</strong> Built by engineers who got tired of rebuilding the same spreadsheet.</p>
+  <div class="hero-actions">
+    <a href="#modules" class="btn-primary">Explore all nine tools →</a>
+    <a href="#methodology" class="btn-secondary">See the methodology</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">9</span><span class="stat-lbl">Engineering modules</span></div>
+    <div class="stat"><span class="stat-num">100%</span><span class="stat-lbl">Free, no account</span></div>
+    <div class="stat"><span class="stat-num">AACE</span><span class="stat-lbl">Class 3 methodology</span></div>
+    <div class="stat"><span class="stat-num">API</span><span class="stat-lbl">520 / 521 / 526</span></div>
+  </div>
+</div>
+
+<div class="trust-bar">
+  <div class="trust-inner">
+    <span class="trust-label">Standards</span>
+    <div class="trust-items">
+      <span class="trust-item">API 520 / 521 / 526</span>
+      <span class="trust-item">ASME Section VIII</span>
+      <span class="trust-item">TEMA Standards</span>
+      <span class="trust-item">Darcy-Weisbach</span>
+      <span class="trust-item">AACE Class 3</span>
+      <span class="trust-item">Lang / Hand Factors</span>
+      <span class="trust-item">CEPCI Escalation</span>
+    </div>
+  </div>
+</div>
+
+<div class="ad-wrap">
+  <div class="ad-inner"><div class="ad-slot" style="height:90px;"><!-- AdSense / Carbon Ads --></div></div>
+</div>
+
+<!-- MODULES -->
+<section id="modules">
+  <div class="section-inner">
+    <span class="section-eyebrow">The FEL-3 Engineering Suite</span>
+    <h2>Nine modules. <em>One coherent platform.</em></h2>
+    <p class="section-sub">Each calculator runs entirely in your browser. No installation, no account, no data sent anywhere.</p>
+    <div <div class="modules-grid">
+
+  <!-- MODULE 01: Liquid Hydraulics — pipe cross-section with flow arrows -->
+  <a href="fel3_hydraulics.html" class="module-card">
+    <div class="mc-thumb">
+      <svg viewBox="0 0 280 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Pipe body -->
+        <rect x="20" y="44" width="240" height="32" rx="4" fill="rgba(26,86,219,0.08)" stroke="#1a56db" stroke-width="1.5"/>
+        <!-- Pipe walls top/bottom -->
+        <rect x="20" y="44" width="240" height="6" rx="2" fill="#1a56db" opacity="0.15"/>
+        <rect x="20" y="70" width="240" height="6" rx="2" fill="#1a56db" opacity="0.15"/>
+        <!-- Flow arrows -->
+        <line x1="48" y1="60" x2="78" y2="60" stroke="#1a56db" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="74,55 80,60 74,65" fill="none" stroke="#1a56db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="110" y1="60" x2="140" y2="60" stroke="#1a56db" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        <polyline points="136,55 142,60 136,65" fill="none" stroke="#1a56db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+        <line x1="172" y1="60" x2="202" y2="60" stroke="#1a56db" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+        <polyline points="198,55 204,60 198,65" fill="none" stroke="#1a56db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+        <!-- Pressure drop label -->
+        <text x="140" y="24" text-anchor="middle" font-family="monospace" font-size="9" fill="#1a56db" opacity="0.7">ΔP = f(L,D,v,ρ)</text>
+        <!-- Reynolds number -->
+        <text x="140" y="106" text-anchor="middle" font-family="monospace" font-size="9" fill="#5a6070">Re · f · NPS sensitivity</text>
+        <!-- Pump icon right -->
+        <circle cx="248" cy="60" r="14" fill="none" stroke="#1a56db" stroke-width="1.5" opacity="0.5"/>
+        <polyline points="240,60 248,53 256,60" fill="none" stroke="#1a56db" stroke-width="1.5" opacity="0.5" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="mc-body">
+      <div class="mc-top"><div class="mc-num">MODULE 01</div><span class="mc-arrow">↗</span></div>
+      <div class="mc-name">Liquid Hydraulics &amp; Line Sizing</div>
+      <div class="mc-desc">Pipe diameter, pressure drop, pump head. Darcy-Weisbach with Colebrook-White. Full NPS sensitivity table.</div>
+      <div class="mc-tags"><span class="mc-tag">Darcy-Weisbach</span><span class="mc-tag">Colebrook-White</span><span class="mc-tag">Pump sizing</span></div>
+    </div>
+  </a>
+
+  <!-- MODULE 02: Gas Hydraulics — Mach number / compressible flow -->
+  <a href="fel3_gas_hydraulics.html" class="module-card">
+    <div class="mc-thumb">
+      <svg viewBox="0 0 280 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Pipe with dashed flow (gas) -->
+        <rect x="20" y="44" width="200" height="32" rx="4" fill="rgba(8,145,178,0.06)" stroke="#0891b2" stroke-width="1.5"/>
+        <!-- Dashed flow lines -->
+        <line x1="40" y1="60" x2="200" y2="60" stroke="#0891b2" stroke-width="1.5" stroke-dasharray="8,5" opacity="0.6"/>
+        <!-- Compressor circle -->
+        <circle cx="236" cy="60" r="22" fill="rgba(8,145,178,0.08)" stroke="#0891b2" stroke-width="1.5"/>
+        <polyline points="224,60 236,50 248,60 236,70 224,60" fill="rgba(8,145,178,0.15)" stroke="#0891b2" stroke-width="1.2" stroke-linejoin="round"/>
+        <!-- Mach label -->
+        <text x="100" y="24" text-anchor="middle" font-family="monospace" font-size="9" fill="#0891b2" opacity="0.8">Ma = v / c  (API 14E)</text>
+        <!-- Erosional velocity bar -->
+        <rect x="20" y="96" width="160" height="6" rx="3" fill="#e2e6ec"/>
+        <rect x="20" y="96" width="95" height="6" rx="3" fill="#0891b2" opacity="0.7"/>
+        <text x="186" y="103" font-family="monospace" font-size="8" fill="#5a6070">Ve check</text>
+      </svg>
+    </div>
+    <div class="mc-body">
+      <div class="mc-top"><div class="mc-num">MODULE 02</div><span class="mc-arrow">↗</span></div>
+      <div class="mc-name">Gas Hydraulics &amp; Line Sizing</div>
+      <div class="mc-desc">Compressible flow, real gas Z-correction. API 14E erosional velocity, Mach check, compressor sizing.</div>
+      <div class="mc-tags"><span class="mc-tag">Weymouth</span><span class="mc-tag">Panhandle B</span><span class="mc-tag">API 14E</span></div>
+    </div>
+  </a>
+
+  <!-- MODULE 03: Heat Exchanger — TEMA shell & tube cross section -->
+  <a href="fel3_heat_exchanger.html" class="module-card">
+    <div class="mc-thumb">
+      <svg viewBox="0 0 280 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Shell -->
+        <rect x="30" y="32" width="220" height="56" rx="8" fill="rgba(220,38,38,0.05)" stroke="#dc2626" stroke-width="1.5"/>
+        <!-- Tube sheet left -->
+        <rect x="30" y="32" width="12" height="56" fill="rgba(220,38,38,0.12)" stroke="#dc2626" stroke-width="1"/>
+        <!-- Tube sheet right -->
+        <rect x="238" y="32" width="12" height="56" fill="rgba(220,38,38,0.12)" stroke="#dc2626" stroke-width="1"/>
+        <!-- Tubes -->
+        <line x1="42" y1="44" x2="238" y2="44" stroke="#dc2626" stroke-width="1.2" opacity="0.35"/>
+        <line x1="42" y1="52" x2="238" y2="52" stroke="#dc2626" stroke-width="1.2" opacity="0.55"/>
+        <line x1="42" y1="60" x2="238" y2="60" stroke="#dc2626" stroke-width="1.8" opacity="0.8"/>
+        <line x1="42" y1="68" x2="238" y2="68" stroke="#dc2626" stroke-width="1.2" opacity="0.55"/>
+        <line x1="42" y1="76" x2="238" y2="76" stroke="#dc2626" stroke-width="1.2" opacity="0.35"/>
+        <!-- Shell nozzles -->
+        <rect x="115" y="18" width="20" height="14" rx="3" fill="rgba(220,38,38,0.1)" stroke="#dc2626" stroke-width="1.2"/>
+        <rect x="145" y="88" width="20" height="14" rx="3" fill="rgba(220,38,38,0.1)" stroke="#dc2626" stroke-width="1.2"/>
+        <!-- Hot/cold arrows -->
+        <line x1="125" y1="10" x2="125" y2="18" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="140" y="10" font-family="monospace" font-size="8" fill="#dc2626" opacity="0.7">Hot in</text>
+        <text x="90" y="112" font-family="monospace" font-size="8" fill="#0891b2" opacity="0.7">Cold out →</text>
+        <!-- LMTD label -->
+        <text x="140" y="24" text-anchor="middle" font-family="monospace" font-size="8" fill="#dc2626" opacity="0.6">LMTD · U · A · TEMA</text>
+      </svg>
+    </div>
+    <div class="mc-body">
+      <div class="mc-top"><div class="mc-num">MODULE 03</div><span class="mc-arrow">↗</span></div>
+      <div class="mc-name">Shell &amp; Tube Heat Exchanger</div>
+      <div class="mc-desc">Full TEMA thermal design. LMTD-Ft, U with fouling, tube count, shell diameter. NTU-ε cross-check.</div>
+      <div class="mc-tags"><span class="mc-tag">TEMA</span><span class="mc-tag">LMTD-Ft</span><span class="mc-tag">NTU-ε</span></div>
+    </div>
+  </a>
+
+  <!-- MODULE 04: Relief Valve — ISA bowtie with pressure gauge -->
+  <a href="fel3_relief_valve.html" class="module-card">
+    <div class="mc-thumb">
+      <svg viewBox="0 0 280 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Inlet pipe -->
+        <line x1="20" y1="60" x2="78" y2="60" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
+        <!-- Outlet pipe -->
+        <line x1="202" y1="60" x2="260" y2="60" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
+        <!-- PRV bowtie body -->
+        <polygon points="78,36 202,52 202,68 78,84" fill="rgba(5,150,105,0.1)" stroke="#059669" stroke-width="1.8" stroke-linejoin="round"/>
+        <polygon points="202,36 78,52 78,68 202,84" fill="rgba(5,150,105,0.1)" stroke="#059669" stroke-width="1.8" stroke-linejoin="round"/>
+        <!-- Valve stem -->
+        <line x1="140" y1="44" x2="140" y2="20" stroke="#059669" stroke-width="2"/>
+        <!-- Actuator circle with label -->
+        <circle cx="140" cy="14" r="10" fill="rgba(5,150,105,0.1)" stroke="#059669" stroke-width="1.5"/>
+        <text x="140" y="17" text-anchor="middle" font-family="monospace" font-size="7" fill="#059669" font-weight="bold">PRV</text>
+        <!-- Set pressure annotation -->
+        <line x1="78" y1="60" x2="60" y2="92" stroke="#059669" stroke-width="1" stroke-dasharray="3,2" opacity="0.5"/>
+        <text x="18" y="106" font-family="monospace" font-size="8" fill="#5a6070">Pset · MAWP</text>
+        <!-- API label -->
+        <text x="140" y="108" text-anchor="middle" font-family="monospace" font-size="9" fill="#059669" opacity="0.7">API 520 · 521 · 526</text>
+        <!-- Orifice label -->
+        <text x="230" y="50" font-family="monospace" font-size="8" fill="#5a6070" opacity="0.8">Orifice</text>
+        <text x="230" y="62" font-family="monospace" font-size="8" fill="#059669" font-weight="bold">H</text>
+      </svg>
+    </div>
+    <div class="mc-body">
+      <div class="mc-top"><div class="mc-num">MODULE 04</div><span class="mc-arrow">↗</span></div>
+      <div class="mc-name">Relief Valve Sizing</div>
+      <div class="mc-desc">API 520 vapor, liquid, two-phase (Omega). Six relief scenarios, ASME accumulation, API 526 orifice selection.</div>
+      <div class="mc-tags"><span class="mc-tag">API 520</span><span class="mc-tag">API 526</span><span class="mc-tag">ASME VIII</span></div>
+    </div>
+  </a>
+
+  <!-- MODULE 05: Pump Selection — H-Q curve -->
+  <a href="fel3_pump_selection.html" class="module-card">
+    <div class="mc-thumb">
+      <svg viewBox="0 0 280 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Axes -->
+        <line x1="30" y1="96" x2="260" y2="96" stroke="#e2e6ec" stroke-width="1.5"/>
+        <line x1="30" y1="16" x2="30" y2="96" stroke="#e2e6ec" stroke-width="1.5"/>
+        <!-- Axis labels -->
+        <text x="145" y="112" text-anchor="middle" font-family="monospace" font-size="8" fill="#9aa0b0">Flow Q (m³/h)</text>
+        <text x="14" y="60" text-anchor="middle" font-family="monospace" font-size="8" fill="#9aa0b0" transform="rotate(-90,14,60)">Head H (m)</text>
+        <!-- H-Q pump curve (falling) -->
+        <path d="M 30 22 C 80 26, 140 40, 220 88" stroke="#d97706" stroke-width="2" fill="none"/>
+        <!-- System curve (rising) -->
+        <path d="M 30 88 C 80 82, 140 68, 220 30" stroke="#1a56db" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+        <!-- Operating point intersection -->
+        <circle cx="132" cy="55" r="5" fill="#dc2626" stroke="white" stroke-width="1.5"/>
+        <!-- BEP marker -->
+        <line x1="132" y1="55" x2="132" y2="96" stroke="#dc2626" stroke-width="1" stroke-dasharray="3,2" opacity="0.5"/>
+        <text x="120" y="107" font-family="monospace" font-size="7" fill="#dc2626">BEP</text>
+        <!-- Legend -->
+        <line x1="170" y1="20" x2="188" y2="20" stroke="#d97706" stroke-width="2"/>
+        <text x="192" y="23" font-family="monospace" font-size="7" fill="#5a6070">H-Q curve</text>
+        <line x1="170" y1="32" x2="188" y2="32" stroke="#1a56db" stroke-width="2" stroke-dasharray="4,2"/>
+        <text x="192" y="35" font-family="monospace" font-size="7" fill="#5a6070">System</text>
+        <!-- NPSH label -->
+        <text x="30" y="14" font-family="monospace" font-size="8" fill="#9aa0b0">NPSH · Affinity · Ns</text>
+      </svg>
+    </div>
+    <div class="mc-body">
+      <div class="mc-top"><div class="mc-num">MODULE 05</div><span class="mc-arrow">↗</span></div>
+      <div class="mc-name">Pump Selection &amp; System Curve</div>
+      <div class="mc-desc">H-Q and system curve intersection, NPSH cavitation check, BEP deviation, affinity laws at three speeds.</div>
+      <div class="mc-tags"><span class="mc-tag">H-Q curve</span><span class="mc-tag">NPSH</span><span class="mc-tag">Affinity laws</span></div>
+    </div>
+  </a>
+
+  <!-- MODULE 06: Mass & Energy Balance — Sankey flow diagram -->
+  <a href="fel3_meb.html" class="module-card">
+    <div class="mc-thumb">
+      <svg viewBox="0 0 280 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Feed stream (wide, left) -->
+        <path d="M 20 40 L 90 40 L 90 80 L 20 80 Z" fill="rgba(124,58,237,0.12)" stroke="#7c3aed" stroke-width="1.2"/>
+        <text x="55" y="63" text-anchor="middle" font-family="monospace" font-size="8" fill="#7c3aed">Feed</text>
+        <text x="55" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#7c3aed" opacity="0.7">12,450 kg/h</text>
+        <!-- Unit op box -->
+        <rect x="110" y="30" width="60" height="60" rx="5" fill="rgba(124,58,237,0.06)" stroke="#7c3aed" stroke-width="1.5"/>
+        <text x="140" y="58" text-anchor="middle" font-family="monospace" font-size="8" fill="#7c3aed">Unit</text>
+        <text x="140" y="69" text-anchor="middle" font-family="monospace" font-size="8" fill="#7c3aed">Op</text>
+        <!-- Connector feed->unit -->
+        <rect x="90" y="46" width="20" height="28" fill="rgba(124,58,237,0.12)" stroke="none"/>
+        <!-- Product stream top (vapour) -->
+        <path d="M 170 30 L 260 24 L 260 42 L 170 48 Z" fill="rgba(5,150,105,0.1)" stroke="#059669" stroke-width="1.2"/>
+        <text x="215" y="38" text-anchor="middle" font-family="monospace" font-size="7" fill="#059669">Overhead</text>
+        <!-- Product stream bottom (liquid) -->
+        <path d="M 170 72 L 260 78 L 260 96 L 170 90 Z" fill="rgba(220,38,38,0.08)" stroke="#dc2626" stroke-width="1.2"/>
+        <text x="215" y="90" text-anchor="middle" font-family="monospace" font-size="7" fill="#dc2626">Bottoms</text>
+        <!-- Closure check -->
+        <text x="140" y="112" text-anchor="middle" font-family="monospace" font-size="8" fill="#5a6070">Closure: 0.51% ✓</text>
+      </svg>
+    </div>
+    <div class="mc-body">
+      <div class="mc-top"><div class="mc-num">MODULE 06</div><span class="mc-arrow">↗</span></div>
+      <div class="mc-name">Mass &amp; Energy Balance Engine</div>
+      <div class="mc-desc">Multi-stream process balance, stream table, component closure check, Sankey diagram, annual energy figure.</div>
+      <div class="mc-tags"><span class="mc-tag">Stream table</span><span class="mc-tag">Sankey</span><span class="mc-tag">5 templates</span></div>
+    </div>
+  </a>
+
+  <!-- MODULE 07: Cost Estimator — CAPEX waterfall bar chart -->
+  <a href="fel3_cost_estimator.html" class="module-card">
+    <div class="mc-thumb">
+      <svg viewBox="0 0 280 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Baseline -->
+        <line x1="20" y1="98" x2="265" y2="98" stroke="#e2e6ec" stroke-width="1.5"/>
+        <!-- Waterfall bars (CAPEX buildups) -->
+        <!-- Purchased Equip -->
+        <rect x="28" y="52" width="28" height="46" rx="2" fill="rgba(234,88,12,0.2)" stroke="#ea580c" stroke-width="1.2"/>
+        <text x="42" y="112" text-anchor="middle" font-family="monospace" font-size="6" fill="#5a6070">PEC</text>
+        <!-- Installation -->
+        <rect x="66" y="38" width="28" height="60" rx="2" fill="rgba(234,88,12,0.3)" stroke="#ea580c" stroke-width="1.2"/>
+        <text x="80" y="112" text-anchor="middle" font-family="monospace" font-size="6" fill="#5a6070">Inst.</text>
+        <!-- Piping/Civil -->
+        <rect x="104" y="28" width="28" height="70" rx="2" fill="rgba(234,88,12,0.4)" stroke="#ea580c" stroke-width="1.2"/>
+        <text x="118" y="112" text-anchor="middle" font-family="monospace" font-size="6" fill="#5a6070">P&amp;C</text>
+        <!-- Instruments -->
+        <rect x="142" y="20" width="28" height="78" rx="2" fill="rgba(234,88,12,0.5)" stroke="#ea580c" stroke-width="1.2"/>
+        <text x="156" y="112" text-anchor="middle" font-family="monospace" font-size="6" fill="#5a6070">I&amp;E</text>
+        <!-- TIC -->
+        <rect x="180" y="14" width="28" height="84" rx="2" fill="rgba(234,88,12,0.65)" stroke="#ea580c" stroke-width="1.5"/>
+        <text x="194" y="112" text-anchor="middle" font-family="monospace" font-size="6" fill="#5a6070">TIC</text>
+        <!-- TPC -->
+        <rect x="218" y="8" width="28" height="90" rx="2" fill="#ea580c" stroke="#ea580c" stroke-width="1.2"/>
+        <text x="232" y="112" text-anchor="middle" font-family="monospace" font-size="6" fill="#5a6070">TPC</text>
+        <!-- Value label -->
+        <text x="232" y="5" text-anchor="middle" font-family="monospace" font-size="8" fill="#ea580c" font-weight="bold">$18.4M</text>
+        <!-- CEPCI label -->
+        <text x="50" y="16" font-family="monospace" font-size="8" fill="#9aa0b0">CEPCI · Lang · Hand</text>
+      </svg>
+    </div>
+    <div class="mc-body">
+      <div class="mc-top"><div class="mc-num">MODULE 07</div><span class="mc-arrow">↗</span></div>
+      <div class="mc-name">Equipment Cost Estimator</div>
+      <div class="mc-desc">Factored CAPEX — purchased equipment to TPC. Lang/Hand factors, CEPCI escalation, location factor.</div>
+      <div class="mc-tags"><span class="mc-tag">Lang / Hand</span><span class="mc-tag">CEPCI</span><span class="mc-tag">AACE ±30%</span></div>
+    </div>
+  </a>
+
+  <!-- MODULE 08: Project Economics — NPV/IRR S-curve -->
+  <a href="fel3_economics.html" class="module-card">
+    <div class="mc-thumb">
+      <svg viewBox="0 0 280 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Axes -->
+        <line x1="30" y1="98" x2="260" y2="98" stroke="#e2e6ec" stroke-width="1.5"/>
+        <line x1="30" y1="14" x2="30" y2="98" stroke="#e2e6ec" stroke-width="1.5"/>
+        <!-- Zero line -->
+        <line x1="30" y1="58" x2="260" y2="58" stroke="#e2e6ec" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- Cumulative DCF curve (negative then rising) -->
+        <path d="M 30 58 C 50 65, 75 80, 95 86 C 115 92, 125 88, 140 78 C 155 68, 175 50, 210 32 C 230 22, 245 18, 260 16" stroke="#059669" stroke-width="2.5" fill="none"/>
+        <!-- Fill under curve (positive zone) -->
+        <path d="M 130 58 C 145 52, 175 40, 210 28 C 230 20, 245 17, 260 16 L 260 58 Z" fill="rgba(5,150,105,0.08)"/>
+        <!-- Payback marker -->
+        <circle cx="130" cy="58" r="4" fill="#1a56db" stroke="white" stroke-width="1.5"/>
+        <line x1="130" y1="58" x2="130" y2="98" stroke="#1a56db" stroke-width="1" stroke-dasharray="3,2" opacity="0.5"/>
+        <text x="118" y="110" font-family="monospace" font-size="7" fill="#1a56db">Payback</text>
+        <!-- NPV label -->
+        <text x="250" y="12" text-anchor="end" font-family="monospace" font-size="9" fill="#059669" font-weight="bold">+$24.7M</text>
+        <text x="250" y="23" text-anchor="end" font-family="monospace" font-size="7" fill="#5a6070">NPV</text>
+        <!-- IRR badge -->
+        <rect x="170" y="70" width="48" height="16" rx="3" fill="rgba(5,150,105,0.1)" stroke="#059669" stroke-width="1"/>
+        <text x="194" y="81" text-anchor="middle" font-family="monospace" font-size="8" fill="#059669">IRR 22.4%</text>
+        <!-- Axis labels -->
+        <text x="145" y="112" text-anchor="middle" font-family="monospace" font-size="7" fill="#9aa0b0">Project year →</text>
+      </svg>
+    </div>
+    <div class="mc-body">
+      <div class="mc-top"><div class="mc-num">MODULE 08</div><span class="mc-arrow">↗</span></div>
+      <div class="mc-name">Project Economics Engine</div>
+      <div class="mc-desc">Full DCF model — NPV, IRR, payback, phased CAPEX, depreciation, tax. Waterfall, NPV profile, tornado chart.</div>
+      <div class="mc-tags"><span class="mc-tag">NPV / IRR</span><span class="mc-tag">DCF</span><span class="mc-tag">Tornado</span></div>
+    </div>
+  </a>
+
+  <!-- MODULE 09: Dashboard — traffic light gate review -->
+  <a href="fel3_dashboard.html" class="module-card" style="border-color:var(--accent-light);background:var(--accent-bg);">
+    <div class="mc-thumb" style="background:rgba(26,86,219,0.04);">
+      <svg viewBox="0 0 280 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Stage gate bar -->
+        <rect x="20" y="16" width="240" height="22" rx="4" fill="rgba(26,86,219,0.06)" stroke="#1a56db" stroke-width="1" opacity="0.5"/>
+        <!-- FEL stages -->
+        <rect x="20" y="16" width="58" height="22" rx="4" fill="rgba(5,150,105,0.15)" stroke="#059669" stroke-width="1"/>
+        <text x="49" y="30" text-anchor="middle" font-family="monospace" font-size="7" fill="#059669">FEL-1 ✓</text>
+        <rect x="82" y="16" width="58" height="22" rx="0" fill="rgba(5,150,105,0.15)" stroke="#059669" stroke-width="1"/>
+        <text x="111" y="30" text-anchor="middle" font-family="monospace" font-size="7" fill="#059669">FEL-2 ✓</text>
+        <rect x="144" y="16" width="58" height="22" rx="0" fill="rgba(26,86,219,0.2)" stroke="#1a56db" stroke-width="1.5"/>
+        <text x="173" y="30" text-anchor="middle" font-family="monospace" font-size="8" fill="#1a56db" font-weight="bold">FEL-3 ▶</text>
+        <rect x="206" y="16" width="54" height="22" rx="4" fill="rgba(15,20,32,0.04)" stroke="#e2e6ec" stroke-width="1"/>
+        <text x="233" y="30" text-anchor="middle" font-family="monospace" font-size="7" fill="#9aa0b0">FEED</text>
+        <!-- Traffic lights -->
+        <circle cx="44" cy="68" r="7" fill="#059669"/>
+        <text x="58" y="72" font-family="monospace" font-size="8" fill="#374151">MEB closed</text>
+        <circle cx="44" cy="86" r="7" fill="#059669"/>
+        <text x="58" y="90" font-family="monospace" font-size="8" fill="#374151">Equipment sized</text>
+        <circle cx="44" cy="104" r="7" fill="#d97706"/>
+        <text x="58" y="108" font-family="monospace" font-size="8" fill="#374151">CAPEX ±30%</text>
+        <!-- Gate decision -->
+        <rect x="180" y="60" width="84" height="52" rx="6" fill="rgba(5,150,105,0.08)" stroke="#059669" stroke-width="1.2"/>
+        <text x="222" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#059669">RECOMMEND</text>
+        <text x="222" y="94" text-anchor="middle" font-family="monospace" font-size="8" fill="#059669" font-weight="bold">PROCEED</text>
+        <text x="222" y="106" text-anchor="middle" font-family="monospace" font-size="7" fill="#5a6070">0 red · 1 amber</text>
+      </svg>
+    </div>
+    <div class="mc-body">
+      <div class="mc-top"><div class="mc-num">MODULE 09</div><span class="mc-arrow" style="color:var(--accent);">↗</span></div>
+      <div class="mc-name">FEL-3 Project Dashboard</div>
+      <div class="mc-desc">Executive gate review. Traffic light readiness, economics snapshot, risk register, assumptions. PDF-ready print.</div>
+      <div class="mc-tags"><span class="mc-tag">Gate review</span><span class="mc-tag">Traffic lights</span><span class="mc-tag">PDF export</span></div>
+    </div>
+  </a>
+
+</div>
+  </div>
+</section>
+
+<div class="ad-wrap" style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="ad-inner"><div class="ad-slot" style="height:90px;"><!-- AdSense / Carbon Ads --></div></div>
+</div>
+
+<!-- HOW -->
+<section id="how" style="background:var(--s1);border-bottom:1px solid var(--border);">
+  <div class="section-inner">
+    <span class="section-eyebrow">How it works</span>
+    <h2>Open. Enter. <em>Decide.</em></h2>
+    <p class="section-sub">No setup, no account, no data uploaded anywhere. Every calculation runs locally in your browser.</p>
+    <div class="how-grid">
+      <div class="how-card"><div class="how-num">01</div><div class="how-title">Open any calculator</div><div class="how-desc">Click a module above. It opens instantly — nothing to install, no login screen. Works on any browser, any device, including tablets on site.</div></div>
+      <div class="how-card"><div class="how-num">02</div><div class="how-title">Enter your process data</div><div class="how-desc">Every module loads with realistic default values so you see it working immediately. Replace with your project data and results update in real time.</div></div>
+      <div class="how-card"><div class="how-num">03</div><div class="how-title">Get deliverable-ready outputs</div><div class="how-desc">Results are formatted as engineering deliverables — datasheets, stream tables, sensitivity tables, charts — ready for a process design package or gate review.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section id="methodology">
+  <div class="section-inner">
+    <span class="section-eyebrow">Engineering rigor</span>
+    <h2>Not approximations. <em>Real methodology.</em></h2>
+    <p class="section-sub">Every calculation uses published industry standards and peer-reviewed engineering references — not simplified rules of thumb.</p>
+    <div class="meth-grid">
+      <div class="meth-card"><div class="meth-icon">🔄</div><div><div class="meth-title">Colebrook-White iterative solver</div><div class="meth-desc">Friction factor solved by 50-iteration Newton-Raphson converging to 10⁻¹⁰ — the same algorithm used in commercial simulation software.</div></div></div>
+      <div class="meth-card"><div class="meth-icon">📐</div><div><div class="meth-title">API 520 orifice sizing equations</div><div class="meth-desc">Vapor (critical and subcritical), liquid (Bernoulli with Kw), and two-phase (Omega method, API 520 Appendix D) all implemented.</div></div></div>
+      <div class="meth-card"><div class="meth-icon">🌡</div><div><div class="meth-title">LMTD-Ft Bell-Delaware correlation</div><div class="meth-desc">Ft factor from R and S parameters for 1-2 and 2-4 exchanger configurations with proper singularity handling at R=1.</div></div></div>
+      <div class="meth-card"><div class="meth-icon">💹</div><div><div class="meth-title">Newton-Raphson IRR solver</div><div class="meth-desc">IRR by 200-iteration Newton-Raphson on the free cash flow stream, converging to 10⁻⁸. Handles non-standard cash flow profiles.</div></div></div>
+      <div class="meth-card"><div class="meth-icon">🏭</div><div><div class="meth-title">Hand factors from Turton et al.</div><div class="meth-desc">Eight equipment-specific installation cost components per equipment type — erection, piping, instrumentation, electrical, civil, structural, insulation, painting.</div></div></div>
+      <div class="meth-card"><div class="meth-icon">📊</div><div><div class="meth-title">TEMA bundle diameter correlations</div><div class="meth-desc">Shell diameter from K₁/n₁ layout constants for triangular and square pitch per TEMA standards.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY FREE -->
+<section id="why" style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="section-inner">
+    <span class="section-eyebrow">Why free?</span>
+    <h2>Good engineering tools should be <em>accessible.</em></h2>
+    <div class="why-grid">
+      <div class="why-list">
+        <div class="why-item"><div class="why-icon">🚫</div><div><div class="why-title">No paywalled methodology</div><div class="why-desc">The Colebrook-White equation does not cost $50,000 per seat. Core FEL-3 calculations are free at ProcessDesk — always.</div></div></div>
+        <div class="why-item"><div class="why-icon">🔍</div><div><div class="why-title">Full transparency</div><div class="why-desc">Every equation, every assumption, every correlation is visible. You can see exactly how the answer was derived — because you need to defend it.</div></div></div>
+        <div class="why-item"><div class="why-icon">🔒</div><div><div class="why-title">Your data stays yours</div><div class="why-desc">All calculations run in your browser. No process data is transmitted to any server. No cloud dependency. No vendor lock-in.</div></div></div>
+        <div class="why-item"><div class="why-icon">⚡</div><div><div class="why-title">Sustained by the community</div><div class="why-desc">ProcessDesk is free because of non-intrusive advertising and optional Pro subscriptions. If it saves you time, share it with a colleague.</div></div></div>
+      </div>
+      <div class="code-visual">
+        <div class="code-bar"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+        <div class="code-block">
+          <div><span class="code-comment">// Colebrook-White — iterative solver</span></div>
+          <div><span class="code-kw">function</span> <span class="code-fn">colebrook</span>(Re, eps_D) {</div>
+          <div>&nbsp;&nbsp;<span class="code-kw">if</span> (Re &lt; <span class="code-num">2300</span>) <span class="code-kw">return</span> <span class="code-num">64</span>/Re;</div>
+          <div>&nbsp;&nbsp;<span class="code-kw">let</span> f = <span class="code-num">0.02</span>;</div>
+          <div>&nbsp;&nbsp;<span class="code-kw">for</span> (<span class="code-kw">let</span> i=<span class="code-num">0</span>; i&lt;<span class="code-num">50</span>; i++) {</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-kw">const</span> fn = <span class="code-num">1</span>/(<span class="code-op">-2</span>*log10(</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps_D/<span class="code-num">3.7</span> + <span class="code-num">2.51</span>/(Re*√f)</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;))<span class="code-op">**</span><span class="code-num">2</span>;</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-kw">if</span>(|fn-f| &lt; <span class="code-num">1e-10</span>) <span class="code-kw">break</span>;</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;f = fn;</div>
+          <div>&nbsp;&nbsp;}</div>
+          <div>&nbsp;&nbsp;<span class="code-kw">return</span> f;</div>
+          <div>}</div>
+          <br>
+          <div><span class="code-comment">// The actual equation. Solved properly.</span></div>
+          <div><span class="code-comment">// Not a lookup. Not a shortcut.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="section-inner">
+    <span class="section-eyebrow">Pricing</span>
+    <h2>Start free. <em>Upgrade when you need more.</em></h2>
+    <p class="section-sub">The full calculation suite is free forever. Pro adds workflow features for engineers using ProcessDesk regularly on real projects.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-name">Free</div>
+        <div class="price-amount">$0<span> /forever</span></div>
+        <div class="price-desc">Full access to all nine FEL-3 engineering calculators. No account, no credit card.</div>
+        <div class="price-features">
+          <div class="pf"><div class="pf-check">✓</div>All 9 calculation modules</div>
+          <div class="pf"><div class="pf-check">✓</div>Full industry-standard methodology</div>
+          <div class="pf"><div class="pf-check">✓</div>Sensitivity tables and charts</div>
+          <div class="pf"><div class="pf-check">✓</div>Auto-generated engineering datasheets</div>
+          <div class="pf"><div class="pf-check">✓</div>No data uploaded, ever</div>
+        </div>
+        <a href="#modules" class="price-btn price-btn-free">Open the calculators →</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-badge">COMING SOON</div>
+        <div class="price-name">Pro</div>
+        <div class="price-amount">$19<span> /month</span></div>
+        <div class="price-desc">For engineers running FEL-3 studies regularly who need to save, export, and share their work.</div>
+        <div class="price-features">
+          <div class="pf"><div class="pf-check">✓</div>Everything in Free</div>
+          <div class="pf dimmed"><div class="pf-soon">◷</div>PDF export of calculation sheets</div>
+          <div class="pf dimmed"><div class="pf-soon">◷</div>Save and reload project data</div>
+          <div class="pf dimmed"><div class="pf-soon">◷</div>Project library</div>
+          <div class="pf dimmed"><div class="pf-soon">◷</div>Shareable calculation links</div>
+          <div class="pf dimmed"><div class="pf-soon">◷</div>No advertisements</div>
+        </div>
+        <a href="#" class="price-btn price-btn-paid">Join the waitlist →</a>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Team</div>
+        <div class="price-amount">$49<span> /month</span></div>
+        <div class="price-desc">For engineering teams who want shared project libraries and consistent methodology across projects.</div>
+        <div class="price-features">
+          <div class="pf"><div class="pf-check">✓</div>Everything in Pro</div>
+          <div class="pf dimmed"><div class="pf-soon">◷</div>Up to 5 team members</div>
+          <div class="pf dimmed"><div class="pf-soon">◷</div>Shared project library</div>
+          <div class="pf dimmed"><div class="pf-soon">◷</div>Custom equipment databanks</div>
+          <div class="pf dimmed"><div class="pf-soon">◷</div>Priority support</div>
+        </div>
+        <a href="#" class="price-btn price-btn-free">Contact us →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ad-wrap" style="border-top:1px solid var(--border);">
+  <div class="ad-inner"><div class="ad-slot" style="height:90px;"><!-- AdSense / Carbon Ads --></div></div>
+</div>
+
+<div class="cta-section">
+  <div class="cta-inner">
+    <span class="section-eyebrow">Ready to use it</span>
+    <h2>Stop rebuilding the same spreadsheet.</h2>
+    <p>Open any calculator, enter your data, get a defensible FEL-3 output in minutes. No setup. No account. No cost.</p>
+    <a href="#modules" class="btn-white">Open the suite →</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">Process<em>Desk</em></div>
+      <p class="footer-desc">Free FEL-3 process engineering calculators. Nine modules covering the full pre-FEED scope. Built by engineers, for engineers.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Calculators</h4>
+      <a href="fel3_hydraulics.html">Liquid Hydraulics</a>
+      <a href="fel3_gas_hydraulics.html">Gas Hydraulics</a>
+      <a href="fel3_heat_exchanger.html">Heat Exchanger</a>
+      <a href="fel3_relief_valve.html">Relief Valve</a>
+      <a href="fel3_pump_selection.html">Pump Selection</a>
+    </div>
+    <div class="footer-col">
+      <h4>More tools</h4>
+      <a href="fel3_meb.html">Mass & Energy Balance</a>
+      <a href="fel3_cost_estimator.html">Cost Estimator</a>
+      <a href="fel3_economics.html">Project Economics</a>
+      <a href="fel3_dashboard.html">Project Dashboard</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">Contact</a>
+      <a href="#">Pro waitlist</a>
+      <a href="#">Advertise with us</a>
+      <a href="#">Privacy policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 ProcessDesk. All calculations run client-side. No process data is transmitted or stored.</p>
+    <p>Not a substitute for professional engineering judgment.</p>
+  </div>
+</footer>
+</body>
+</html>

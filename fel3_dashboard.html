@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FEL-3 Project Dashboard — Gate Review | ProcessDesk</title>
+<meta name="description" content="Free FEL-3 project gate review dashboard. Traffic light readiness assessment, economics snapshot, CAPEX estimate, risk register, assumptions table. PDF-ready executive summary.">
+<link rel="canonical" href="https://processdesks.com/fel3_dashboard.html">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg:#f8f9fb; --s1:#ffffff; --s2:#f2f4f7; --s3:#e8ebf0;
+  --border:#e2e6ec; --border2:#d0d5de;
+  --text:#0f1420; --text2:#5a6070; --text3:#9aa0b0;
+  --accent:#1a56db; --accent2:#1648c0;
+  --accent-bg:#eef2ff; --accent-light:#c7d4fa;
+  --green:#059669; --green-bg:#ecfdf5;
+  --red:#dc2626; --red-bg:#fef2f2;
+  --amber:#d97706; --amber-bg:#fffbeb;
+  --orange:#ea580c; --orange-bg:#fff7ed;
+  --purple:#7c3aed; --purple-bg:#f5f3ff;
+  --teal:#0891b2; --teal-bg:#ecfeff;
+  --radius:12px; --rsm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.05);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+.pd-nav { position:fixed; top:0; left:0; right:0; z-index:9999; background:rgba(255,255,255,0.97); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.pd-nav-inner { max-width:1280px; margin:0 auto; height:54px; display:flex; align-items:center; padding:0 1.5rem; gap:0; }
+.pd-logo { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:var(--text); text-decoration:none; letter-spacing:0.3px; margin-right:1.5rem; white-space:nowrap; flex-shrink:0; }
+.pd-logo em { font-style:normal; color:var(--accent); }
+.pd-tools { display:flex; align-items:center; gap:0; overflow-x:auto; flex:1; scrollbar-width:none; }
+.pd-tools::-webkit-scrollbar { display:none; }
+.pd-tool { font-size:11px; color:var(--text2); text-decoration:none; padding:6px 9px; border-radius:var(--rsm); white-space:nowrap; transition:all 0.15s; font-weight:500; }
+.pd-tool:hover { color:var(--accent); background:var(--accent-bg); }
+.pd-tool.active { color:var(--accent); background:var(--accent-bg); font-weight:600; }
+.pd-home { font-size:11px; color:#fff; background:var(--accent); text-decoration:none; padding:6px 14px; border-radius:var(--rsm); white-space:nowrap; font-weight:600; margin-left:auto; flex-shrink:0; transition:background 0.15s; }
+.pd-home:hover { background:var(--accent2); }
+body { padding-top:54px; }
+
+.pd-footer { background:#0f1420; color:rgba(255,255,255,0.6); padding:3rem 2rem 1.5rem; margin-top:3rem; }
+.pd-footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:2.5rem; margin-bottom:2rem; }
+@media(max-width:720px){ .pd-footer-inner { grid-template-columns:1fr 1fr; gap:1.5rem; } }
+@media(max-width:420px){ .pd-footer-inner { grid-template-columns:1fr; } }
+.pd-footer-logo { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:#fff; margin-bottom:0.6rem; }
+.pd-footer-logo em { font-style:normal; color:#93c5fd; }
+.pd-footer-desc { font-size:12px; line-height:1.75; max-width:220px; }
+.pd-footer-col h4 { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; color:rgba(255,255,255,0.3); text-transform:uppercase; margin-bottom:0.85rem; }
+.pd-footer-col a { display:block; font-size:12px; color:rgba(255,255,255,0.55); text-decoration:none; margin-bottom:7px; transition:color 0.15s; }
+.pd-footer-col a:hover { color:#fff; }
+.pd-footer-bottom { max-width:1280px; margin:0 auto; padding-top:1.25rem; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.pd-footer-bottom p { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.25); }
+
+.page { max-width:1280px; margin:0 auto; padding:0 1.5rem 2rem; }
+/* Module header */
+.mod-header { padding:1.5rem 0 1.25rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:flex-end; gap:1rem; flex-wrap:wrap; }
+.mod-logo { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; color:var(--text2); letter-spacing:0.5px; }
+.mod-logo em { font-style:normal; color:var(--accent); }
+.mod-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.02em; }
+.mod-subtitle { font-size:13px; color:var(--text2); margin-top:3px; }
+.mod-badges { display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; align-items:center; }
+.mod-badge { font-family:'DM Mono',monospace; font-size:10px; padding:4px 10px; border-radius:3px; border:1px solid; letter-spacing:0.04em; }
+.mb-blue { background:var(--accent-bg); color:var(--accent); border-color:var(--accent-light); }
+.mb-green { background:var(--green-bg); color:var(--green); border-color:#a7f3d0; }
+.mb-amber { background:var(--amber-bg); color:var(--amber); border-color:#fcd34d; }
+.mb-red { background:var(--red-bg); color:var(--red); border-color:#fca5a5; }
+/* Layout grids */
+.col2 { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; margin-bottom:1rem; }
+.col3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-bottom:1rem; }
+.g2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.75rem; }
+.g3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.75rem; }
+@media(max-width:900px){ .col2,.col3 { grid-template-columns:1fr; } }
+@media(max-width:540px){ .g2,.g3 { grid-template-columns:1fr; } }
+/* Cards */
+.card { background:var(--s1); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.25rem; margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow); }
+.card-title { font-family:'DM Mono',monospace; font-size:10px; font-weight:500; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.85rem; display:flex; align-items:center; gap:8px; }
+.card-title::after { content:''; flex:1; height:1px; background:var(--border); }
+/* Form elements */
+.field { margin-bottom:0.65rem; }
+.lbl { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); margin-bottom:3px; display:block; letter-spacing:0.04em; }
+.ir { display:flex; gap:5px; align-items:center; }
+.unit { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); min-width:52px; flex-shrink:0; }
+input[type="number"], input[type="text"], select, textarea {
+  background:var(--s2); border:1px solid var(--border2); border-radius:var(--rsm);
+  color:var(--text); font-family:'DM Mono',monospace; font-size:12px;
+  padding:6px 9px; width:100%; outline:none; transition:border-color 0.15s; -webkit-appearance:none;
+}
+input:focus, select:focus, textarea:focus { border-color:var(--accent); background:var(--s1); }
+.ir input, .ir select { flex:1; width:auto; min-width:0; }
+/* Toggle */
+.tog { display:flex; border:1px solid var(--border2); border-radius:var(--rsm); overflow:hidden; margin-bottom:0.85rem; }
+.tb { flex:1; padding:8px 6px; font-family:'DM Mono',monospace; font-size:11px; background:transparent; border:none; cursor:pointer; color:var(--text2); transition:all 0.15s; }
+.tb.av { background:var(--accent); color:#fff; font-weight:500; }
+/* Run button */
+.run-btn { width:100%; padding:12px; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.5px; background:var(--accent); color:#fff; border:none; border-radius:var(--rsm); cursor:pointer; transition:background 0.15s; margin-bottom:1rem; }
+.run-btn:hover { background:var(--accent2); }
+/* Metrics */
+.mg { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:1rem; }
+@media(max-width:600px){ .mg { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.metric { background:var(--s2); border-radius:var(--rsm); padding:0.75rem 1rem; border:1px solid var(--border); }
+.ml { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); margin-bottom:4px; letter-spacing:0.04em; }
+.mv { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; color:var(--text); }
+.mv.acc { color:var(--accent); }
+.mv.gr { color:var(--green); }
+.mv.rd { color:var(--red); }
+.mv.am { color:var(--amber); }
+.mu { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); }
+/* Alerts */
+.alert { border-radius:0 var(--rsm) var(--rsm) 0; padding:8px 12px; font-family:'DM Mono',monospace; font-size:11px; line-height:1.6; margin-bottom:8px; display:none; }
+.alert.show { display:block; }
+.aok  { background:var(--green-bg); border-left:3px solid var(--green); color:var(--green); }
+.awk  { background:var(--amber-bg); border-left:3px solid var(--amber); color:var(--amber); }
+.aer  { background:var(--red-bg);   border-left:3px solid var(--red);   color:var(--red); }
+.ainf { background:var(--accent-bg);border-left:3px solid var(--accent);color:var(--accent); }
+/* Tables */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; font-size:11px; }
+th { text-align:left; padding:7px 10px; border-bottom:1px solid var(--border2); color:var(--text2); font-size:10px; letter-spacing:0.06em; background:var(--s2); }
+td { padding:6px 10px; border-bottom:1px solid var(--border); color:var(--text); }
+tr:last-child td { border-bottom:none; }
+td.num { text-align:right; }
+td.ok  { color:var(--green); }
+td.wk  { color:var(--amber); }
+td.er  { color:var(--red); }
+tr.sel { background:var(--accent-bg); }
+/* Divider */
+.divider { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); letter-spacing:0.1em; text-transform:uppercase; display:flex; align-items:center; gap:10px; margin:1.5rem 0 1rem; }
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border2); }
+.note { font-family:'DM Mono',monospace; font-size:11px; color:var(--text2); line-height:1.7; }
+/* Chart containers */
+.chart-wrap { background:var(--s1); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow); }
+.chart-title { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem; }
+.chart-box { position:relative; width:100%; }
+
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-bottom:1rem;}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-bottom:1rem;}
+.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.75rem;margin-bottom:1rem;}
+@media(max-width:800px){.grid-3,.grid-4{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:500px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}}
+.stage-gate{display:flex;gap:0;margin-bottom:1.75rem;border:1px solid var(--border2);border-radius:var(--rsm);overflow:hidden;}
+.sg-step{flex:1;padding:10px 8px;text-align:center;background:var(--s2);border-right:1px solid var(--border);}
+.sg-step:last-child{border-right:none;}
+.sg-step.done{background:var(--teal-bg);}
+.sg-step.active{background:var(--accent);color:#fff;}
+.sg-num{font-size:18px;font-weight:700;color:var(--accent);display:block;}
+.sg-step.active .sg-num{color:#fff;}
+.sg-step:not(.done):not(.active) .sg-num{color:var(--text3);}
+.sg-name{font-family:'DM Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:0.05em;display:block;margin-top:2px;}
+.section-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:0.9rem;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);padding-bottom:0.6rem;}
+.kpi-box{background:var(--s2);border-radius:var(--rsm);padding:0.85rem 1rem;border:1px solid var(--border);}
+.kpi-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);margin-bottom:3px;}
+.kpi-val{font-size:22px;font-weight:700;color:var(--text);line-height:1;}
+.kpi-val.pos{color:var(--green);}.kpi-val.neg{color:var(--red);}.kpi-val.warn{color:var(--amber);}
+.kpi-unit{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px;}
+.tl-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.tl-row:last-child{border-bottom:none;}
+.tl{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
+.tl.green{background:var(--green);}.tl.amber{background:var(--amber);}.tl.red{background:var(--red);}.tl.gray{background:var(--text3);}
+.tl-label{font-size:12px;font-weight:600;flex:1;}
+.tl-note{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);}
+.tl-select{font-family:'DM Mono',monospace;font-size:10px;border:1px solid var(--border2);border-radius:3px;padding:2px 4px;background:var(--s2);color:var(--text);cursor:pointer;}
+.risk-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.risk-row:last-child{border-bottom:none;}
+.risk-badge{font-family:'DM Mono',monospace;font-size:9px;padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.rb-h{background:var(--red-bg);color:var(--red);}.rb-m{background:var(--amber-bg);color:var(--amber);}.rb-l{background:var(--green-bg);color:var(--green);}
+.assump-row{padding:6px 0;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;}
+.assump-row:last-child{border-bottom:none;}
+.assump-key{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);}
+.assump-val{font-size:12px;font-weight:600;}
+.assump-conf{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:2px;}
+.ac-h{background:var(--green-bg);color:var(--green);}.ac-m{background:var(--amber-bg);color:var(--amber);}.ac-l{background:var(--red-bg);color:var(--red);}
+.mod-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.mod-card{background:var(--s2);border:1px solid var(--border2);border-radius:var(--rsm);padding:0.85rem 1rem;cursor:pointer;transition:all 0.15s;text-decoration:none;display:block;}
+.mod-card:hover{border-color:var(--accent);background:var(--accent-bg);}
+.mod-icon{font-size:20px;margin-bottom:5px;display:block;}
+.mod-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.top-btn{font-family:'DM Mono',monospace;font-size:11px;padding:7px 14px;border-radius:var(--rsm);border:1px solid var(--border2);background:var(--s1);color:var(--text2);cursor:pointer;transition:all 0.15s;}
+.top-btn:hover{border-color:var(--accent);color:var(--accent);}
+.top-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.topbar,.hdr{display:none;}
+[contenteditable]{cursor:text;}
+[contenteditable]:hover{background:rgba(26,86,219,0.04);border-radius:2px;}
+@media print{.no-print{display:none!important;}body{background:#fff!important;}.card{break-inside:avoid;box-shadow:none!important;}}
+
+
+
+
+.fb-btn{position:fixed;bottom:24px;right:24px;z-index:8888;background:var(--accent);color:#fff;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;padding:10px 18px;border-radius:24px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(26,86,219,0.35);display:flex;align-items:center;gap:7px;transition:all 0.2s;}
+.fb-btn:hover{background:var(--accent2);}
+.fb-overlay{position:fixed;inset:0;z-index:8889;background:rgba(15,20,32,0.45);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.fb-overlay.open{opacity:1;pointer-events:all;}
+.fb-panel{position:fixed;bottom:80px;right:24px;z-index:8890;width:340px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--border2);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,0.14);opacity:0;transform:translateY(16px);pointer-events:none;transition:all 0.2s;}
+.fb-panel.open{opacity:1;transform:translateY(0);pointer-events:all;}
+.fb-header{padding:1rem 1.25rem 0.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.fb-header-icon{width:34px;height:34px;border-radius:8px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.fb-header-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:var(--text);}
+.fb-header-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);}
+.fb-close{width:28px;height:28px;border:none;background:var(--s2);border-radius:50%;cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fb-body{padding:1rem 1.25rem;}
+.fb-field{margin-bottom:0.85rem;}
+.fb-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:0.06em;margin-bottom:5px;display:block;text-transform:uppercase;}
+.fb-select,.fb-textarea{width:100%;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;background:var(--s2);border:1px solid var(--border2);border-radius:8px;color:var(--text);outline:none;padding:8px 10px;}
+.fb-textarea{resize:vertical;min-height:80px;line-height:1.6;padding:10px 12px;}
+.fb-submit{width:100%;padding:11px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;}
+.fb-char-count{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);text-align:right;margin-top:3px;}
+.fb-success{padding:1.5rem 1.25rem;text-align:center;display:none;}
+.fb-success-icon{font-size:40px;margin-bottom:10px;}
+.fb-success-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;color:var(--text);}
+@media print{.fb-btn,.fb-panel,.fb-overlay{display:none!important;}}
+
+</style>
+</head>
+<body>
+<nav class="pd-nav">
+  <div class="pd-nav-inner">
+    <a href="/" class="pd-logo">Process<em>Desk</em></a>
+    <div class="pd-tools">
+    <a href="fel3_hydraulics.html" class="pd-tool" data-page="fel3_hydraulics">Liquid Hydraulics</a>
+    <a href="fel3_gas_hydraulics.html" class="pd-tool" data-page="fel3_gas_hydraulics">Gas Hydraulics</a>
+    <a href="fel3_heat_exchanger.html" class="pd-tool" data-page="fel3_heat_exchanger">Heat Exchanger</a>
+    <a href="fel3_relief_valve.html" class="pd-tool" data-page="fel3_relief_valve">Relief Valve</a>
+    <a href="fel3_pump_selection.html" class="pd-tool" data-page="fel3_pump_selection">Pump Selection</a>
+    <a href="fel3_meb.html" class="pd-tool" data-page="fel3_meb">M&amp;E Balance</a>
+    <a href="fel3_cost_estimator.html" class="pd-tool" data-page="fel3_cost_estimator">Cost Estimator</a>
+    <a href="fel3_economics.html" class="pd-tool" data-page="fel3_economics">Project Economics</a>
+    <a href="fel3_dashboard.html" class="pd-tool" data-page="fel3_dashboard">Dashboard</a>
+    </div>
+    <a href="/" class="pd-home">← All tools</a>
+  </div>
+</nav>
+<script>
+(function(){
+  var p='fel3_dashboard';
+  document.querySelectorAll('.pd-tool[data-page]').forEach(function(a){
+    if(a.dataset.page===p) a.classList.add('active');
+  });
+})();
+</script>
+<div class="page">
+  <div class="mod-header">
+    <div>
+      <div class="mod-logo">ProcessDesk &middot; Module 09</div>
+      <div class="mod-title">FEL-3 Project Dashboard</div>
+      <div class="mod-subtitle">Gate Review &middot; Traffic Light Readiness &middot; Executive Summary &middot; PDF Print</div>
+    </div>
+    <div class="mod-badges">
+      <span class="mod-badge mb-blue">Gate Review</span>
+      <span class="mod-badge mb-amber">Traffic Lights</span>
+      <span class="mod-badge mb-green">PDF Export</span>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:1.5rem;padding:0.75rem 1.25rem;">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span class="note">ProcessDesk FEL-3 Dashboard</span>
+      <div style="display:flex;gap:8px;margin-left:auto;">
+        <button class="top-btn no-print" onclick="toggleEdit()">&#x270F; Edit Mode</button>
+        <button class="top-btn primary no-print" onclick="window.print()">&#x2399; Print / PDF</button>
+      </div>
+    </div>
+  </div>
+<div class="stage-gate">
+  <div class="sg-step done"><span class="sg-num">1</span><span class="sg-name">Identify</span><span class="sg-check">✓</span></div>
+  <div class="sg-step done"><span class="sg-num">2</span><span class="sg-name">Assess</span><span class="sg-check">✓</span></div>
+  <div class="sg-step active"><span class="sg-num">3</span><span class="sg-name">Define ◀ HERE</span></div>
+  <div class="sg-step"><span class="sg-num">4</span><span class="sg-name">Execute</span></div>
+  <div class="sg-step"><span class="sg-num">5</span><span class="sg-name">Operate</span></div>
+</div>
+
+<!-- ── SECTION 1: TRAFFIC LIGHT STATUS ──────────── -->
+<div class="grid-2">
+  <div class="card teal-top">
+    <div class="section-title"><span class="sticon">🚦</span> FEL-3 Readiness — Gate Status</div>
+    <div id="tl-list">
+      <div class="tl-row"><div class="tl green"></div><div class="tl-label">Mass & Energy Balance</div><div class="tl-note">Closed ±1.2% · 5 streams</div><select class="tl-select no-print" onchange="setTL(this,0)"><option>green</option><option>amber</option><option>red</option><option>gray</option></select></div>
+      <div class="tl-row"><div class="tl green"></div><div class="tl-label">Process Flow Diagram (PFD)</div><div class="tl-note">Issued for review</div><select class="tl-select no-print" onchange="setTL(this,1)"><option>green</option><option>amber</option><option>red</option><option>gray</option></select></div>
+      <div class="tl-row"><div class="tl green"></div><div class="tl-label">Equipment Sizing</div><div class="tl-note">All major items sized</div><select class="tl-select no-print" onchange="setTL(this,2)"><option>green</option><option>amber</option><option>red</option><option>gray</option></select></div>
+      <div class="tl-row"><div class="tl amber"></div><div class="tl-label">CAPEX Estimate</div><div class="tl-note">Class 3 · vendor quotes pending</div><select class="tl-select no-print" onchange="setTL(this,3)"><option>green</option><option selected>amber</option><option>red</option><option>gray</option></select></div>
+      <div class="tl-row"><div class="tl green"></div><div class="tl-label">Relief & Safety Review</div><div class="tl-note">PRV sized · HAZOP scheduled</div><select class="tl-select no-print" onchange="setTL(this,4)"><option>green</option><option>amber</option><option>red</option><option>gray</option></select></div>
+      <div class="tl-row"><div class="tl amber"></div><div class="tl-label">Environmental & Permits</div><div class="tl-note">Pre-app meeting completed</div><select class="tl-select no-print" onchange="setTL(this,5)"><option>green</option><option selected>amber</option><option>red</option><option>gray</option></select></div>
+      <div class="tl-row"><div class="tl green"></div><div class="tl-label">Project Economics (DCF)</div><div class="tl-note">NPV positive · IRR > hurdle</div><select class="tl-select no-print" onchange="setTL(this,6)"><option>green</option><option>amber</option><option>red</option><option>gray</option></select></div>
+      <div class="tl-row"><div class="tl red"></div><div class="tl-label">Offtake / Commercial</div><div class="tl-note">MOU in progress — not signed</div><select class="tl-select no-print" onchange="setTL(this,7)"><option>green</option><option>amber</option><option selected>red</option><option>gray</option></select></div>
+    </div>
+  </div>
+
+  <div>
+    <!-- RECOMMENDATION BOX -->
+    <div class="card rust-top" style="margin-bottom:1rem;">
+      <div class="section-title"><span class="sticon">📋</span> Gate Recommendation</div>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:var(--amber);margin-bottom:6px;" id="gate-rec">CONDITIONAL PROCEED</div>
+      <div class="note" id="gate-note" contenteditable="false">Project meets FEL-3 technical and economic criteria. Recommend proceed to FEED subject to: (1) execution of binding offtake agreement, (2) receipt of ≥3 vendor budget quotations for major equipment, (3) completion of pre-FEED HAZOP. Estimated FEED cost: $2.8M over 8 months.</div>
+    </div>
+    <!-- DECISION OWNER -->
+    <div class="card">
+      <div class="section-title"><span class="sticon">👤</span> Decision Information</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div class="assump-row" style="grid-template-columns:auto 1fr;">
+          <span class="assump-key">Decision required by</span>
+          <span class="assump-val" contenteditable="false">April 15, 2026</span>
+        </div>
+        <div class="assump-row" style="grid-template-columns:auto 1fr;">
+          <span class="assump-key">FEED budget required</span>
+          <span class="assump-val" contenteditable="false">$2.8M</span>
+        </div>
+        <div class="assump-row" style="grid-template-columns:auto 1fr;">
+          <span class="assump-key">FID target date</span>
+          <span class="assump-val" contenteditable="false">Q1 2027</span>
+        </div>
+        <div class="assump-row" style="grid-template-columns:auto 1fr;border-bottom:none;">
+          <span class="assump-key">Plant start-up target</span>
+          <span class="assump-val" contenteditable="false">Q3 2029</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SECTION 2: ECONOMICS SNAPSHOT ────────────── -->
+<div class="divider">Economics Snapshot</div>
+<div class="grid-4" style="margin-bottom:1rem;">
+  <div class="kpi-box">
+    <div class="kpi-lbl">NPV (@ 10% WACC)</div>
+    <div class="kpi-val pos" contenteditable="false">+$148M</div>
+    <div class="kpi-unit">real terms · 20yr life</div>
+  </div>
+  <div class="kpi-box">
+    <div class="kpi-lbl">IRR</div>
+    <div class="kpi-val pos" contenteditable="false">18.4%</div>
+    <div class="kpi-unit">vs WACC 10% hurdle</div>
+  </div>
+  <div class="kpi-box">
+    <div class="kpi-lbl">Simple Payback</div>
+    <div class="kpi-val warn" contenteditable="false">6.2 yrs</div>
+    <div class="kpi-unit">undiscounted</div>
+  </div>
+  <div class="kpi-box">
+    <div class="kpi-lbl">Discounted Payback</div>
+    <div class="kpi-val warn" contenteditable="false">8.9 yrs</div>
+    <div class="kpi-unit">at 10% discount rate</div>
+  </div>
+</div>
+<div class="grid-4" style="margin-bottom:1rem;">
+  <div class="kpi-box">
+    <div class="kpi-lbl">Annual Revenue (SS)</div>
+    <div class="kpi-val" contenteditable="false">$124M</div>
+    <div class="kpi-unit">steady state yr 3+</div>
+  </div>
+  <div class="kpi-box">
+    <div class="kpi-lbl">Annual EBITDA</div>
+    <div class="kpi-val pos" contenteditable="false">$48M</div>
+    <div class="kpi-unit">margin 38.7%</div>
+  </div>
+  <div class="kpi-box">
+    <div class="kpi-lbl">Total OPEX</div>
+    <div class="kpi-val" contenteditable="false">$76M</div>
+    <div class="kpi-unit">per year steady state</div>
+  </div>
+  <div class="kpi-box">
+    <div class="kpi-lbl">Break-even Price</div>
+    <div class="kpi-val warn" contenteditable="false">$610/t</div>
+    <div class="kpi-unit">vs base case $850/t</div>
+  </div>
+</div>
+
+<!-- ── SECTION 3: CAPEX ESTIMATE ─────────────────── -->
+<div class="divider">CAPEX Estimate — AACE Class 3</div>
+<div class="grid-2">
+  <div class="card navy-top">
+    <div class="section-title"><span class="sticon">💰</span> Capital Cost Build-up</div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div class="assump-row"><span class="assump-key">Purchased Equipment Cost (PEC)</span><span class="assump-val" contenteditable="false">$42.1M</span><span class="assump-conf ac-m">AACE 3</span></div>
+      <div class="assump-row"><span class="assump-key">Total Installed Cost (TIC)</span><span class="assump-val" contenteditable="false">$163M</span><span class="assump-conf ac-m">Lang 3.88×</span></div>
+      <div class="assump-row"><span class="assump-key">Engineering & Procurement</span><span class="assump-val" contenteditable="false">$16.3M</span><span class="assump-conf ac-m">10% TIC</span></div>
+      <div class="assump-row"><span class="assump-key">Contingency</span><span class="assump-val" contenteditable="false">$26.9M</span><span class="assump-conf ac-l">15%</span></div>
+      <div class="assump-row"><span class="assump-key">Owner's Costs / OSBL</span><span class="assump-val" contenteditable="false">$16.5M</span><span class="assump-conf ac-m">8%</span></div>
+      <div class="assump-row" style="border-bottom:none;"><span class="assump-key" style="font-weight:600;color:var(--ink);">Total Project Cost (TPC)</span><span class="assump-val" style="font-size:16px;color:var(--navy);font-weight:700;" contenteditable="false">$238M</span><span class="assump-conf ac-m">±30%</span></div>
+    </div>
+  </div>
+  <div class="card navy-top">
+    <div class="section-title"><span class="sticon">📊</span> Estimate Accuracy Range</div>
+    <div style="margin-bottom:1rem;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;align-items:baseline;">
+        <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:var(--red);">$167M</span>
+        <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:700;color:var(--navy);">$238M</span>
+        <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:var(--green);">$309M</span>
+      </div>
+      <div class="acc-bar">
+        <div class="acc-pointer" style="left:50%;"></div>
+        <span class="acc-val">Base Estimate</span>
+      </div>
+      <div class="acc-labels"><span>−30% low</span><span>Base · Class 3</span><span>+30% high</span></div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);line-height:1.7;">
+      CEPCI escalation: 567→820 (1.447×)<br>
+      Location: US Gulf Coast (1.00×)<br>
+      Phased CAPEX: 40% Yr0 / 40% Yr1 / 20% Yr2<br>
+      Major equipment: 14 items · 3 quotes pending
+    </div>
+  </div>
+</div>
+
+<!-- ── SECTION 4: PROCESS METRICS ───────────────── -->
+<div class="divider">Process Metrics — Mass & Energy Balance Summary</div>
+<div class="grid-2">
+  <div class="card teal-top">
+    <div class="section-title"><span class="sticon">⚗</span> Stream Summary</div>
+    <div id="stream-list">
+      <div class="stream-row"><div class="stream-dot sd-feed"></div><span class="stream-name">Methanol Feed</span><span class="stream-val" contenteditable="false">12,500</span><span class="stream-unit">kg/h · 40°C · liquid</span></div>
+      <div class="stream-row"><div class="stream-dot sd-prod"></div><span class="stream-name">Ethylene Product</span><span class="stream-val" contenteditable="false">3,840</span><span class="stream-unit">kg/h · 25°C · vapor</span></div>
+      <div class="stream-row"><div class="stream-dot sd-prod"></div><span class="stream-name">Propylene Product</span><span class="stream-val" contenteditable="false">2,960</span><span class="stream-unit">kg/h · 25°C · vapor</span></div>
+      <div class="stream-row"><div class="stream-dot sd-prod"></div><span class="stream-name">C4+ By-product</span><span class="stream-val" contenteditable="false">1,200</span><span class="stream-unit">kg/h · liquid</span></div>
+      <div class="stream-row"><div class="stream-dot sd-util"></div><span class="stream-name">Steam (HPS)</span><span class="stream-val" contenteditable="false">4,200</span><span class="stream-unit">kg/h · 380°C · 40 bar</span></div>
+      <div class="stream-row" style="border-bottom:none;"><div class="stream-dot sd-util"></div><span class="stream-name">Cooling Water</span><span class="stream-val" contenteditable="false">85,000</span><span class="stream-unit">kg/h · 28°C supply</span></div>
+    </div>
+  </div>
+  <div class="card teal-top">
+    <div class="section-title"><span class="sticon">⚡</span> Energy Balance</div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div class="assump-row"><span class="assump-key">Feed stream enthalpy</span><span class="assump-val" contenteditable="false">4,820 kW</span><span class="assump-conf ac-h">✓</span></div>
+      <div class="assump-row"><span class="assump-key">Product stream enthalpy</span><span class="assump-val" contenteditable="false">3,960 kW</span><span class="assump-conf ac-h">✓</span></div>
+      <div class="assump-row"><span class="assump-key">Reactor heat (ΔHrxn)</span><span class="assump-val" contenteditable="false">−2,840 kW</span><span class="assump-conf ac-m">exo</span></div>
+      <div class="assump-row"><span class="assump-key">Net process duty</span><span class="assump-val" contenteditable="false">18.4 MW</span><span class="assump-conf ac-m">fired</span></div>
+      <div class="assump-row"><span class="assump-key">Utility steam demand</span><span class="assump-val" contenteditable="false">8.4 t/h</span><span class="assump-conf ac-m">est.</span></div>
+      <div class="assump-row"><span class="assump-key">Electricity demand</span><span class="assump-val" contenteditable="false">3.2 MW</span><span class="assump-conf ac-m">est.</span></div>
+      <div class="assump-row" style="border-bottom:none;"><span class="assump-key">Mass balance closure</span><span class="assump-val pos" contenteditable="false">99.2%</span><span class="assump-conf ac-h">✓</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SECTION 5: RISK & ASSUMPTIONS ────────────── -->
+<div class="divider">Risk Register & Key Assumptions</div>
+<div class="grid-2">
+  <div class="card amber-top">
+    <div class="section-title"><span class="sticon">⚠</span> Key Risks</div>
+    <div>
+      <div class="risk-row"><span class="risk-desc">Product price below break-even ($610/t)</span><span class="risk-badge rb-h">HIGH</span><span class="risk-action">Offtake agreement</span></div>
+      <div class="risk-row"><span class="risk-desc">CAPEX overrun — vendor quotes pending</span><span class="risk-badge rb-h">HIGH</span><span class="risk-action">Get 3 quotes</span></div>
+      <div class="risk-row"><span class="risk-desc">Catalyst performance below design</span><span class="risk-badge rb-m">MEDIUM</span><span class="risk-action">Vendor guarantee</span></div>
+      <div class="risk-row"><span class="risk-desc">Permitting timeline slippage</span><span class="risk-badge rb-m">MEDIUM</span><span class="risk-action">Pre-app submitted</span></div>
+      <div class="risk-row"><span class="risk-desc">Feedstock (methanol) cost escalation</span><span class="risk-badge rb-m">MEDIUM</span><span class="risk-action">Index-linked contract</span></div>
+      <div class="risk-row"><span class="risk-desc">Skilled labour availability onsite</span><span class="risk-badge rb-l">LOW</span><span class="risk-action">EPC tender Q2</span></div>
+      <div class="risk-row" style="border-bottom:none;"><span class="risk-desc">Utility infrastructure adequacy</span><span class="risk-badge rb-l">LOW</span><span class="risk-action">Site survey done</span></div>
+    </div>
+  </div>
+  <div class="card amber-top">
+    <div class="section-title"><span class="sticon">📌</span> Key Assumptions</div>
+    <div>
+      <div class="assump-row"><span class="assump-key">Plant capacity</span><span class="assump-val" contenteditable="false">120 kt/yr olefins</span><span class="assump-conf ac-h">confirmed</span></div>
+      <div class="assump-row"><span class="assump-key">Ethylene selling price</span><span class="assump-val" contenteditable="false">$850/tonne</span><span class="assump-conf ac-m">Q4 2025 spot</span></div>
+      <div class="assump-row"><span class="assump-key">Methanol feedstock</span><span class="assump-val" contenteditable="false">$320/tonne</span><span class="assump-conf ac-m">market index</span></div>
+      <div class="assump-row"><span class="assump-key">On-stream factor</span><span class="assump-val" contenteditable="false">8,000 hr/yr</span><span class="assump-conf ac-h">91.3%</span></div>
+      <div class="assump-row"><span class="assump-key">Catalyst life</span><span class="assump-val" contenteditable="false">18 months</span><span class="assump-conf ac-m">vendor est.</span></div>
+      <div class="assump-row"><span class="assump-key">Discount rate (WACC)</span><span class="assump-val" contenteditable="false">10%</span><span class="assump-conf ac-h">board approved</span></div>
+      <div class="assump-row"><span class="assump-key">Inflation / escalation</span><span class="assump-val" contenteditable="false">2.5%/yr</span><span class="assump-conf ac-h">CPI basis</span></div>
+      <div class="assump-row" style="border-bottom:none;"><span class="assump-key">Tax rate</span><span class="assump-val" contenteditable="false">25%</span><span class="assump-conf ac-h">US federal</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SECTION 6: MODULE NAVIGATOR ───────────────── -->
+<div class="divider" id="module-nav">ProcessDesk FEL-3 Engineering Suite — Module Navigator</div>
+<div class="card" style="padding:1.25rem;">
+  <div class="section-title"><span class="sticon">⊞</span> Engineering Calculation Modules</div>
+  <div class="mod-grid">
+    <a class="mod-card" href="fel3_hydraulics.html">
+      <span class="mod-icon">🌊</span>
+      <div class="mod-name">Liquid Hydraulics</div>
+      <div class="mod-desc">Line sizing · ΔP · pump head</div>
+      <span class="mod-status ms-ready">Darcy-Weisbach / HW</span>
+    </a>
+    <a class="mod-card" href="fel3_gas_hydraulics.html">
+      <span class="mod-icon">💨</span>
+      <div class="mod-name">Gas Hydraulics</div>
+      <div class="mod-desc">Compressible flow · Weymouth · API 14E</div>
+      <span class="mod-status ms-ready">General Flow / Panhandle B</span>
+    </a>
+    <a class="mod-card" href="fel3_heat_exchanger.html">
+      <span class="mod-icon">♨</span>
+      <div class="mod-name">Heat Exchanger Design</div>
+      <div class="mod-desc">TEMA S&T · LMTD · U coefficient</div>
+      <span class="mod-status ms-ready">NTU-Effectiveness</span>
+    </a>
+    <a class="mod-card" href="fel3_relief_valve.html">
+      <span class="mod-icon">🔧</span>
+      <div class="mod-name">Relief Valve Sizing</div>
+      <div class="mod-desc">API 520/521/526 · ASME VIII</div>
+      <span class="mod-status ms-ready">Vapor / Liquid / 2-Phase</span>
+    </a>
+    <a class="mod-card" href="fel3_pump_selection.html">
+      <span class="mod-icon">⚙</span>
+      <div class="mod-name">Pump Selection</div>
+      <div class="mod-desc">H-Q curves · NPSH · Affinity laws</div>
+      <span class="mod-status ms-ready">System curve intersection</span>
+    </a>
+    <a class="mod-card" href="fel3_meb.html">
+      <span class="mod-icon">⚗</span>
+      <div class="mod-name">Mass & Energy Balance</div>
+      <div class="mod-desc">Stream table · Sankey · Closure</div>
+      <span class="mod-status ms-ready">5 process templates</span>
+    </a>
+    <a class="mod-card" href="fel3_economics.html">
+      <span class="mod-icon">📈</span>
+      <div class="mod-name">Project Economics</div>
+      <div class="mod-desc">NPV · IRR · Payback · Tornado</div>
+      <span class="mod-status ms-ready">DCF · Sensitivity</span>
+    </a>
+    <a class="mod-card" href="fel3_cost_estimator.html">
+      <span class="mod-icon">💰</span>
+      <div class="mod-name">Equipment Cost Estimator</div>
+      <div class="mod-desc">Lang/Hand · CEPCI · 6 types</div>
+      <span class="mod-status ms-ready">±30% AACE Class 3</span>
+    </a>
+    <a class="mod-card" href="fel3_dashboard.html" style="border-color:var(--teal);background:var(--teal-bg);">
+      <span class="mod-icon">🗂</span>
+      <div class="mod-name">Project Dashboard</div>
+      <div class="mod-desc">Executive summary · Gate review</div>
+      <span class="mod-status ms-link">← You are here</span>
+    </a>
+  </div>
+  <div class="note" style="margin-top:1rem;">All modules are standalone HTML files — no server, no login, no dependencies. Deploy to any static host or share as a file. Each module produces FEL-3 grade outputs suitable for capital sanction packages.</div>
+</div>
+
+
+</div>
+
+
+</script>
+<button class="fb-btn no-print" onclick="fbOpen()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M14 1H2C1.45 1 1 1.45 1 2v9c0 .55.45 1 1 1h3l3 3 3-3h3c.55 0 1-.45 1-1V2c0-.55-.45-1-1-1z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/></svg> Feedback</button>
+<div class="fb-overlay" id="fb-overlay" onclick="fbClose()"></div>
+<div class="fb-panel" id="fb-panel">
+  <div class="fb-header"><div class="fb-header-icon">&#x1F4AC;</div><div style="flex:1;"><div class="fb-header-title">Share your feedback</div><div class="fb-header-sub">ProcessDesk</div></div><button class="fb-close" onclick="fbClose()">&#x2715;</button></div>
+  <div class="fb-body" id="fb-body">
+    <div class="fb-field"><label class="fb-lbl">Module</label><select class="fb-select" id="fb-module"><option value="auto">Auto-detect</option><option value="fel3_hydraulics">01 - Liquid Hydraulics</option><option value="fel3_gas_hydraulics">02 - Gas Hydraulics</option><option value="fel3_heat_exchanger">03 - Heat Exchanger</option><option value="fel3_relief_valve">04 - Relief Valve</option><option value="fel3_pump_selection">05 - Pump Selection</option><option value="fel3_meb">06 - Mass &amp; Energy Balance</option><option value="fel3_cost_estimator">07 - Cost Estimator</option><option value="fel3_economics">08 - Project Economics</option><option value="fel3_dashboard">09 - Dashboard</option></select></div>
+    <div class="fb-field"><label class="fb-lbl">Type</label><select class="fb-select" id="fb-type"><option value="general">General feedback</option><option value="bug">Bug report</option><option value="calculation">Calculation question</option><option value="feature">Feature request</option></select></div>
+    <div class="fb-field"><label class="fb-lbl">Feedback</label><textarea class="fb-textarea" id="fb-text" placeholder="Tell us what is working or broken..." maxlength="1000" oninput="document.getElementById('fb-char').textContent=this.value.length+' / 1000'"></textarea><div class="fb-char-count" id="fb-char">0 / 1000</div></div>
+    <button class="fb-submit" onclick="fbSubmit()">Send Feedback &#x2192;</button>
+  </div>
+  <div class="fb-success" id="fb-success"><div class="fb-success-icon">&#x2705;</div><div class="fb-success-title">Thanks!</div></div>
+</div>
+<script>
+(function(){
+  var page=window.location.pathname.split('/').pop().replace('.html','')||'index';
+  var sel=document.getElementById('fb-module');
+  if(sel){for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===page){sel.selectedIndex=i;break;}}}
+  window.fbOpen=function(){document.getElementById('fb-panel').classList.add('open');document.getElementById('fb-overlay').classList.add('open');};
+  window.fbClose=function(){document.getElementById('fb-panel').classList.remove('open');document.getElementById('fb-overlay').classList.remove('open');};
+  window.fbSubmit=function(){
+    var text=document.getElementById('fb-text').value.trim();
+    if(!text){document.getElementById('fb-text').style.borderColor='var(--red)';return;}
+    var module=document.getElementById('fb-module').value;
+    var type=document.getElementById('fb-type').value;
+    var addr='processdesks'+String.fromCharCode(64)+'gmail.com';
+    var subject=encodeURIComponent('[ProcessDesk] '+module+' - '+type);
+    var body=encodeURIComponent('Module: '+module+'%0AType: '+type+'%0A%0A'+text);
+    window.location.href='mai'+'lto:'+addr+'?subject='+subject+'&body='+body;
+    document.getElementById('fb-body').style.display='none';
+    document.getElementById('fb-success').style.display='block';
+    setTimeout(function(){fbClose();},3000);
+  };
+}());
+</script>
+</body>
+</html
+</div>
+<footer class="pd-footer">
+  <div class="pd-footer-inner">
+    <div>
+      <div class="pd-footer-logo">Process<em>Desk</em></div>
+      <p class="pd-footer-desc">Free FEL-3 process engineering calculators. Nine modules covering the full pre-FEED scope. Built by engineers, for engineers.</p>
+    </div>
+    <div class="pd-footer-col">
+      <h4>Calculators</h4>
+      <a href="fel3_hydraulics.html">Liquid Hydraulics</a>
+      <a href="fel3_gas_hydraulics.html">Gas Hydraulics</a>
+      <a href="fel3_heat_exchanger.html">Heat Exchanger</a>
+      <a href="fel3_relief_valve.html">Relief Valve</a>
+      <a href="fel3_pump_selection.html">Pump Selection</a>
+    </div>
+    <div class="pd-footer-col">
+      <h4>More tools</h4>
+      <a href="fel3_meb.html">Mass &amp; Energy Balance</a>
+      <a href="fel3_cost_estimator.html">Cost Estimator</a>
+      <a href="fel3_economics.html">Project Economics</a>
+      <a href="fel3_dashboard.html">Dashboard</a>
+    </div>
+    <div class="pd-footer-col">
+      <h4>Company</h4>
+      <a href="#">Contact</a>
+      <a href="#">Pro waitlist</a>
+      <a href="#">Advertise with us</a>
+    </div>
+  </div>
+  <div class="pd-footer-bottom">
+    <p>© 2026 ProcessDesk. All calculations run client-side. No process data transmitted.</p>
+    <p>Not a substitute for professional engineering judgment.</p>
+  </div>
+</footer>
+<script>
+
+var now=new Date();
+var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var dateStr=months[now.getMonth()]+' '+now.getFullYear();
+try{document.getElementById('date-chip').textContent='Issue: '+dateStr;}catch(e){}
+try{document.getElementById('footer-date').textContent='Prepared: '+dateStr;}catch(e){}
+function setTL(sel,idx){
+  var rows=document.querySelectorAll('#tl-list .tl-row');
+  if(rows[idx]){var dot=rows[idx].querySelector('.tl');if(dot){dot.className='tl '+sel.value;}}
+  updateGateRec();
+}
+function updateGateRec(){
+  var dots=document.querySelectorAll('#tl-list .tl');
+  var reds=0,ambers=0;
+  dots.forEach(function(d){if(d.classList.contains('red'))reds++;else if(d.classList.contains('amber'))ambers++;});
+  var el=document.getElementById('gate-rec');
+  if(!el)return;
+  if(reds>=2){el.textContent='DO NOT PROCEED';el.style.color='var(--red)';}
+  else if(reds===1||ambers>=3){el.textContent='CONDITIONAL PROCEED';el.style.color='var(--amber)';}
+  else{el.textContent='RECOMMEND PROCEED';el.style.color='var(--green)';}
+}
+var editMode=false;
+function toggleEdit(){
+  editMode=!editMode;
+  document.querySelectorAll('[contenteditable]').forEach(function(el){el.setAttribute('contenteditable',editMode?'true':'false');});
+  var bar=document.getElementById('edit-bar');
+  if(bar)bar.style.display=editMode?'flex':'none';
+  var btn=document.querySelector('.top-btn:not(.primary)');
+  if(btn)btn.textContent=editMode?'Done Editing':'Edit Mode';
+}
+updateGateRec();
+
+</script>
+<div class="fb-overlay" id="fb-overlay" onclick="fbClose()"></div>
+<div class="fb-panel" id="fb-panel">
+  <div class="fb-header">
+    <div class="fb-header-icon">&#x1F4AC;</div>
+    <div style="flex:1;"><div class="fb-header-title">Share your feedback</div><div class="fb-header-sub">ProcessDesk</div></div>
+    <button class="fb-close" onclick="fbClose()">&#x2715;</button>
+  </div>
+  <div class="fb-body" id="fb-body">
+    <div class="fb-field"><label class="fb-lbl">Module</label>
+      <select class="fb-select" id="fb-module">
+        <option value="auto">Auto-detect</option>
+        <option value="fel3_hydraulics">01 - Liquid Hydraulics</option>
+        <option value="fel3_gas_hydraulics">02 - Gas Hydraulics</option>
+        <option value="fel3_heat_exchanger">03 - Heat Exchanger</option>
+        <option value="fel3_relief_valve">04 - Relief Valve</option>
+        <option value="fel3_pump_selection">05 - Pump Selection</option>
+        <option value="fel3_meb">06 - Mass &amp; Energy Balance</option>
+        <option value="fel3_cost_estimator">07 - Cost Estimator</option>
+        <option value="fel3_economics">08 - Project Economics</option>
+        <option value="fel3_dashboard">09 - Dashboard</option>
+      </select>
+    </div>
+    <div class="fb-field"><label class="fb-lbl">Type</label>
+      <select class="fb-select" id="fb-type">
+        <option value="general">General feedback</option>
+        <option value="bug">Bug report</option>
+        <option value="calculation">Calculation question</option>
+        <option value="feature">Feature request</option>
+      </select>
+    </div>
+    <div class="fb-field"><label class="fb-lbl">Feedback</label>
+      <textarea class="fb-textarea" id="fb-text" placeholder="Tell us what is working, what is broken, or what you would like to see..." maxlength="1000" oninput="document.getElementById('fb-char').textContent=this.value.length+' / 1000'"></textarea>
+      <div class="fb-char-count" id="fb-char">0 / 1000</div>
+    </div>
+    <button class="fb-submit" onclick="fbSubmit()">Send Feedback &#x2192;</button>
+  </div>
+  <div class="fb-success" id="fb-success">
+    <div class="fb-success-icon">&#x2705;</div>
+    <div class="fb-success-title">Thanks for your feedback!</div>
+    <div class="fb-success-msg">We read every submission.</div>
+  </div>
+</div>
+<script>
+(function(){
+  var page=window.location.pathname.split('/').pop().replace('.html','')||'index';
+  var sel=document.getElementById('fb-module');
+  if(sel){for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===page){sel.selectedIndex=i;break;}}}
+  window.fbOpen=function(){document.getElementById('fb-panel').classList.add('open');document.getElementById('fb-overlay').classList.add('open');};
+  window.fbClose=function(){document.getElementById('fb-panel').classList.remove('open');document.getElementById('fb-overlay').classList.remove('open');};
+  window.fbSubmit=function(){
+    var text=document.getElementById('fb-text').value.trim();
+    if(!text){document.getElementById('fb-text').style.borderColor='var(--red)';return;}
+    var module=document.getElementById('fb-module').value;
+    var type=document.getElementById('fb-type').value;
+    window.location.href='mailto:contact@processdesks.com?subject='+encodeURIComponent('[ProcessDesk] '+module+' - '

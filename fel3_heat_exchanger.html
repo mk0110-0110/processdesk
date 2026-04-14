@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shell & Tube Heat Exchanger Design Calculator — TEMA FEL-3 | ProcessDesk</title>
+<meta name="description" content="Free TEMA shell and tube heat exchanger sizing. LMTD-Ft correction, U coefficient with fouling, tube count, shell diameter. NTU-effectiveness cross-check. Auto-generated datasheet.">
+<link rel="canonical" href="https://processdesks.com/fel3_heat_exchanger.html">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg:#f8f9fb; --s1:#ffffff; --s2:#f2f4f7; --s3:#e8ebf0;
+  --border:#e2e6ec; --border2:#d0d5de;
+  --text:#0f1420; --text2:#5a6070; --text3:#9aa0b0;
+  --accent:#1a56db; --accent2:#1648c0;
+  --accent-bg:#eef2ff; --accent-light:#c7d4fa;
+  --green:#059669; --green-bg:#ecfdf5;
+  --red:#dc2626; --red-bg:#fef2f2;
+  --amber:#d97706; --amber-bg:#fffbeb;
+  --orange:#ea580c; --orange-bg:#fff7ed;
+  --purple:#7c3aed; --purple-bg:#f5f3ff;
+  --teal:#0891b2; --teal-bg:#ecfeff;
+  --radius:12px; --rsm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.05);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+.pd-nav { position:fixed; top:0; left:0; right:0; z-index:9999; background:rgba(255,255,255,0.97); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.pd-nav-inner { max-width:1280px; margin:0 auto; height:54px; display:flex; align-items:center; padding:0 1.5rem; gap:0; }
+.pd-logo { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:var(--text); text-decoration:none; letter-spacing:0.3px; margin-right:1.5rem; white-space:nowrap; flex-shrink:0; }
+.pd-logo em { font-style:normal; color:var(--accent); }
+.pd-tools { display:flex; align-items:center; gap:0; overflow-x:auto; flex:1; scrollbar-width:none; }
+.pd-tools::-webkit-scrollbar { display:none; }
+.pd-tool { font-size:11px; color:var(--text2); text-decoration:none; padding:6px 9px; border-radius:var(--rsm); white-space:nowrap; transition:all 0.15s; font-weight:500; }
+.pd-tool:hover { color:var(--accent); background:var(--accent-bg); }
+.pd-tool.active { color:var(--accent); background:var(--accent-bg); font-weight:600; }
+.pd-home { font-size:11px; color:#fff; background:var(--accent); text-decoration:none; padding:6px 14px; border-radius:var(--rsm); white-space:nowrap; font-weight:600; margin-left:auto; flex-shrink:0; transition:background 0.15s; }
+.pd-home:hover { background:var(--accent2); }
+body { padding-top:54px; }
+
+.pd-footer { background:#0f1420; color:rgba(255,255,255,0.6); padding:3rem 2rem 1.5rem; margin-top:3rem; }
+.pd-footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:2.5rem; margin-bottom:2rem; }
+@media(max-width:720px){ .pd-footer-inner { grid-template-columns:1fr 1fr; gap:1.5rem; } }
+@media(max-width:420px){ .pd-footer-inner { grid-template-columns:1fr; } }
+.pd-footer-logo { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:#fff; margin-bottom:0.6rem; }
+.pd-footer-logo em { font-style:normal; color:#93c5fd; }
+.pd-footer-desc { font-size:12px; line-height:1.75; max-width:220px; }
+.pd-footer-col h4 { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; color:rgba(255,255,255,0.3); text-transform:uppercase; margin-bottom:0.85rem; }
+.pd-footer-col a { display:block; font-size:12px; color:rgba(255,255,255,0.55); text-decoration:none; margin-bottom:7px; transition:color 0.15s; }
+.pd-footer-col a:hover { color:#fff; }
+.pd-footer-bottom { max-width:1280px; margin:0 auto; padding-top:1.25rem; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.pd-footer-bottom p { font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.25); }
+
+.page { max-width:1280px; margin:0 auto; padding:0 1.5rem 2rem; }
+/* Module header */
+.mod-header { padding:1.5rem 0 1.25rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:flex-end; gap:1rem; flex-wrap:wrap; }
+.mod-logo { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; color:var(--text2); letter-spacing:0.5px; }
+.mod-logo em { font-style:normal; color:var(--accent); }
+.mod-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.02em; }
+.mod-subtitle { font-size:13px; color:var(--text2); margin-top:3px; }
+.mod-badges { display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; align-items:center; }
+.mod-badge { font-family:'DM Mono',monospace; font-size:10px; padding:4px 10px; border-radius:3px; border:1px solid; letter-spacing:0.04em; }
+.mb-blue { background:var(--accent-bg); color:var(--accent); border-color:var(--accent-light); }
+.mb-green { background:var(--green-bg); color:var(--green); border-color:#a7f3d0; }
+.mb-amber { background:var(--amber-bg); color:var(--amber); border-color:#fcd34d; }
+.mb-red { background:var(--red-bg); color:var(--red); border-color:#fca5a5; }
+/* Layout grids */
+.col2 { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; margin-bottom:1rem; }
+.col3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-bottom:1rem; }
+.g2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.75rem; }
+.g3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.75rem; }
+@media(max-width:900px){ .col2,.col3 { grid-template-columns:1fr; } }
+@media(max-width:540px){ .g2,.g3 { grid-template-columns:1fr; } }
+/* Cards */
+.card { background:var(--s1); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.25rem; margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow); }
+.card-title { font-family:'DM Mono',monospace; font-size:10px; font-weight:500; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.85rem; display:flex; align-items:center; gap:8px; }
+.card-title::after { content:''; flex:1; height:1px; background:var(--border); }
+/* Form elements */
+.field { margin-bottom:0.65rem; }
+.lbl { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); margin-bottom:3px; display:block; letter-spacing:0.04em; }
+.ir { display:flex; gap:5px; align-items:center; }
+.unit { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); min-width:52px; flex-shrink:0; }
+input[type="number"], input[type="text"], select, textarea {
+  background:var(--s2); border:1px solid var(--border2); border-radius:var(--rsm);
+  color:var(--text); font-family:'DM Mono',monospace; font-size:12px;
+  padding:6px 9px; width:100%; outline:none; transition:border-color 0.15s; -webkit-appearance:none;
+}
+input:focus, select:focus, textarea:focus { border-color:var(--accent); background:var(--s1); }
+.ir input, .ir select { flex:1; width:auto; min-width:0; }
+/* Toggle */
+.tog { display:flex; border:1px solid var(--border2); border-radius:var(--rsm); overflow:hidden; margin-bottom:0.85rem; }
+.tb { flex:1; padding:8px 6px; font-family:'DM Mono',monospace; font-size:11px; background:transparent; border:none; cursor:pointer; color:var(--text2); transition:all 0.15s; }
+.tb.av { background:var(--accent); color:#fff; font-weight:500; }
+/* Run button */
+.run-btn { width:100%; padding:12px; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.5px; background:var(--accent); color:#fff; border:none; border-radius:var(--rsm); cursor:pointer; transition:background 0.15s; margin-bottom:1rem; }
+.run-btn:hover { background:var(--accent2); }
+/* Metrics */
+.mg { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:1rem; }
+@media(max-width:600px){ .mg { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.metric { background:var(--s2); border-radius:var(--rsm); padding:0.75rem 1rem; border:1px solid var(--border); }
+.ml { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); margin-bottom:4px; letter-spacing:0.04em; }
+.mv { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; color:var(--text); }
+.mv.acc { color:var(--accent); }
+.mv.gr { color:var(--green); }
+.mv.rd { color:var(--red); }
+.mv.am { color:var(--amber); }
+.mu { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); }
+/* Alerts */
+.alert { border-radius:0 var(--rsm) var(--rsm) 0; padding:8px 12px; font-family:'DM Mono',monospace; font-size:11px; line-height:1.6; margin-bottom:8px; display:none; }
+.alert.show { display:block; }
+.aok  { background:var(--green-bg); border-left:3px solid var(--green); color:var(--green); }
+.awk  { background:var(--amber-bg); border-left:3px solid var(--amber); color:var(--amber); }
+.aer  { background:var(--red-bg);   border-left:3px solid var(--red);   color:var(--red); }
+.ainf { background:var(--accent-bg);border-left:3px solid var(--accent);color:var(--accent); }
+/* Tables */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; font-size:11px; }
+th { text-align:left; padding:7px 10px; border-bottom:1px solid var(--border2); color:var(--text2); font-size:10px; letter-spacing:0.06em; background:var(--s2); }
+td { padding:6px 10px; border-bottom:1px solid var(--border); color:var(--text); }
+tr:last-child td { border-bottom:none; }
+td.num { text-align:right; }
+td.ok  { color:var(--green); }
+td.wk  { color:var(--amber); }
+td.er  { color:var(--red); }
+tr.sel { background:var(--accent-bg); }
+/* Divider */
+.divider { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); letter-spacing:0.1em; text-transform:uppercase; display:flex; align-items:center; gap:10px; margin:1.5rem 0 1rem; }
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border2); }
+.note { font-family:'DM Mono',monospace; font-size:11px; color:var(--text2); line-height:1.7; }
+/* Chart containers */
+.chart-wrap { background:var(--s1); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow); }
+.chart-title { font-family:'DM Mono',monospace; font-size:10px; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem; }
+.chart-box { position:relative; width:100%; }
+
+.stream-card{border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1rem;}
+.sh{background:#fff8f5;border:1px solid #fca5a5;}
+.sc{background:#f0f9ff;border:1px solid #93c5fd;}
+.st{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.85rem;display:flex;align-items:center;gap:8px;}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+.dh{background:var(--red);} .dc{background:var(--accent);}
+.ft-bar-track{height:8px;background:var(--s3);border-radius:4px;margin:6px 0;}
+.ft-bar-fill{height:100%;border-radius:4px;transition:width 0.4s,background 0.4s;}
+
+/* Feedback Widget */
+.fb-btn{position:fixed;bottom:24px;right:24px;z-index:8888;background:var(--accent);color:#fff;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;padding:10px 18px;border-radius:24px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(26,86,219,0.35);display:flex;align-items:center;gap:7px;}
+.fb-btn:hover{background:var(--accent2);}
+.fb-overlay{position:fixed;inset:0;z-index:8889;background:rgba(15,20,32,0.45);opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.fb-overlay.open{opacity:1;pointer-events:all;}
+.fb-panel{position:fixed;bottom:80px;right:24px;z-index:8890;width:340px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--border2);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,0.14);opacity:0;transform:translateY(16px);pointer-events:none;transition:all 0.2s;}
+.fb-panel.open{opacity:1;transform:translateY(0);pointer-events:all;}
+.fb-header{padding:1rem 1.25rem 0.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.fb-header-icon{width:34px;height:34px;border-radius:8px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.fb-header-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:var(--text);}
+.fb-header-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);}
+.fb-close{width:28px;height:28px;border:none;background:var(--s2);border-radius:50%;cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;}
+.fb-body{padding:1rem 1.25rem;}
+.fb-field{margin-bottom:0.85rem;}
+.fb-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:0.06em;margin-bottom:5px;display:block;text-transform:uppercase;}
+.fb-select,.fb-textarea{width:100%;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;background:var(--s2);border:1px solid var(--border2);border-radius:8px;color:var(--text);outline:none;padding:8px 10px;}
+.fb-textarea{resize:vertical;min-height:80px;line-height:1.6;padding:10px 12px;}
+.fb-submit{width:100%;padding:11px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;}
+.fb-char-count{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);text-align:right;margin-top:3px;}
+.fb-success{padding:1.5rem 1.25rem;text-align:center;display:none;}
+.fb-success-icon{font-size:40px;margin-bottom:10px;}
+.fb-success-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;color:var(--text);}
+@media print{.fb-btn,.fb-panel,.fb-overlay{display:none!important;}}
+</style>
+</head>
+<body>
+<nav class="pd-nav">
+  <div class="pd-nav-inner">
+    <a href="/" class="pd-logo">Process<em>Desk</em></a>
+    <div class="pd-tools">
+    <a href="fel3_hydraulics.html" class="pd-tool" data-page="fel3_hydraulics">Liquid Hydraulics</a>
+    <a href="fel3_gas_hydraulics.html" class="pd-tool" data-page="fel3_gas_hydraulics">Gas Hydraulics</a>
+    <a href="fel3_heat_exchanger.html" class="pd-tool" data-page="fel3_heat_exchanger">Heat Exchanger</a>
+    <a href="fel3_relief_valve.html" class="pd-tool" data-page="fel3_relief_valve">Relief Valve</a>
+    <a href="fel3_pump_selection.html" class="pd-tool" data-page="fel3_pump_selection">Pump Selection</a>
+    <a href="fel3_meb.html" class="pd-tool" data-page="fel3_meb">M&amp;E Balance</a>
+    <a href="fel3_cost_estimator.html" class="pd-tool" data-page="fel3_cost_estimator">Cost Estimator</a>
+    <a href="fel3_economics.html" class="pd-tool" data-page="fel3_economics">Project Economics</a>
+    <a href="fel3_dashboard.html" class="pd-tool" data-page="fel3_dashboard">Dashboard</a>
+    </div>
+    <a href="/" class="pd-home">← All tools</a>
+  </div>
+</nav>
+<script>
+(function(){
+  var p='fel3_heat_exchanger';
+  document.querySelectorAll('.pd-tool[data-page]').forEach(function(a){
+    if(a.dataset.page===p) a.classList.add('active');
+  });
+})();
+</script>
+<div class="page">
+  <div class="mod-header">
+    <div>
+      <div class="mod-logo">Process<em>Desk</em> · Module 03</div>
+      <div class="mod-title">Shell & Tube Heat Exchanger Design</div>
+      <div class="mod-subtitle">TEMA Standards · LMTD-Ft Correction · Overall U Coefficient · NTU-Effectiveness</div>
+    </div>
+    <div class="mod-badges">
+      <span class="mod-badge mb-red">TEMA</span>
+      <span class="mod-badge mb-blue">LMTD-Ft</span>
+      <span class="mod-badge mb-green">FEL-3 / AACE Class 3</span>
+    </div>
+  </div>
+
+  <div class="col2">
+    <div>
+      <div class="stream-card sh">
+        <div class="st"><span class="dot dh"></span>Hot Stream — Shell Side</div>
+        <div class="field"><label class="lbl">Fluid description</label><input type="text" id="hot-name" value="Process fluid / hot oil"></div>
+        <div class="g2">
+          <div class="field"><label class="lbl">Inlet temp (T₁)</label><div class="ir"><input type="number" id="hot-t1" value="180" step="1"><span class="unit">°C</span></div></div>
+          <div class="field"><label class="lbl">Outlet temp (T₂)</label><div class="ir"><input type="number" id="hot-t2" value="90" step="1"><span class="unit">°C</span></div></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label class="lbl">Mass flow rate</label><div class="ir"><input type="number" id="hot-mdot" value="15" step="0.1"><span class="unit">kg/s</span></div></div>
+          <div class="field"><label class="lbl">Specific heat (Cp)</label><div class="ir"><input type="number" id="hot-cp" value="2.2" step="0.01"><span class="unit">kJ/kg·K</span></div></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label class="lbl">Film h coefficient</label><div class="ir"><input type="number" id="hot-h" value="1200" step="50"><span class="unit">W/m²·K</span></div></div>
+          <div class="field"><label class="lbl">Fouling resistance (Rf)</label><div class="ir"><input type="number" id="hot-rf" value="0.00018" step="0.00001"><span class="unit">m²K/W</span></div></div>
+        </div>
+      </div>
+
+      <div class="stream-card sc">
+        <div class="st"><span class="dot dc"></span>Cold Stream — Tube Side</div>
+        <div class="field"><label class="lbl">Fluid description</label><input type="text" id="cold-name" value="Cooling water"></div>
+        <div class="g2">
+          <div class="field"><label class="lbl">Inlet temp (t₁)</label><div class="ir"><input type="number" id="cold-t1" value="25" step="1"><span class="unit">°C</span></div></div>
+          <div class="field"><label class="lbl">Outlet temp (t₂)</label><div class="ir"><input type="number" id="cold-t2" value="55" step="1"><span class="unit">°C</span></div></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label class="lbl">Mass flow rate</label><div class="ir"><input type="number" id="cold-mdot" value="40" step="0.1"><span class="unit">kg/s</span></div></div>
+          <div class="field"><label class="lbl">Specific heat (Cp)</label><div class="ir"><input type="number" id="cold-cp" value="4.18" step="0.01"><span class="unit">kJ/kg·K</span></div></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label class="lbl">Film h coefficient</label><div class="ir"><input type="number" id="cold-h" value="5000" step="100"><span class="unit">W/m²·K</span></div></div>
+          <div class="field"><label class="lbl">Fouling resistance (Rf)</label><div class="ir"><input type="number" id="cold-rf" value="0.00017" step="0.00001"><span class="unit">m²K/W</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-title">Flow Arrangement</div>
+        <div class="tog">
+          <button class="tb av" id="btn-counter" onclick="setFlow('counter')">Counterflow</button>
+          <button class="tb" id="btn-parallel" onclick="setFlow('parallel')">Parallel flow</button>
+        </div>
+        <div class="g2">
+          <div class="field"><label class="lbl">Shell passes</label><select id="shell-passes" onchange="drawSVG()"><option value="1" selected>1 pass</option><option value="2">2 passes</option></select></div>
+          <div class="field"><label class="lbl">Tube passes</label><select id="tube-passes" onchange="drawSVG()"><option value="1">1 pass</option><option value="2" selected>2 passes</option><option value="4">4 passes</option><option value="6">6 passes</option></select></div>
+        </div>
+        <svg id="hx-svg" viewBox="0 0 560 72" xmlns="http://www.w3.org/2000/svg" style="width:100%;margin-top:4px;"></svg>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Tube Geometry (TEMA)</div>
+        <div class="g2">
+          <div class="field"><label class="lbl">Tube OD</label><select id="tube-od"><option value="19.05">¾" — 19.05 mm</option><option value="25.4" selected>1" — 25.4 mm</option><option value="31.75">1¼" — 31.75 mm</option><option value="38.1">1½" — 38.1 mm</option></select></div>
+          <div class="field"><label class="lbl">Wall thickness (BWG)</label><select id="tube-wt"><option value="1.65">BWG 16 — 1.65 mm</option><option value="2.11" selected>BWG 14 — 2.11 mm</option><option value="2.77">BWG 12 — 2.77 mm</option><option value="3.40">BWG 10 — 3.40 mm</option></select></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label class="lbl">Tube length (TEMA std)</label><select id="tube-len"><option value="2438">8 ft — 2438 mm</option><option value="3658">12 ft — 3658 mm</option><option value="4877" selected>16 ft — 4877 mm</option><option value="6096">20 ft — 6096 mm</option></select></div>
+          <div class="field"><label class="lbl">Tube pitch</label><select id="pitch-type"><option value="1.25t" selected>Triangular 1.25×OD</option><option value="1.25s">Square 1.25×OD</option><option value="1.33t">Triangular 1.33×OD</option></select></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label class="lbl">Tube material (kw)</label><select id="tube-k"><option value="50">Carbon steel — 50 W/m·K</option><option value="16" selected>SS 316L — 16 W/m·K</option><option value="111">Admiralty brass — 111 W/m·K</option><option value="200">Copper — 200 W/m·K</option><option value="10">Titanium — 10 W/m·K</option></select></div>
+          <div class="field"><label class="lbl">Over-design margin</label><div class="ir"><input type="number" id="od-margin" value="15" step="5" min="0" max="40"><span class="unit">%</span></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Shell & Baffle (TEMA)</div>
+        <div class="g2">
+          <div class="field"><label class="lbl">TEMA shell type</label><select id="tema-type"><option value="E" selected>E — single-pass shell</option><option value="F">F — two-pass (long baffle)</option><option value="G">G — split flow</option><option value="J">J — divided flow</option><option value="X">X — crossflow</option></select></div>
+          <div class="field"><label class="lbl">Baffle cut</label><select id="baffle-cut"><option value="0.20">20% — high h, high ΔP</option><option value="0.25" selected>25% — standard</option><option value="0.35">35% — low ΔP</option><option value="0.45">45% — very low ΔP</option></select></div>
+        </div>
+      </div>
+
+      <button class="run-btn" onclick="calculate()">▶ Size Heat Exchanger</button>
+
+      <div id="duty-result" style="display:none;">
+        <div class="card">
+          <div class="card-title">Duty Balance Check</div>
+          <div id="alert-bal" class="alert"></div>
+          <div class="g2">
+            <div><div class="lbl" style="margin-bottom:4px;">Hot side duty</div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--red);" id="q-hot">—</div><div class="mu">kW</div></div>
+            <div><div class="lbl" style="margin-bottom:4px;">Cold side duty</div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--accent);" id="q-cold">—</div><div class="mu">kW</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="outputs" style="display:none;">
+    <div class="divider">Thermal Design Results</div>
+    <div class="col2">
+      <div class="card">
+        <div class="card-title">LMTD & Ft Correction Factor</div>
+        <div class="g2" style="margin-bottom:1rem;">
+          <div><div class="lbl">LMTD (counterflow basis)</div><div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:500;" id="lmtd-val">—</div><div class="mu">°C</div></div>
+          <div><div class="lbl">Ft correction factor</div><div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:500;" id="ft-val">—</div>
+            <div class="ft-bar-track"><div class="ft-bar-fill" id="ft-bar"></div></div>
+            <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);"><span>0.5</span><span>0.75 min</span><span>1.0</span></div>
+          </div>
+        </div>
+        <div id="alert-ft" class="alert"></div>
+        <div class="lbl" style="margin-bottom:4px;">Effective ΔTₘ = LMTD × Ft</div>
+        <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--accent);" id="dtm-val">—</div>
+        <div class="mu">°C</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Overall Heat Transfer Coefficient U</div>
+        <div class="lbl" style="margin-bottom:4px;">U (clean)</div>
+        <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--green);" id="u-clean">—</div>
+        <div class="mu" style="margin-bottom:1rem;">W/m²·K</div>
+        <div class="lbl" style="margin-bottom:4px;">U (fouled — design basis)</div>
+        <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:500;" id="u-fouled">—</div>
+        <div class="mu" style="margin-bottom:1rem;">W/m²·K</div>
+        <div id="alert-u" class="alert"></div>
+        <div class="note">1/U = 1/h_shell + Rf_shell + (OD·ln(OD/ID))/(2kw) + Rf_tube·(OD/ID) + OD/(ID·h_tube)</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Required Surface Area & Tube Count</div>
+      <div id="alert-area" class="alert"></div>
+      <div class="mg">
+        <div class="metric"><div class="ml">Area req. — clean</div><div class="mv" id="a-clean">—</div><div class="mu">m²</div></div>
+        <div class="metric"><div class="ml">Area req. — fouled</div><div class="mv rd" id="a-fouled">—</div><div class="mu">m²</div></div>
+        <div class="metric"><div class="ml">Area with over-design</div><div class="mv am" id="a-design">—</div><div class="mu">m²</div></div>
+        <div class="metric"><div class="ml">Number of tubes</div><div class="mv acc" id="n-tubes">—</div><div class="mu">tubes</div></div>
+        <div class="metric"><div class="ml">Shell diameter (est.)</div><div class="mv" id="d-shell">—</div><div class="mu">mm</div></div>
+        <div class="metric"><div class="ml">L/D ratio</div><div class="mv" id="ld-ratio">—</div><div class="mu">target 5–10</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Full Thermal Summary</div>
+      <div class="mg">
+        <div class="metric"><div class="ml">Design duty (Q)</div><div class="mv" id="m-q">—</div><div class="mu">kW</div></div>
+        <div class="metric"><div class="ml">NTU</div><div class="mv" id="m-ntu">—</div><div class="mu">transfer units</div></div>
+        <div class="metric"><div class="ml">Effectiveness (ε)</div><div class="mv gr" id="m-eff">—</div><div class="mu">—</div></div>
+        <div class="metric"><div class="ml">Tube OD / ID</div><div class="mv" id="m-dims">—</div><div class="mu">mm / mm</div></div>
+        <div class="metric"><div class="ml">Tube pitch</div><div class="mv" id="m-pitch">—</div><div class="mu">mm</div></div>
+        <div class="metric"><div class="ml">Tubes per pass</div><div class="mv" id="m-tpp">—</div><div class="mu">tubes/pass</div></div>
+      </div>
+    </div>
+    <div class="divider">Tube Size Sensitivity</div>
+    <div class="card">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Tube OD</th><th>ID (mm)</th><th>A/tube (m²)</th><th>U fouled (W/m²K)</th><th>A req. fouled (m²)</th><th>N tubes</th><th>D shell (mm)</th><th>L/D</th><th>Status</th></tr></thead>
+          <tbody id="sens-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="divider">FEL-3 Datasheet — Shell & Tube HX</div>
+    <div class="card"><table style="min-width:unset;"><tbody id="ds-body"></tbody></table></div>
+  </div>
+</div>
+<footer class="pd-footer">
+  <div class="pd-footer-inner">
+    <div>
+      <div class="pd-footer-logo">Process<em>Desk</em></div>
+      <p class="pd-footer-desc">Free FEL-3 process engineering calculators. Nine modules covering the full pre-FEED scope. Built by engineers, for engineers.</p>
+    </div>
+    <div class="pd-footer-col">
+      <h4>Calculators</h4>
+      <a href="fel3_hydraulics.html">Liquid Hydraulics</a>
+      <a href="fel3_gas_hydraulics.html">Gas Hydraulics</a>
+      <a href="fel3_heat_exchanger.html">Heat Exchanger</a>
+      <a href="fel3_relief_valve.html">Relief Valve</a>
+      <a href="fel3_pump_selection.html">Pump Selection</a>
+    </div>
+    <div class="pd-footer-col">
+      <h4>More tools</h4>
+      <a href="fel3_meb.html">Mass &amp; Energy Balance</a>
+      <a href="fel3_cost_estimator.html">Cost Estimator</a>
+      <a href="fel3_economics.html">Project Economics</a>
+      <a href="fel3_dashboard.html">Dashboard</a>
+    </div>
+    <div class="pd-footer-col">
+      <h4>Company</h4>
+      <a href="#">Contact</a>
+      <a href="#">Pro waitlist</a>
+      <a href="#">Advertise with us</a>
+    </div>
+  </div>
+  <div class="pd-footer-bottom">
+    <p>© 2026 ProcessDesk. All calculations run client-side. No process data transmitted.</p>
+    <p>Not a substitute for professional engineering judgment.</p>
+  </div>
+</footer>
+
+<script>
+let flow='counter';
+const TUBE_ODS=[[19.05,'¾" (19.05mm)'],[25.4,'1" (25.4mm)'],[31.75,'1¼" (31.75mm)'],[38.1,'1½" (38.1mm)']];
+
+function setFlow(f){
+  flow=f;
+  document.getElementById('btn-counter').className='tb'+(f==='counter'?' av':'');
+  document.getElementById('btn-parallel').className='tb'+(f==='parallel'?' av':'');
+  drawSVG();
+}
+
+function drawSVG(){
+  const svg=document.getElementById('hx-svg'), tp=parseInt(document.getElementById('tube-passes').value), isC=flow==='counter';
+  const H='#dc2626',C='#1a56db',G='#d0d5de'; let h='';
+  h+=`<rect x="50" y="8" width="460" height="56" rx="5" fill="none" stroke="${G}" stroke-width="1.5"/>`;
+  if(tp>=2) h+=`<line x1="280" y1="8" x2="280" y2="64" stroke="${G}" stroke-width="1" stroke-dasharray="4,3"/>`;
+  if(tp>=4){h+=`<line x1="190" y1="8" x2="190" y2="64" stroke="${G}" stroke-width="1" stroke-dasharray="4,3"/>`;h+=`<line x1="370" y1="8" x2="370" y2="64" stroke="${G}" stroke-width="1" stroke-dasharray="4,3"/>`;}
+  [18,28,36,46,56].forEach(y=>h+=`<line x1="54" y1="${y}" x2="506" y2="${y}" stroke="${C}" stroke-width="0.8" opacity="0.25"/>`);
+  h+=`<line x1="0" y1="36" x2="50" y2="36" stroke="${H}" stroke-width="2.5"/>`;
+  h+=`<polygon points="48,31 48,41 56,36" fill="${H}"/>`;
+  h+=`<line x1="510" y1="36" x2="560" y2="36" stroke="${H}" stroke-width="2.5"/>`;
+  h+=`<text x="2" y="52" font-size="9" fill="${H}" font-family="DM Mono,monospace">HOT IN</text>`;
+  h+=`<text x="498" y="52" font-size="9" fill="${H}" font-family="DM Mono,monospace">OUT</text>`;
+  if(isC){h+=`<line x1="510" y1="16" x2="560" y2="16" stroke="${C}" stroke-width="2.5"/>`;h+=`<polygon points="512,11 512,21 505,16" fill="${C}"/>`;h+=`<text x="496" y="10" font-size="9" fill="${C}" font-family="DM Mono,monospace">CW IN</text>`;h+=`<text x="2" y="10" font-size="9" fill="${C}" font-family="DM Mono,monospace">CW OUT</text>`;}
+  else{h+=`<line x1="0" y1="16" x2="50" y2="16" stroke="${C}" stroke-width="2.5"/>`;h+=`<polygon points="48,11 48,21 55,16" fill="${C}"/>`;h+=`<text x="2" y="10" font-size="9" fill="${C}" font-family="DM Mono,monospace">CW IN</text>`;h+=`<text x="496" y="10" font-size="9" fill="${C}" font-family="DM Mono,monospace">CW OUT</text>`;}
+  svg.innerHTML=h;
+}
+
+function calcLMTD(T1,T2,t1,t2){
+  const d1=T1-t2,d2=T2-t1;
+  if(Math.abs(d1-d2)<0.01) return d1;
+  if(d1<=0||d2<=0) return (Math.abs(d1)+Math.abs(d2))/2;
+  return (d1-d2)/Math.log(d1/d2);
+}
+
+function calcFt(T1,T2,t1,t2,sp,tp){
+  const R=(T1-T2)/(t2-t1),S=(t2-t1)/(T1-t1);
+  if(S>=1||S<=0) return 0.75;
+  if(Math.abs(R-1)<0.001){const n=Math.sqrt(2)*(1-S),d=Math.log(Math.max((2/S-1-1+Math.sqrt(2))/(2/S-1-1-Math.sqrt(2)),0.001));return Math.abs(d)<1e-9?0.9:Math.abs(n/d);}
+  const sq=Math.sqrt(R*R+1),num=sq*Math.log((1-S)/(1-R*S));
+  const A=2-S*(R+1-sq),B=2-S*(R+1+sq);
+  if(A<=0||B<=0||A/B<=0) return 0.75;
+  const den=(R-1)*Math.log(A/B);
+  if(Math.abs(den)<1e-9) return 1.0;
+  let ft=num/den; ft=Math.min(ft*(0.92+0.04*sp),1.0);
+  return Math.max(0.55,Math.min(ft,1.0));
+}
+
+function calcU(hh,hc,Rfh,Rfc,OD_mm,wt_mm,kw){
+  const OD=OD_mm/1000,ID=(OD_mm-2*wt_mm)/1000;
+  const inv_c=1/hh+(OD*Math.log(OD/ID))/(2*kw)+OD/(ID*hc);
+  const inv_f=inv_c+Rfh+Rfc*(OD/ID);
+  return{Uc:1/inv_c,Uf:1/inv_f,OD,ID,OD_mm,ID_mm:OD_mm-2*wt_mm};
+}
+
+function shellDiam(N,OD_mm,pitchT){
+  const pitch=pitchT.startsWith('1.25')?1.25*OD_mm:1.33*OD_mm;
+  const K1=pitchT.includes('t')?0.319:0.215,n1=pitchT.includes('t')?2.142:2.207;
+  const Db=OD_mm*Math.pow(N/K1,1/n1),Ds=Math.round((Db+38)/10)*10;
+  return{Ds,pitch};
+}
+
+function setAlert(id,cls,msg){const e=document.getElementById(id);if(!e)return;e.className='alert '+cls+' show';e.textContent=msg;}
+function clrAlert(id){const e=document.getElementById(id);if(e)e.className='alert';}
+
+function calculate(){
+  const T1=+document.getElementById('hot-t1').value,T2=+document.getElementById('hot-t2').value;
+  const mh=+document.getElementById('hot-mdot').value,Cph=+document.getElementById('hot-cp').value*1000;
+  const hh=+document.getElementById('hot-h').value,Rfh=+document.getElementById('hot-rf').value;
+  const t1=+document.getElementById('cold-t1').value,t2=+document.getElementById('cold-t2').value;
+  const mc=+document.getElementById('cold-mdot').value,Cpc=+document.getElementById('cold-cp').value*1000;
+  const hc=+document.getElementById('cold-h').value,Rfc=+document.getElementById('cold-rf').value;
+  const tp=+document.getElementById('tube-passes').value,sp=+document.getElementById('shell-passes').value;
+  const OD_mm=+document.getElementById('tube-od').value,wt_mm=+document.getElementById('tube-wt').value;
+  const L_mm=+document.getElementById('tube-len').value,pitchT=document.getElementById('pitch-type').value;
+  const kw=+document.getElementById('tube-k').value,odMarg=+document.getElementById('od-margin').value;
+  const tema=document.getElementById('tema-type').value;
+  const Q_hot=mh*Cph*(T1-T2)/1000,Q_cold=mc*Cpc*(t2-t1)/1000,Q_avg=(Q_hot+Q_cold)/2;
+  const bal_err=Math.abs(Q_hot-Q_cold)/Math.max(Q_hot,Q_cold)*100;
+  document.getElementById('q-hot').textContent=Q_hot.toFixed(1);
+  document.getElementById('q-cold').textContent=Q_cold.toFixed(1);
+  document.getElementById('duty-result').style.display='';
+  clrAlert('alert-bal');
+  if(bal_err>15) setAlert('alert-bal','awk','Duty imbalance '+bal_err.toFixed(1)+'% — verify inputs. Using average Q = '+Q_avg.toFixed(1)+' kW.');
+  else if(bal_err>5) setAlert('alert-bal','awk','Minor imbalance '+bal_err.toFixed(1)+'%. Using average Q = '+Q_avg.toFixed(1)+' kW.');
+  else setAlert('alert-bal','aok','Duty balanced within '+bal_err.toFixed(1)+'%. Design Q = '+Q_avg.toFixed(1)+' kW.');
+  const lmtd_cf=calcLMTD(T1,T2,t1,t2);
+  const lmtd_base=flow==='counter'?lmtd_cf:calcLMTD(T1,T2,t2,t1);
+  const Ft=calcFt(T1,T2,t1,t2,sp,tp),dTm=lmtd_base*Ft;
+  document.getElementById('lmtd-val').textContent=lmtd_cf.toFixed(2);
+  document.getElementById('ft-val').textContent=Ft.toFixed(3);
+  document.getElementById('dtm-val').textContent=dTm.toFixed(2);
+  const ftPct=Math.max(0,Math.min((Ft-0.5)/0.5*100,100));
+  const ftB=document.getElementById('ft-bar');
+  ftB.style.width=ftPct+'%';
+  ftB.style.background=Ft<0.75?'var(--red)':Ft<0.85?'var(--amber)':'var(--green)';
+  clrAlert('alert-ft');
+  if(Ft<0.75) setAlert('alert-ft','aer','Ft < 0.75 — thermodynamically inefficient. Increase tube passes or reconfigure shell type.');
+  else if(Ft<0.85) setAlert('alert-ft','awk','Ft between 0.75–0.85. Acceptable at FEL-3 but consider additional tube passes.');
+  else setAlert('alert-ft','aok','Ft correction factor acceptable (≥ 0.85).');
+  const u=calcU(hh,hc,Rfh,Rfc,OD_mm,wt_mm,kw);
+  document.getElementById('u-clean').textContent=u.Uc.toFixed(1);
+  document.getElementById('u-fouled').textContent=u.Uf.toFixed(1);
+  const fpct=(1-u.Uf/u.Uc)*100;
+  clrAlert('alert-u');
+  if(fpct>40) setAlert('alert-u','awk','Fouling reduces U by '+fpct.toFixed(1)+'%. Consider enhanced tubes or fouling mitigation.');
+  else setAlert('alert-u','aok','Fouling penalty '+fpct.toFixed(1)+'%. U_fouled/U_clean = '+(u.Uf/u.Uc).toFixed(3)+'.');
+  const Q_W=Q_avg*1000,L_eff=(L_mm-100)/1000;
+  const aPerTube=Math.PI*(OD_mm/1000)*L_eff;
+  const A_clean=Q_W/(u.Uc*Math.max(dTm,0.1)),A_fouled=Q_W/(u.Uf*Math.max(dTm,0.1)),A_design=A_fouled*(1+odMarg/100);
+  const N_raw=Math.ceil(A_design/aPerTube),N_tubes=Math.ceil(N_raw/tp)*tp;
+  const{Ds,pitch}=shellDiam(N_tubes,OD_mm,pitchT),LD=(L_eff*1000)/Ds;
+  document.getElementById('a-clean').textContent=A_clean.toFixed(2);
+  document.getElementById('a-fouled').textContent=A_fouled.toFixed(2);
+  document.getElementById('a-design').textContent=A_design.toFixed(2);
+  document.getElementById('n-tubes').textContent=N_tubes;
+  document.getElementById('d-shell').textContent=Ds.toFixed(0);
+  document.getElementById('ld-ratio').textContent=LD.toFixed(2);
+  clrAlert('alert-area');
+  if(LD<3) setAlert('alert-area','awk','L/D < 3 — shell too squat. Consider longer tubes or series shells.');
+  else if(LD>15) setAlert('alert-area','awk','L/D > 15 — excessively long. Consider shorter tubes or parallel shells.');
+  else setAlert('alert-area','aok','L/D = '+LD.toFixed(2)+' — within acceptable range (5–10 preferred).');
+  const Cmin=Math.min(mh*Cph,mc*Cpc),Cmax=Math.max(mh*Cph,mc*Cpc),Cr=Cmin/Cmax;
+  const NTU=(u.Uf*A_fouled)/Cmin;
+  let eff;
+  if(flow==='counter') eff=Math.abs(Cr-1)<0.001?NTU/(1+NTU):(1-Math.exp(-NTU*(1-Cr)))/(1-Cr*Math.exp(-NTU*(1-Cr)));
+  else eff=(1-Math.exp(-NTU*(1+Cr)))/(1+Cr);
+  document.getElementById('m-q').textContent=Q_avg.toFixed(1);
+  document.getElementById('m-ntu').textContent=NTU.toFixed(3);
+  document.getElementById('m-eff').textContent=(eff*100).toFixed(1)+'%';
+  document.getElementById('m-dims').textContent=OD_mm+' / '+u.ID_mm.toFixed(2);
+  document.getElementById('m-pitch').textContent=pitch.toFixed(1);
+  document.getElementById('m-tpp').textContent=Math.ceil(N_tubes/tp);
+  // Sensitivity
+  const sb=document.getElementById('sens-body'); sb.innerHTML='';
+  TUBE_ODS.forEach(([od,lbl])=>{
+    const apt=Math.PI*(od/1000)*L_eff,uu=calcU(hh,hc,Rfh,Rfc,od,wt_mm,kw);
+    const af=Q_W/(uu.Uf*Math.max(dTm,0.1)),ad=af*(1+odMarg/100);
+    const nt=Math.ceil(Math.ceil(ad/apt)/tp)*tp;
+    const{Ds:ds,pitch:pt}=shellDiam(nt,od,pitchT),ld2=(L_eff*1000)/ds;
+    const isSel=Math.abs(od-OD_mm)<0.01;
+    let st='',sc='';
+    if(ld2<3||ld2>15){st='L/D out of range';sc='wk';}
+    else if(ds>1600){st='Oversized shell';sc='wk';}
+    else{st='Acceptable';sc='ok';}
+    const tr=document.createElement('tr');
+    if(isSel) tr.classList.add('sel');
+    tr.innerHTML=`<td style="font-weight:${isSel?'600':'400'}">${lbl}${isSel?' ◀':''}</td><td class="num">${(od-2*wt_mm).toFixed(2)}</td><td class="num">${apt.toFixed(4)}</td><td class="num">${uu.Uf.toFixed(1)}</td><td class="num">${af.toFixed(2)}</td><td class="num">${nt}</td><td class="num">${ds.toFixed(0)}</td><td class="num ${ld2<3||ld2>15?'wk':'ok'}">${ld2.toFixed(2)}</td><td class="${sc}">${st}</td>`;
+    sb.appendChild(tr);
+  });
+  // Datasheet
+  const dsb=document.getElementById('ds-body');
+  const rows=[['Service',document.getElementById('hot-name').value+' / '+document.getElementById('cold-name').value,'TEMA type',tema],['Design duty',Q_avg.toFixed(1)+' kW','Flow arrangement',flow==='counter'?'Counterflow':'Parallel'],['T inlet / outlet',T1+' / '+T2+' °C','t inlet / outlet',t1+' / '+t2+' °C'],['Mass flow (hot)',mh+' kg/s','Mass flow (cold)',mc+' kg/s'],['h film (shell)',hh+' W/m²·K','h film (tube)',hc+' W/m²·K'],['Rf (shell)',Rfh+' m²K/W','Rf (tube)',Rfc+' m²K/W'],['LMTD',lmtd_cf.toFixed(2)+' °C','Ft factor',Ft.toFixed(3)],['Effective ΔTm',dTm.toFixed(2)+' °C','NTU',NTU.toFixed(3)],['U clean',u.Uc.toFixed(1)+' W/m²·K','U fouled',u.Uf.toFixed(1)+' W/m²·K'],['Area — fouled',A_fouled.toFixed(2)+' m²','Area — design',A_design.toFixed(2)+' m²'],['Tube OD / ID',OD_mm+' / '+u.ID_mm.toFixed(2)+' mm','Tube length',L_mm+' mm'],['No. of tubes',N_tubes,'Tube passes',tp],['Shell diameter',Ds+' mm','L/D ratio',LD.toFixed(2)],['Tube pitch',pitch.toFixed(1)+' mm','Layout',pitchT.includes('t')?'Triangular':'Square'],['Over-design margin',odMarg+'%','HX effectiveness',(eff*100).toFixed(1)+'%']];
+  dsb.innerHTML=rows.map(r=>`<tr><td style="color:var(--text2);font-size:11px;padding:5px 10px;border-bottom:1px solid var(--border);white-space:nowrap;font-family:'DM Mono',monospace;">${r[0]}</td><td style="font-weight:500;font-size:12px;padding:5px 10px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;">${r[1]}</td><td style="color:var(--text2);font-size:11px;padding:5px 10px;border-bottom:1px solid var(--border);border-left:1px solid var(--border);white-space:nowrap;font-family:'DM Mono',monospace;">${r[2]}</td><td style="font-weight:500;font-size:12px;padding:5px 10px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;">${r[3]}</td></tr>`).join('');
+  document.getElementById('outputs').style.display='';
+}
+drawSVG();
+</script>
+
+<button class="fb-btn no-print" onclick="fbOpen()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M14 1H2C1.45 1 1 1.45 1 2v9c0 .55.45 1 1 1h3l3 3 3-3h3c.55 0 1-.45 1-1V2c0-.55-.45-1-1-1z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/></svg> Feedback</button>
+<div class="fb-overlay" id="fb-overlay" onclick="fbClose()"></div>
+<div class="fb-panel" id="fb-panel">
+  <div class="fb-header"><div class="fb-header-icon">&#x1F4AC;</div><div style="flex:1;"><div class="fb-header-title">Share your feedback</div><div class="fb-header-sub">ProcessDesk</div></div><button class="fb-close" onclick="fbClose()">&#x2715;</button></div>
+  <div class="fb-body" id="fb-body">
+    <div class="fb-field"><label class="fb-lbl">Module</label><select class="fb-select" id="fb-module"><option value="auto">Auto-detect</option><option value="fel3_hydraulics">01 - Liquid Hydraulics</option><option value="fel3_gas_hydraulics">02 - Gas Hydraulics</option><option value="fel3_heat_exchanger">03 - Heat Exchanger</option><option value="fel3_relief_valve">04 - Relief Valve</option><option value="fel3_pump_selection">05 - Pump Selection</option><option value="fel3_meb">06 - Mass &amp; Energy Balance</option><option value="fel3_cost_estimator">07 - Cost Estimator</option><option value="fel3_economics">08 - Project Economics</option><option value="fel3_dashboard">09 - Dashboard</option></select></div>
+    <div class="fb-field"><label class="fb-lbl">Type</label><select class="fb-select" id="fb-type"><option value="general">General feedback</option><option value="bug">Bug report</option><option value="calculation">Calculation question</option><option value="feature">Feature request</option></select></div>
+    <div class="fb-field"><label class="fb-lbl">Feedback</label><textarea class="fb-textarea" id="fb-text" placeholder="Tell us what is working or broken..." maxlength="1000" oninput="document.getElementById('fb-char').textContent=this.value.length+' / 1000'"></textarea><div class="fb-char-count" id="fb-char">0 / 1000</div></div>
+    <button class="fb-submit" onclick="fbSubmit()">Send Feedback &#x2192;</button>
+  </div>
+  <div class="fb-success" id="fb-success"><div class="fb-success-icon">&#x2705;</div><div class="fb-success-title">Thanks!</div></div>
+</div>
+<script>
+(function(){
+  var page=window.location.pathname.split('/').pop().replace('.html','')||'index';
+  var sel=document.getElementById('fb-module');
+  if(sel){for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===page){sel.selectedIndex=i;break;}}}
+  window.fbOpen=function(){document.getElementById('fb-panel').classList.add('open');document.getElementById('fb-overlay').classList.add('open');};
+  window.fbClose=function(){document.getElementById('fb-panel').classList.remove('open');document.getElementById('fb-overlay').classList.remove('open');};
+  window.fbSubmit=function(){
+    var text=document.getElementById('fb-text').value.trim();
+    if(!text){document.getElementById('fb-text').style.borderColor='var(--red)';return;}
+    var module=document.getElementById('fb-module').value;
+    var type=document.getElementById('fb-type').value;
+    var addr='processdesks'+String.fromCharCode(64)+'gmail.com';
+    var subject=encodeURIComponent('[ProcessDesk] '+module+' - '+type);
+    var body=encodeURIComponent('Module: '+module+'%0AType: '+type+'%0A%0A'+text);
+    window.location.href='mai'+'lto:'+addr+'?subject='+subject+'&body='+body;
+    document.getElementById('fb-body').style.display='none';
+    document.getElementById('fb-success').style.display='block';
+    setTimeout(function(){fbClose();},3000);
+  };
+}());
+</script>
+</body>
+</html>
